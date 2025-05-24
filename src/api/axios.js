@@ -2,8 +2,7 @@ import axios from "axios";
 
 // Create Axios instance (recommended over modifying default axios)
 const instance = axios.create({
-  baseURL: "http://localhost:8000", // Laravel backend
-  // baseURL: "https://api.osintwork.com", //laravel for production
+  baseURL: import.meta.env.VITE_BASE_URL, // Laravel backend
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
