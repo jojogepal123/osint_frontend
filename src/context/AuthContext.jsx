@@ -144,122 +144,7 @@ export const AuthProvider = ({ children }) => {
     return true;
   };
 
-  // const fetchTelData = async () => {
-  //   const fullPhoneNumber = ` ${countryCode.replace("+", "")}${inputValue}`;
-  //   setLoading(true);
-
-  //   try {
-  //     const { data } = await instance.get("/api/tel", {
-  //       params: { number: fullPhoneNumber.trim() },
-  //     });
-
-  //     let parsedHLR = null;
-  //     try {
-  //       parsedHLR =
-  //         typeof data.hlrData === "string"
-  //           ? JSON.parse(data.hlrData)
-  //           : data.hlrData;
-  //     } catch (err) {
-  //       console.error("Failed to parse HLR data", err);
-  //     }
-
-  //     const newResults = {
-  //       whatsappData: data.whatsappData || null,
-  //       hlrData: parsedHLR,
-  //       truecallerData: data.truecallerData || null,
-  //       allMobileData: data.allMobileData || null,
-  //       socialMediaData: data.socialMediaData || null,
-  //       osintData: data.osintData?.data || null,
-  //       // surepassKyc: data.surepassKyc || null, // <-- add this
-  //       // surepassUpi: data.surepassUpi || null, // <-- add this
-  //       // surepassBank: data.surepassBank || null, // <-- add this
-  //       errors: data.errors || {},
-  //     };
-
-  //     setResults(JSON.parse(JSON.stringify(newResults)));
-
-  //     if (Object.keys(data.errors || {}).length > 0) {
-  //       console.log(
-  //         `Some APIs failed: ${Object.keys(data.errors)
-  //           .map((api) => api.toUpperCase())
-  //           .join(", ")}`
-  //       );
-  //     } else {
-  //       toast.success("Data fetched successfully");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error in fetchTelData:", error);
-  //     toast.error("Internal server error, please try again.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // const fetchEmailData = async () => {
-  //   setLoading(true);
-
-  //   try {
-  //     const { data } = await instance.get("/api/email", {
-  //       params: { email: inputValue },
-  //     });
-
-  //     let failedAPIs = [];
-
-  //     // ✅ Google API check
-  //     if (data.emailData) {
-  //       setResults(data.emailData);
-  //     } else {
-  //       console.error("Google API failed or returned no data", data.emailData);
-  //       failedAPIs.push("Google API");
-  //     }
-
-  //     // ✅ Have I Been Pwned (HIBP) API check
-  //     if (data.hibpData && data.hibpData.length > 0) {
-  //       setHibpResults(data.hibpData);
-  //     } else {
-  //       console.error(
-  //         "Have I Been Pwned API failed or no breaches found",
-  //         data.hibpData
-  //       );
-  //       failedAPIs.push("HIBP API");
-  //     }
-
-  //     // ✅ Zehef API check
-  //     if (data.zehefData?.data && Array.isArray(data.zehefData.data)) {
-  //       const zehefData = data.zehefData.data;
-  //       setZehefResults(zehefData);
-  //     } else {
-  //       console.error("Zehef API failed or returned no data", data.zehefData);
-  //       setZehefResults([]);
-  //       failedAPIs.push("Zehef API");
-  //     }
-
-  //     // ✅ Osint Search API check
-  //     if (data.osintData && data.osintData.data) {
-  //       console.log("Setting Osint Search Data:", data.osintData.data);
-  //       setOsintDataResults(data.osintData.data);
-  //     } else {
-  //       console.log("No valid Osint Search data found:", data.osintData);
-  //       setOsintDataResults(null);
-  //       failedAPIs.push("Osint Search API");
-  //     }
-  //     // 🚨 Log failed APIs
-  //     if (failedAPIs.length > 0) {
-  //       console.log(`Some APIs failed: ${failedAPIs.join(", ")}`);
-  //     } else {
-  //       toast.success("Data fetched successfully");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error in fetchEmailData:", error);
-  //     toast.error("Error fetching data!");
-
-  //     setZehefResults([]);
-  //     setOsintDataResults(null);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
+  
   const fetchTelData = async () => {
     const fullPhoneNumber = `${countryCode.replace(
       "+",
@@ -283,7 +168,7 @@ export const AuthProvider = ({ children }) => {
         truecallerData: data.truecallerData || null,
         allMobileData: data.allMobileData || null,
         socialMediaData: data.socialMediaData || null,
-        osintData: data.osintData?.data || null,
+        osintData: data.osintData || null,
         // surepassKyc: data.surepassKyc || null, // <-- add this
         // surepassUpi: data.surepassUpi || null, // <-- add this
         // surepassBank: data.surepassBank || null, // <-- add this

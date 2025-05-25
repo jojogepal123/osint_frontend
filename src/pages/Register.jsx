@@ -4,7 +4,6 @@ import useAuthContext from "../context/AuthContext";
 import Loader from "../components/Loader";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
-import instance from "../api/axios";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -16,10 +15,6 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const [enabled, setEnabled] = useState(false);
-  const [LoadingRegister, setLoadingRegister] = useState(true);
-  
-  
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,27 +28,7 @@ const Register = () => {
     }
   };
 
-  useEffect(() => {
-    instance
-      .get("/api/registration-status")
-      .then((res) => {
-        setEnabled(res.data.registration_enabled);
-        setLoadingRegister(false);
-      })
-      .catch(() => {
-        setEnabled(false);
-        setLoadingRegister(false);
-      });
-  }, []);
-
-  if (LoadingRegister)
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-        <Loader />
-      </div>
-    );
-
-  if (!enabled) {
+  if (import.meta.env.VITE_REGISTER_ENABLED === "false") {
     return (
       <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-900 text-gray-100">
         <h1 className="text-9xl font-extrabold tracking-widest text-red-600">
@@ -79,7 +54,6 @@ const Register = () => {
           <Loader />
         </div>
       )}
-      {!loading && (
         <section className="my-auto relative">
           <div className="container mx-auto max-w-6xl z-90">
             <div className="flex flex-row p-0 mx-0 sm:mx-4">
@@ -237,7 +211,6 @@ const Register = () => {
             </div>
           </div>
         </section>
-      )}
     </>
   );
 };

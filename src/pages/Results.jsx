@@ -1,6 +1,4 @@
 import { WhatsappCard } from "../components/cards/WhatsappCard";
-// import { SkypeCard } from "../components/cards/SkypeCard";
-import { EyeconCard } from "../components/cards/EyeconCard";
 import { SocialMediaCard } from "../components/cards/SocialMediaCard";
 import { HLRCard } from "../components/cards/HLRCard";
 import { TruecallerCard } from "../components/cards/TruecallerCard";
@@ -9,24 +7,31 @@ import { GoogleCard } from "../components/cards/GoogleCard";
 import { GravatarCard } from "../components/cards/GravatarCard";
 import { ZehefCard } from "../components/cards/ZehefCard";
 import { OsintCard } from "../components/cards/OsintCard";
-import useAuthContext from "../context/AuthContext";
 import ResultHeader from "../components/ResultHeader";
 import { useLocation, useNavigate } from "react-router-dom";
 // import SurepassKycCard from "../components/cards/SurepassKycCard";
 // import SurepassUpiCard from "../components/cards/SurepassUpiCard";
 // import SurepassBankCard from "../components/cards/SurepassBankCard";
+
+import { ProfileFromTelApis } from "../utils/ProfileFromTelApis";
+import { ProfileFromEmailApis } from "../utils/ProfileFromEmailApis";
+import TelProfileCard from "../components/TelProfileCard";
+import EmailProfileCard from "../components/EmailProfileCard";
+
 const Results = () => {
   const location = useLocation();
   const { results, type, userInput } = location.state || {};
   const navigate = useNavigate();
-
   const handleNewSearch = () => navigate("/dashboard");
-  const emailData = results?.emailData || null;
+  const TelProfile = ProfileFromTelApis(results);
+  const EmailProfile = ProfileFromEmailApis(results);
 
+  const emailData = results?.emailData || null;
+  console.log("Email Data:", emailData);
   const hibpResults = results?.hibpData || [];
   const zehefResults = results?.zehefData?.data || [];
-  const osintDataResults = results?.osintData?.data || null;
-
+  const osintDataResults = results?.osintData.data || null;
+  console.log("Results:", osintDataResults);
   return (
     <>
       <ResultHeader
@@ -42,95 +47,71 @@ const Results = () => {
 
       {type === "tel" ? (
         <>
-          <div className="w-full flex flex-wrap gap-6 justify-start items-stretch max-w-7xl mx-auto mt-8 md:mt-16 py-4 px-4 md:px-24 z-10">
-            {results.whatsappData && (
-              <WhatsappCard data={results.whatsappData} />
-            )}
-            {results.eyeconData && <EyeconCard data={results.eyeconData} />}
-            {/* {results.skypeData && <SkypeCard data={results.skypeData} />} */}
-            {results.hlrData && <HLRCard data={results.hlrData} />}
-            {results.truecallerData && (
-              <TruecallerCard data={results.truecallerData} />
-            )}
-            {results.socialMediaData && (
-              <SocialMediaCard data={results.socialMediaData} />
-            )}
-            {results.allMobileData && (
-              <AllMobileCard data={results.allMobileData} />
-            )}
-            {results.osintData && <OsintCard data={results.osintData} />}
-            {/* {JSON.stringify(results, null, 2)} */}
-            {/* {results.surepassKyc && typeof results.surepassKyc === "object" && (
-              <SurepassKycCard data={results.surepassKyc} />
-            )}
-            {results.surepassUpi && typeof results.surepassUpi === "object" && (
-              <SurepassUpiCard data={results.surepassUpi} />
-            )}
-            {results.surepassBank &&
-              typeof results.surepassBank === "object" && (
-                <SurepassBankCard data={results.surepassBank} />
-              )} */}
+          <div className="z-10 w-full max-w-6xl mx-auto mt-12">
+            <TelProfileCard profile={TelProfile} userInput={userInput} />
+            <div className="mt-8">
+              <OsintCard data={osintDataResults} />
+            </div>
           </div>
         </>
       ) : (
         <>
-          <div className="w-full flex flex-wrap gap-6 justify-start items-stretch max-w-7xl mx-auto mt-8 md:mt-16 py-4 px-4 md:px-24 z-10">
-            <GoogleCard emailData={emailData} />
-            {Array.isArray(hibpResults) && hibpResults.length > 0 && (
-              <div className="w-full md:w-[48%] bg-white dark:bg-gray-800 border rounded-lg shadow hover:bg-gray-100 dark:hover:bg-gray-700 p-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <img
-                    src="https://www.google.com/favicon.ico"
-                    alt="Google"
-                    className="w-14 h-14 bg-[#313544] rounded-xl"
-                  />
-                  <h2 className="text-white text-xl font-semibold">
-                    Leaked Databases
-                  </h2>
-                </div>
-                <ul className="list-disc pl-6 text-white space-y-2">
-                  {hibpResults.map((result, index) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <img
-                        src={
-                          result.LogoPath || "https://via.placeholder.com/50"
-                        }
-                        alt={result.Name}
-                        className="w-6 h-6 rounded-full"
-                      />
-                      {result.Name}
-                    </li>
-                  ))}
-                </ul>
+          <div className="z-10 w-full max-w-6xl mx-auto mt-12">
+            <EmailProfileCard profile={EmailProfile} userInput={userInput} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="mt-4">
+                <GoogleCard emailData={emailData} />
               </div>
-            )}
-
-            {/* {skypeResults?.data?.profiles?.length > 0 && (
-                <SkypeCard data={skypeResults} />
-              )} */}
-            <OsintCard data={osintDataResults} />
-            {zehefResults?.some(
-              (item) => item.source === "Gravatar" && item.status === "found"
-            ) && (
-              <GravatarCard
-                data={zehefResults.filter(
-                  (item) =>
-                    item.source === "Gravatar" && item.status === "found"
+              <div className="mt-4">
+                {Array.isArray(hibpResults) && hibpResults.length > 0 && (
+                  <div className="w-full bg-green  border rounded-lg shadow border-gray-700 p-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <img
+                        src="https://www.google.com/favicon.ico"
+                        alt="Google"
+                        className="w-6 h-6 bg-[#313544] rounded-xl"
+                      />
+                      <h2 className="text-gray-200 text-xl font-semibold">
+                        Found breaches
+                      </h2>
+                    </div>
+                    <ul className="list-disc pl-6 text-gray-200 space-y-2">
+                      {hibpResults.map((result, index) => (
+                        <li key={index} className="flex items-center gap-2">
+                          <img
+                            src={
+                              result.LogoPath ||
+                              "https://via.placeholder.com/50"
+                            }
+                            alt={result.Name}
+                            className="w-6 h-6 rounded-full"
+                          />
+                          {result.Name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
-              />
-            )}
-            <ZehefCard data={zehefResults} />
+              </div>
+              {zehefResults?.some(
+                (item) => item.source === "Gravatar" && item.status === "found"
+              ) && (
+                <div className="">
+                  <GravatarCard
+                    data={zehefResults.filter(
+                      (item) =>
+                        item.source === "Gravatar" && item.status === "found"
+                    )}
+                  />
+                </div>
+              )}
+              <div className="">
+                <OsintCard data={osintDataResults} />
+              </div>
+            </div>
           </div>
         </>
       )}
-      {/* <div className="z-10 w-full flex justify-center items-center max-w-7xl mx-auto py-4 px-4 md:px-24">
-        <button
-          onClick={onBack}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4"
-        >
-          Back
-        </button>
-      </div> */}
     </>
   );
 };

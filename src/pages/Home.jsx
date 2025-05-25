@@ -59,7 +59,7 @@ const Home = () => {
         } else if (inputType === "email") {
           fetchedResults = await fetchEmailData();
         }
-        console.log("Fetched results:", fetchedResults);
+        // console.log("Fetched results:", fetchedResults);
         navigate("/results", {
           state: {
             results: fetchedResults,

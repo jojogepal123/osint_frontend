@@ -10,24 +10,24 @@ export const GoogleCard = ({ emailData }) => {
   const sourceId = profile.sourceIds?.PROFILE?.lastUpdated;
 
   return (
-    <div className="w-full md:w-[48%] bg-white dark:bg-gray-800 border rounded-lg shadow hover:bg-gray-100 dark:hover:bg-gray-700 p-4">
+    <div className="w-full bg-green border border-gray-700 rounded-lg shadow p-4">
       <div className="flex items-center gap-3 mb-4">
         <img
           src="https://www.google.com/favicon.ico"
           alt="Google"
-          className="w-14 h-14 bg-[#313544] rounded-xl"
+          className="w-6 h-6 bg-[#313544] rounded-xl"
         />
-        <h2 className="text-white text-xl font-semibold">Google Profile</h2>
+        <h2 className="text-gray-200 text-xl font-semibold">Google Profile</h2>
       </div>
 
-      <div className="text-white flex flex-col sm:flex-row sm:items-start sm:space-x-6 space-y-4 sm:space-y-0">
+      <div className="text-gray-200 flex flex-col sm:flex-row sm:items-start sm:space-x-6 space-y-4 sm:space-y-0">
         {profilePhoto && (
           <div className="flex justify-center sm:block">
             <img
               src={profilePhoto}
               alt="Profile"
               referrerPolicy="no-referrer"
-              className="w-24 h-24 sm:w-32 sm:h-32 rounded-md border-4 border-gray-200 object-cover"
+              className="w-24 h-24 sm:w-32 sm:h-32 rounded-md border-4 border-gray-400 object-cover"
             />
           </div>
         )}
@@ -35,20 +35,20 @@ export const GoogleCard = ({ emailData }) => {
         <div className="space-y-2 text-sm sm:text-base">
           {name && (
             <p>
-              <strong>Name:</strong> {name}
+              <strong className="text-gray-200">Name:</strong> {name}
             </p>
           )}
 
           {email && (
             <p>
-              <strong>Email:</strong> {email}
+              <strong className="text-gray-200">Email:</strong> {email}
             </p>
           )}
 
           {personId && (
             <>
               <p>
-                <strong>Maps Profile:</strong>{" "}
+                <strong className="text-gray-200">Maps Profile:</strong>{" "}
                 <a
                   href={`https://www.google.com/maps/contrib/${personId}`}
                   target="_blank"

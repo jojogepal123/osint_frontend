@@ -45,7 +45,7 @@ const ResultHeader = ({ userInput, type, profile, results,hibpResults, zehefResu
   return (
     <>
       <div className="max-w-7xl w-full mx-auto mt-16 sm:mt-12 z-40 transition-all duration-300 ease-in-out hide-on-pdf">
-        <div className="rounded-xl mx-8 md:mx-24 text-white p-3 md:p-4 bg-teal-700 bg-opacity-30 backdrop-blur-sm shadow-lg">
+        <div className="rounded-xl mx-8 md:mx-16 text-white p-3 md:p-4 bg-teal-700 bg-opacity-30 backdrop-blur-sm shadow-lg">
           <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-3 md:gap-4">
             <div className="w-full md:w-auto">
               <div className="flex items-center gap-2">
