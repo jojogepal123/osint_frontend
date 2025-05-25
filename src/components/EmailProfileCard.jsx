@@ -76,8 +76,8 @@ const EmailProfileCard = ({ profile, userInput }) => {
 
       {/* Social Media Links */}
       {Object.keys(profile.socialMediaPresence).length > 0 && (
-        <div className="bg-custom p-4 rounded-lg">
-          <div className="bg-custom p-4 rounded w-full md:w-2/3 text-white">
+        <div className="bg-gray-900 p-4 rounded-lg">
+          <div className="bg-gray-900 p-4 rounded w-full md:w-2/3 text-white">
             <h3 className="text-xl font-semibold mb-3">
               Social Media Presence
             </h3>

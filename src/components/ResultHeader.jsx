@@ -3,7 +3,15 @@ import instance from "../api/axios";
 import InlineLoader from "../components/InlineLoader";
 import { useNavigate } from "react-router-dom";
 
-const ResultHeader = ({ userInput, type, profile, results,hibpResults, zehefResults,osintDataResults }) => {
+const ResultHeader = ({
+  userInput,
+  type,
+  profile,
+  results,
+  hibpResults,
+  zehefResults,
+  osintDataResults,
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -42,13 +50,34 @@ const ResultHeader = ({ userInput, type, profile, results,hibpResults, zehefResu
       setIsLoading(false);
     }
   };
+
+  const handleGenerateReport = async () => {
+    try {
+      const res = await axios.post("/api/generate-report", {
+        userInput,
+        type,
+        results,
+      });
+
+      // If the API returns a download URL
+      if (res.data?.pdf_url) {
+        window.open(res.data.pdf_url, "_blank"); // open PDF in new tab
+      } else {
+        alert("Report generated but no PDF URL returned.");
+      }
+    } catch (error) {
+      console.error("Report generation failed:", error);
+      alert("Failed to generate report.");
+    }
+  };
+
   return (
     <>
       <div className="max-w-7xl w-full mx-auto mt-16 sm:mt-12 z-40 transition-all duration-300 ease-in-out hide-on-pdf">
         <div className="rounded-xl mx-8 md:mx-16 text-white p-3 md:p-4 bg-teal-700 bg-opacity-30 backdrop-blur-sm shadow-lg">
           <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-3 md:gap-4">
             <div className="w-full md:w-auto">
-              <div className="flex items-center gap-3">
+              <div className="flex justify-center items-center gap-3">
                 <span className="text-white text-lg sm:text-xl font-medium truncate">
                   {userInput}
                 </span>
@@ -130,41 +159,70 @@ const ResultHeader = ({ userInput, type, profile, results,hibpResults, zehefResu
                 {/* Add dropdown menu */}
 
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-auto rounded-md shadow-lg bg-[#1A1F30] ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-                    <div
-                      className="py-1"
-                      role="menu"
-                      aria-orientation="vertical"
-                    >
-                      <button
-                        className="flex items-center gap-2 w-full px-4 py-2 text-sm text-white hover:bg-white/10 backdrop-blur-lg transition-colors"
-                        onClick={handleSaveResults}
-                        role="menuitem"
+                  <>
+                    <div className="absolute left-0 mt-2 w-full md:w-60 rounded-md shadow-lg bg-[#1A1F30] ring-1 ring-black ring-opacity-5 focus:outline-none z-50 float-end">
+                      <div
+                        className="py-1"
+                        role="menu"
+                        aria-orientation="vertical"
                       >
-                        {isLoading ? (
-                          <InlineLoader />
-                        ) : (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="mr-2"
-                          >
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <polyline points="7 10 12 15 17 10" />
-                            <line x1="12" y1="15" x2="12" y2="3" />
-                          </svg>
-                        )}
-                        Save as HTML
-                      </button>
+                        <button
+                          className="flex items-center gap-2 w-full px-4 py-2 text-xs md:text-sm text-white hover:bg-white/10 backdrop-blur-lg transition-colors"
+                          onClick={handleGenerateReport}
+                          role="menuitem"
+                        >
+                          {isLoading ? (
+                            <InlineLoader />
+                          ) : (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="mr-2"
+                            >
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="7 10 12 15 17 10" />
+                              <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                          )}
+                          Generate AI Report
+                        </button>
+                        <button
+                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-white hover:bg-white/10 backdrop-blur-lg transition-colors"
+                          onClick={handleSaveResults}
+                          role="menuitem"
+                        >
+                          {isLoading ? (
+                            <InlineLoader />
+                          ) : (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="mr-2"
+                            >
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="7 10 12 15 17 10" />
+                              <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                          )}
+                          Save as HTML
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  </>
                 )}
               </div>
               <button

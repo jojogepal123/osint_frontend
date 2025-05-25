@@ -23,7 +23,7 @@ const AuthLayout = () => {
     return <Outlet />;
   }
 
-  const hideSidebar = location.pathname.startsWith("/subscription");
+  const hideSidebar = location.pathname.startsWith("/subscription") || location.pathname.startsWith("/results");
 
   return user ? (
     <>
