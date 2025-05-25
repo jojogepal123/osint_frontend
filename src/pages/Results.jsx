@@ -1,17 +1,8 @@
-import { WhatsappCard } from "../components/cards/WhatsappCard";
-import { SocialMediaCard } from "../components/cards/SocialMediaCard";
-import { HLRCard } from "../components/cards/HLRCard";
-import { TruecallerCard } from "../components/cards/TruecallerCard";
-import { AllMobileCard } from "../components/cards/AllMobileCard";
 import { GoogleCard } from "../components/cards/GoogleCard";
 import { GravatarCard } from "../components/cards/GravatarCard";
-import { ZehefCard } from "../components/cards/ZehefCard";
 import { OsintCard } from "../components/cards/OsintCard";
 import ResultHeader from "../components/ResultHeader";
 import { useLocation, useNavigate } from "react-router-dom";
-// import SurepassKycCard from "../components/cards/SurepassKycCard";
-// import SurepassUpiCard from "../components/cards/SurepassUpiCard";
-// import SurepassBankCard from "../components/cards/SurepassBankCard";
 
 import { ProfileFromTelApis } from "../utils/ProfileFromTelApis";
 import { ProfileFromEmailApis } from "../utils/ProfileFromEmailApis";
@@ -27,30 +18,26 @@ const Results = () => {
   const EmailProfile = ProfileFromEmailApis(results);
 
   const emailData = results?.emailData || null;
-  console.log("Email Data:", emailData);
   const hibpResults = results?.hibpData || [];
   const zehefResults = results?.zehefData?.data || [];
   const osintDataResults = results?.osintData.data || null;
-  console.log("Results:", osintDataResults);
+
   return (
     <>
       <ResultHeader
         userInput={userInput}
         onNewSearch={handleNewSearch}
         type={type}
-        profile={emailData}
         results={results}
-        hibpResults={hibpResults}
-        zehefResults={zehefResults}
-        osintDataResults={osintDataResults}
       />
-
       {type === "tel" ? (
         <>
           <div className="z-10 w-full max-w-6xl mx-auto mt-12">
             <TelProfileCard profile={TelProfile} userInput={userInput} />
-            <div className="mt-8">
-              <OsintCard data={osintDataResults} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="mt-4">
+                <OsintCard data={osintDataResults} />
+              </div>
             </div>
           </div>
         </>

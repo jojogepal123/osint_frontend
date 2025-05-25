@@ -91,7 +91,7 @@ const Sidebar = () => {
                       setInputType("email");
                       closeMenu();
                       if (window.location.pathname !== "/dashboard") {
-                        window.location.href = "/dashboard";
+                          navigate("/dashboard");
                       }
                     }}
                     className={`
@@ -147,7 +147,7 @@ const Sidebar = () => {
                       setInputType("tel");
                       closeMenu();
                       if (window.location.pathname !== "/dashboard") {
-                        window.location.href = "/dashboard";
+                        navigate("/dashboard");
                       }
                     }}
                     className={`

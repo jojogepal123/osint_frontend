@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState({});
-  const [zehefResults, setZehefResults] = useState([]); // ✅ Default to empty array
+  const [zehefResults, setZehefResults] = useState([]);
   const [inputType, setInputType] = useState("email");
   const [loading, setLoading] = useState(false);
   const [countryCode, setCountryCode] = useState("+91");
@@ -169,9 +169,9 @@ export const AuthProvider = ({ children }) => {
         allMobileData: data.allMobileData || null,
         socialMediaData: data.socialMediaData || null,
         osintData: data.osintData || null,
-        // surepassKyc: data.surepassKyc || null, // <-- add this
-        // surepassUpi: data.surepassUpi || null, // <-- add this
-        // surepassBank: data.surepassBank || null, // <-- add this
+        surepassKyc: data.surepassKyc || null, // <-- add this
+        surepassUpi: data.surepassUpi || null, // <-- add this
+        surepassBank: data.surepassBank || null, // <-- add this
         errors: data.errors || {},
       };
 

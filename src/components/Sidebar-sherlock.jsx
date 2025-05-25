@@ -64,7 +64,7 @@ const Sidebar = () => {
                       setInputType("email");
                       closeMenu();
                       if (window.location.pathname !== "/dashboard") {
-                        window.location.href = "/dashboard";
+                        navigate("/dashboard");
                       }
                     }}
                     className={`flex items-center rounded-lg
@@ -114,7 +114,7 @@ const Sidebar = () => {
                       setInputType("tel");
                       closeMenu();
                       if (window.location.pathname !== "/dashboard") {
-                        window.location.href = "/dashboard";
+                        navigate("/dashboard");
                       }
                     }}
                     className={`flex items-center rounded-lg

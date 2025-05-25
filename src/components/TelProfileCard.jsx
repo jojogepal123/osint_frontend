@@ -1,22 +1,33 @@
-const InfoList = ({ title, items }) => (
-  <div className="mb-4">
-    <h3 className="text-lg font-semibold text-white">{title}</h3>
-    {items?.length > 0 ? (
+const InfoList = ({ title, items }) => {
+  if (!items || items.length === 0) return null;
+
+  return (
+    <div className="mb-4">
+      <h3 className="text-lg font-semibold text-white">{title}</h3>
       <ul className="ml-5 list-disc text-md text-gray-300">
         {items.map((item, idx) => (
           <li key={idx}>
-            {item.value}{" "}
+            {item.key ? item.key + " : " : ""}
+            {item.value}
             {item.source && (
-              <span className="text-sm text-gray-500">({item.source})</span>
+              <span className="text-sm text-gray-500"> ({item.source})</span>
             )}
           </li>
         ))}
       </ul>
-    ) : (
-      <p className="text-sm text-gray-400">N/A</p>
-    )}
-  </div>
-);
+    </div>
+  );
+};
+
+const DataCard = ({ title, items }) => {
+  if (!items || items.length === 0) return null;
+
+  return (
+    <div className="bg-gray-900 p-4 rounded-lg text-gray-200">
+      <InfoList title={title} items={items} />
+    </div>
+  );
+};
 
 const TelProfileCard = ({ profile, userInput }) => {
   console.log(profile);
@@ -60,74 +71,55 @@ const TelProfileCard = ({ profile, userInput }) => {
       </div>
 
       {/* personal info */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
-        <div className="text-gray-200 bg-custom p-4 rounded-lg">
-          <InfoList title="Full Names and Aliases" items={profile.fullNames} />
-        </div>
-
-        <div className="text-gray-200 bg-custom p-4 rounded-lg">
-          <InfoList title="Phone Numbers" items={profile.phones} />
-        </div>
-
-        <div className="text-gray-200 bg-custom p-4 rounded-lg">
-          <InfoList title="Emails" items={profile.emails} />
-        </div>
-
-        <div className="text-gray-200 bg-custom p-4 rounded-lg">
-          <InfoList title="Locations" items={profile.locations} />
-        </div>
-
-        <div className="text-gray-200 bg-custom p-4 rounded-lg">
-          <InfoList title="Country Codes" items={profile.countryCodes} />
-        </div>
-
-        <div className="text-gray-200 bg-custom p-4 rounded-lg">
-          <InfoList title="Carriers" items={profile.carriers} />
-        </div>
-
-        <div className="text-gray-200 bg-custom p-4 rounded-lg">
-          <InfoList title="Job Profiles" items={profile.jobProfiles} />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <DataCard title="Full Names and Alias" items={profile.fullNames} />
+        <DataCard title="Phone Numbers" items={profile.phones} />
+        <DataCard title="Emails" items={profile.emails} />
+        <DataCard title="Basic Info" items={profile.basicInfo} />
+        <DataCard title="Bank Details" items={profile.bankDetails} />
+        <DataCard title="Upi Ids" items={profile.upiDetails} />
+        <DataCard title="Identity Proofs" items={profile.idProofs} />
+        <DataCard title="Verified Address" items={profile.verifiedAddress} />
+        <DataCard title="Locations" items={profile.locations} />
+        <DataCard title="Last Updated" items={profile.lastUpdated} />
+        <DataCard title="Country Codes" items={profile.countryCodes} />
+        <DataCard title="Carriers" items={profile.carriers} />
+        <DataCard title="Job Profiles" items={profile.jobProfiles} />
       </div>
 
       {/* Social Media Links */}
-      <div className="bg-custom p-4 rounded-lg">
-        {profile.socialMediaPresence &&
-          Object.keys(profile.socialMediaPresence).length > 0 && (
-            <div className="bg-custom p-4 rounded w-full md:w-1/2 text-white">
-              <h3 className="text-xl font-semibold mb-3">
-                Social Media Presence
-              </h3>
-              <ul className="space-y-2">
-                {Object.entries(profile.socialMediaPresence).map(
-                  ([platform, isPresent]) => (
-                    <li
-                      key={platform}
-                      className="flex items-center justify-between text-md text-gray-200"
-                    >
-                      <span className="capitalize">{platform}</span>
-                      <span
-                        className={`w-3 h-3 rounded-full ${
-                          isPresent ? "bg-green-500" : "bg-gray-500"
-                        }`}
-                      />
-                    </li>
-                  )
-                )}
-              </ul>
-            </div>
-          )}
-      </div>
+      {Object.keys(profile.socialMediaPresence).length > 0 && (
+        <div className="bg-gray-900 p-4 rounded-lg">
+          <div className="bg-gray-900 rounded w-full md:w-2/3 text-white">
+            <h3 className="text-xl font-semibold mb-3">
+              Social Media Presence
+            </h3>
+            <ul className="space-y-2 px-2">
+              {Object.entries(profile.socialMediaPresence).map(
+                ([platform, isPresent]) => (
+                  <li
+                    key={platform}
+                    className="flex items-center justify-between text-md text-gray-200"
+                  >
+                    <span className="capitalize">{platform}</span>
+                    <span
+                      className={`w-3 h-3 rounded-full ${
+                        isPresent ? "bg-green-500" : "bg-gray-500"
+                      }`}
+                    />
+                  </li>
+                )
+              )}
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* Other single-value fields */}
-      <div className="grid md:grid-cols-2 gap-6 text-white text-md">
+      <div className="grid md:grid-cols-2 gap-6 text-white text-md p-4">
         <div>
           <h3 className="font-semibold">Whatsapp Business Account</h3>
           <p className="text-gray-300">{profile.isBusiness ? "Yes" : "No"}</p>
-        </div>
-        <div>
-          <h3 className="font-semibold">Last number activity</h3>
-          <p className="text-gray-300">{profile.lastSeen || "N/A"}</p>
         </div>
         <div>
           <h3 className="font-semibold">Phone IMSI</h3>

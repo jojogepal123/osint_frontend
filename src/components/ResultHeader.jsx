@@ -48,8 +48,8 @@ const ResultHeader = ({ userInput, type, profile, results,hibpResults, zehefResu
         <div className="rounded-xl mx-8 md:mx-16 text-white p-3 md:p-4 bg-teal-700 bg-opacity-30 backdrop-blur-sm shadow-lg">
           <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-3 md:gap-4">
             <div className="w-full md:w-auto">
-              <div className="flex items-center gap-2">
-                <span className="text-white text-lg sm:text-2xl font-medium truncate">
+              <div className="flex items-center gap-3">
+                <span className="text-white text-lg sm:text-xl font-medium truncate">
                   {userInput}
                 </span>
                 <button
@@ -70,7 +70,7 @@ const ResultHeader = ({ userInput, type, profile, results,hibpResults, zehefResu
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="lucide lucide-clipboard w-4 h-4 text-[#ABDE64]"
+                    className="lucide lucide-clipboard w-6 h-6 text-[#ABDE64]"
                   >
                     <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
                     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>

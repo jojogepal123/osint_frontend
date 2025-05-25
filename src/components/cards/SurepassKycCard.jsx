@@ -1,5 +1,3 @@
-import React from "react";
-
 const SurepassKycCard = ({ data }) => {
   if (!data?.data) return null;
   const { client_id, mobile, details } = data.data;
