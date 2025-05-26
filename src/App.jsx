@@ -34,8 +34,7 @@ function App() {
         <div
           className={`absolute top-4 left-4 z-30 md:hidden ${
             (sidebarVisible ||
-              ["/dashboard"].includes(location.pathname)) &&
-            location.pathname !== "/subscription" || location.pathname !== "/results"
+              location.pathname === "/dashboard")
               ? ""
               : "hidden"
           }`}
