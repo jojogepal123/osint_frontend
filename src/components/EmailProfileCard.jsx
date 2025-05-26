@@ -48,7 +48,7 @@ const EmailProfileCard = ({ profile, userInput }) => {
                 <img
                   src={img.value}
                   alt={`Profile ${idx}`}
-                  className="w-32 h-32 rounded-full object-cover border-4 border-gray-400"
+                  className="w-32 h-32 rounded-full object-cover border-2 border-gray-200"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     e.target.onerror = null;
@@ -67,6 +67,7 @@ const EmailProfileCard = ({ profile, userInput }) => {
       {/* personal info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <DataCard title="Full Names and Alias" items={profile.fullNames} />
+        <DataCard title="Usernames" items={profile.userNames} />
         <DataCard title="Phone Numbers" items={profile.phones} />
         <DataCard title="Emails" items={profile.emails} />
         <DataCard title="Basic Info" items={profile.basicInfo} />

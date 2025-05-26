@@ -1,5 +1,7 @@
 export const ProfileFromEmailApis = (results) => {
   const osintResults = results?.osintData?.data || [];
+  const holeheResults = results?.holeheData || [];
+  console.log(holeheResults);
 
   const getIfExists = (val, source) => (val ? { value: val, source } : null);
 
@@ -10,10 +12,12 @@ export const ProfileFromEmailApis = (results) => {
     ),
   ].filter(Boolean);
 
+  const userNames = [].filter(Boolean);
+
   if (Array.isArray(results?.zehefData?.data)) {
     results?.zehefData.data.forEach((item) => {
       if (item.source === "Gravatar" && item.status === "found") {
-        fullNames.push({ value: item.username, source: "Social Media" });
+        userNames.push({ value: item.username, source: "Social Media" });
       }
     });
   }
@@ -39,6 +43,15 @@ export const ProfileFromEmailApis = (results) => {
   if (Array.isArray(osintResults)) {
     osintResults?.forEach((item) => {
       const sourceKey = item.source?.toLowerCase();
+      if (sourceKey && !socialMediaPresence[sourceKey]) {
+        socialMediaPresence[sourceKey] = true;
+      }
+    });
+  }
+
+  if (Array.isArray(holeheResults?.used)) {
+    holeheResults?.used.forEach((item) => {
+      const sourceKey = item.toLowerCase();
       if (sourceKey && !socialMediaPresence[sourceKey]) {
         socialMediaPresence[sourceKey] = true;
       }
@@ -82,13 +95,20 @@ export const ProfileFromEmailApis = (results) => {
         basicInfo.push({ key: "Age", value: item.age, source: "Social Media" });
       }
       if (item.gender) {
-        basicInfo.push({ key: "Gender", value: item.gender, source: "Social Media" });
+        basicInfo.push({
+          key: "Gender",
+          value: item.gender,
+          source: "Social Media",
+        });
       }
       if (item.dob) {
         basicInfo.push({ value: item.dob, source: "Social Media" });
       }
       if (item.name) {
         fullNames.push({ value: item.name, source: "Social Media" });
+      }
+      if (item.username) {
+        userNames.push({ value: item.username, source: "Social Media" });
       }
       if (item.address) {
         locations.push({ value: item.address, source: "Social Media" });
@@ -113,6 +133,7 @@ export const ProfileFromEmailApis = (results) => {
 
   const EmailProfile = {
     fullNames,
+    userNames,
     emails,
     profileImages,
     phones,

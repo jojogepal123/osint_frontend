@@ -1,7 +1,6 @@
 export const ProfileFromTelApis = (results) => {
   const osintResults = results?.osintData?.data || [];
   const spKycData = results?.surepassKyc?.data?.details || null;
-  console.log(spKycData);
   const getIfExists = (val, source, key) =>
     val ? { value: val, source, key } : null;
 
@@ -23,6 +22,16 @@ export const ProfileFromTelApis = (results) => {
     getIfExists(spKycData?.personal_info?.full_name, "Gov"),
     getIfExists(results?.surepassBank?.data?.name, "Gov"),
     getIfExists(results?.surepassUpi?.data?.name, "Gov"),
+    getIfExists(
+      `${results?.telegramData?.first_name || ""} ${
+        results?.telegramData?.last_name || ""
+      }`.trim(),
+      "Social Media"
+    ),
+  ].filter(Boolean);
+
+  const userNames = [
+    getIfExists(results?.telegramData?.username, "Social Media"),
   ].filter(Boolean);
 
   const locations = [
@@ -69,7 +78,8 @@ export const ProfileFromTelApis = (results) => {
 
   const socialMediaPresence = {
     whatsapp: results?.whatsappData?.isUser ?? false,
-    facebook: results?.socialMediaData?.response?.fb ? true : false,
+    facebook: results?.socialMediaData?.response?.fb ?? false,
+    telegram: results?.telegramData?.found ?? false,
   };
 
   // Add sources from osintData
@@ -108,6 +118,9 @@ export const ProfileFromTelApis = (results) => {
       }
       if (item.name) {
         fullNames.push({ value: item.name, source: "Social Media" });
+      }
+      if (item.username) {
+        userNames.push({ value: item.username, source: "Social Media" });
       }
       if (item.address) {
         locations.push({ value: item.address, source: "Social Media" });
@@ -174,7 +187,7 @@ export const ProfileFromTelApis = (results) => {
           item.reported_date && `Reported: ${item.reported_date}`,
         ]
           .filter(Boolean)
-          .join(", "); 
+          .join(", ");
 
         verifiedAddress.push({
           value: formatted,
@@ -185,29 +198,34 @@ export const ProfileFromTelApis = (results) => {
   }
 
   const bankDetails = [
-    getIfExists(results?.surepassBank?.data?.bank_account_no, "Gov", "Bank Account No"),
+    getIfExists(
+      results?.surepassBank?.data?.bank_account_no,
+      "Gov",
+      "Bank Account No"
+    ),
     getIfExists(results?.surepassBank?.data?.bank_ifsc, "Gov", "IFSC Code"),
     getIfExists(results?.surepassBank?.data?.bank_details, "Gov", "Bank Name"),
   ].filter(Boolean);
 
-  const upiDetails = [
-  ].filter(Boolean);
-  
+  const upiDetails = [].filter(Boolean);
+
   const upiData = results?.surepassUpi?.data?.upi_id || null;
 
-  if(Array.isArray(upiData)) {
+  if (Array.isArray(upiData)) {
     upiData.forEach((item) => {
       if (item) {
-        upiDetails.push({ key:"Upi Id", value: item, source: "Gov" });
+        upiDetails.push({ key: "Upi Id", value: item, source: "Gov" });
       }
     });
   }
 
   const TelProfile = {
     fullNames,
+    userNames,
     emails,
     profileImages: [
       getIfExists(results?.whatsappData?.profilePic, "WhatsApp"),
+      getIfExists(results?.telegramData?.profile_photo, "Social Media"),
     ].filter(Boolean),
 
     phones,

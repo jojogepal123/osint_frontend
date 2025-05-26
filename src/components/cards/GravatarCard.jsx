@@ -10,7 +10,7 @@ export const GravatarCard = ({ data }) => {
         <img
           src="https://gravatar.com/images/favicon-192x192.png"
           alt="Gravatar"
-          className="w-8 h-8 bg-[#313544] rounded-xl"
+          className="w-6 h-6 bg-[#313544] rounded-xl"
         />
         <h2 className="text-gray-200 text-xl font-semibold">Gravatar</h2>
       </div>

@@ -32,7 +32,7 @@ const Results = () => {
       />
       {type === "tel" ? (
         <>
-          <div className="z-10 w-full max-w-6xl mx-auto mt-12">
+          <div className="z-10 w-full max-w-6xl mx-auto my-12">
             <TelProfileCard profile={TelProfile} userInput={userInput} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="mt-4">
@@ -43,7 +43,7 @@ const Results = () => {
         </>
       ) : (
         <>
-          <div className="z-10 w-full max-w-6xl mx-auto mt-12">
+          <div className="z-10 w-full max-w-6xl mx-auto my-12">
             <EmailProfileCard profile={EmailProfile} userInput={userInput} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="mt-4">
@@ -53,11 +53,21 @@ const Results = () => {
                 {Array.isArray(hibpResults) && hibpResults.length > 0 && (
                   <div className="w-full bg-green  border rounded-lg shadow border-gray-700 p-4">
                     <div className="flex items-center gap-3 mb-4">
-                      <img
-                        src="https://www.google.com/favicon.ico"
-                        alt="Google"
-                        className="w-6 h-6 bg-[#313544] rounded-xl"
-                      />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="50"
+                        height="50"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#FFF"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-blocks w-6 h-6"
+                      >
+                        <rect width="7" height="7" x="14" y="3" rx="1"></rect>
+                        <path d="M10 21V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H3"></path>
+                      </svg>
                       <h2 className="text-gray-200 text-xl font-semibold">
                         Found breaches
                       </h2>

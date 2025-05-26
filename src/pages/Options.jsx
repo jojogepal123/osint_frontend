@@ -289,7 +289,7 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
   return (
     <div className="relative">
       <div
-        className="bg-gray-800 border border-lime-200 text-white rounded-md px-4 py-2 flex items-center justify-between cursor-pointer focus:ring-lime-200"
+        className="bg-gray-800 border border-lime-200 text-white rounded-md px-4 py-3 flex items-center justify-between cursor-pointer focus:ring-lime-200"
         onClick={toggleDropdown}
       >
         <span className="text-lime-200">{selectedCountryCode}</span>

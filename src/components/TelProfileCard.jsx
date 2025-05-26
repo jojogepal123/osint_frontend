@@ -30,7 +30,6 @@ const DataCard = ({ title, items }) => {
 };
 
 const TelProfileCard = ({ profile, userInput }) => {
-  console.log(profile);
   if (!profile) return null;
 
   return (
@@ -54,7 +53,7 @@ const TelProfileCard = ({ profile, userInput }) => {
                 <img
                   src={img.value}
                   alt={`Profile ${idx}`}
-                  className="w-32 h-32 rounded-full object-cover border-4 border-gray-400"
+                  className="w-32 h-32 rounded-full object-cover border-2 border-gray-200"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     e.target.onerror = null;
@@ -66,13 +65,16 @@ const TelProfileCard = ({ profile, userInput }) => {
             ))}
           </div>
         ) : (
-          <div className="w-full text-center text-gray-400">No Image</div>
+          <div className="w-32 h-32 rounded-full flex justify-center items-center bg-gray-700 text-gray-200">
+            No Image
+          </div>
         )}
       </div>
 
       {/* personal info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <DataCard title="Full Names and Alias" items={profile.fullNames} />
+        <DataCard title="Usernames" items={profile.userNames} />
         <DataCard title="Phone Numbers" items={profile.phones} />
         <DataCard title="Emails" items={profile.emails} />
         <DataCard title="Basic Info" items={profile.basicInfo} />
@@ -119,15 +121,16 @@ const TelProfileCard = ({ profile, userInput }) => {
       <div className="grid md:grid-cols-2 gap-6 text-white text-md p-4">
         <div>
           <h3 className="font-semibold">Whatsapp Business Account</h3>
-          <p className="text-gray-300">{profile.isBusiness ? "Yes" : "No"}</p>
+          <p className="text-gray-300">{profile?.isBusiness ? "Yes" : "No"}</p>
         </div>
         <div>
           <h3 className="font-semibold">Phone IMSI</h3>
-          <p className="text-gray-300">{profile.imsi || "N/A"}</p>
+          <p className="text-gray-300">{profile?.imsi || "N/A"}</p>
         </div>
-        <div className="md:col-span-2">
-          <h3 className="font-semibold">Facebook Profile</h3>
-          {profile.facebook?.profile_url ? (
+        {profile.facebook?.profile_url && (
+          <div className="md:col-span-2">
+            <h3 className="font-semibold">Facebook Profile</h3>
+
             <a
               href={profile.facebook.profile_url}
               target="_blank"
@@ -136,10 +139,8 @@ const TelProfileCard = ({ profile, userInput }) => {
             >
               {profile.facebook.profile_url}
             </a>
-          ) : (
-            <p className="text-gray-300">N/A</p>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

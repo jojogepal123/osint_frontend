@@ -169,9 +169,10 @@ export const AuthProvider = ({ children }) => {
         allMobileData: data.allMobileData || null,
         socialMediaData: data.socialMediaData || null,
         osintData: data.osintData || null,
-        surepassKyc: data.surepassKyc || null, // <-- add this
-        surepassUpi: data.surepassUpi || null, // <-- add this
-        surepassBank: data.surepassBank || null, // <-- add this
+        surepassKyc: data.surepassKyc || null,
+        surepassUpi: data.surepassUpi || null,
+        surepassBank: data.surepassBank || null,
+        telegramData: data.telegramData || null,
         errors: data.errors || {},
       };
 
