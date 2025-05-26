@@ -1,7 +1,6 @@
 export const ProfileFromEmailApis = (results) => {
   const osintResults = results?.osintData?.data || [];
   const holeheResults = results?.holeheData || [];
-  console.log(holeheResults);
 
   const getIfExists = (val, source) => (val ? { value: val, source } : null);
 
@@ -39,6 +38,19 @@ export const ProfileFromEmailApis = (results) => {
       : false,
   };
 
+  const extractDomainName = (input) => {
+    if (!input) return "";
+    const cleaned = input.toLowerCase().trim();
+    // Match domain-like patterns (e.g., amazon.com, spotify.net)
+    const domainMatch = cleaned.match(
+      /([a-z0-9-]+)\.(com|org|net|io|in|co|me|info|biz)/
+    );
+    if (domainMatch) {
+      return domainMatch[1]; // Return only 'amazon' from 'amazon.com'
+    }
+    return cleaned.split(".")[0];
+  };
+
   // Add sources from osintData
   if (Array.isArray(osintResults)) {
     osintResults?.forEach((item) => {
@@ -51,7 +63,7 @@ export const ProfileFromEmailApis = (results) => {
 
   if (Array.isArray(holeheResults?.used)) {
     holeheResults?.used.forEach((item) => {
-      const sourceKey = item.toLowerCase();
+      const sourceKey = extractDomainName(item);
       if (sourceKey && !socialMediaPresence[sourceKey]) {
         socialMediaPresence[sourceKey] = true;
       }
