@@ -17,12 +17,43 @@ const Results = () => {
   const TelProfile = ProfileFromTelApis(results);
   const EmailProfile = ProfileFromEmailApis(results);
 
-  console.log(results);
-
   const emailData = results?.emailData || null;
   const hibpResults = results?.hibpData || [];
   const zehefResults = results?.zehefData?.data || [];
   const osintDataResults = results?.osintData?.data || null;
+  console.log("Results:", results);
+  const isResultEmpty = () => {
+    if (!results) return true;
+
+    const isTelResultsEmpty =
+      TelProfile === null &&
+      (!osintDataResults || osintDataResults.length === 0);
+
+    const isEmailResultsEmpty =
+      !emailData &&
+      (!hibpResults || hibpResults.length === 0) &&
+      (!osintDataResults || osintDataResults.length === 0) &&
+      !results.zehefData?.data?.some((item) => item.status === "found") &&
+      (!results.holeheData?.used || results.holeheData.used.length === 0);
+
+    return type === "tel" ? isTelResultsEmpty : isEmailResultsEmpty;
+  };
+
+  if (isResultEmpty()) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen z-10">
+        <h1 className="text-5xl font-bold text-gray-300 mb-4">
+          No results found
+        </h1>
+        <button
+          onClick={handleNewSearch}
+          className="px-4 py-2 bg-lime-500 font-bold uppercase text-gray-950 rounded hover:bg-lime-600"
+        >
+          Start a new search
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -36,7 +67,7 @@ const Results = () => {
         <>
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
             <TelProfileCard profile={TelProfile} userInput={userInput} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {osintDataResults !== null && (
                 <div className="mt-4">
                   <OsintCard data={osintDataResults} />
@@ -108,6 +139,8 @@ const Results = () => {
                   />
                 </div>
               )}
+            </div>
+            <div className="grid grid-cols-1 gap-4">
               {osintDataResults !== null && (
                 <div className="mt-4">
                   <OsintCard data={osintDataResults} />
