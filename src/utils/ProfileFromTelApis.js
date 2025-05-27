@@ -76,11 +76,16 @@ export const ProfileFromTelApis = (results) => {
     });
   }
 
-  const socialMediaPresence = {
-    whatsapp: results?.whatsappData?.isUser ?? false,
-    facebook: results?.socialMediaData?.response?.fb ?? false,
-    telegram: results?.telegramData?.found ?? false,
-  };
+  const socialMediaPresence = {};
+
+  const isSocialPresence = (platform,data) =>{
+      if(data){
+        socialMediaPresence[platform] = data;
+      }
+  }
+  isSocialPresence("whatsapp", results?.whatsappData?.isUser);
+  isSocialPresence("facebook", results?.socialMediaData?.response?.fb);
+  isSocialPresence("telegram", results?.telegramData?.found);
 
   // Add sources from osintData
   if (Array.isArray(osintResults)) {

@@ -45,8 +45,8 @@ const TelProfileCard = ({ profile, userInput }) => {
           </span>
         )}
       </div>
-      <div className="flex flex-col md:flex-row items-center gap-4">
-        {profile.profileImages?.length > 0 ? (
+      {profile.profileImages?.length > 0 && (
+        <div className="flex flex-col md:flex-row items-center gap-4">
           <div className="flex flex-wrap gap-4 items-center">
             {profile.profileImages.map((img, idx) => (
               <div key={idx} className="flex flex-col items-center">
@@ -64,12 +64,8 @@ const TelProfileCard = ({ profile, userInput }) => {
               </div>
             ))}
           </div>
-        ) : (
-          <div className="w-32 h-32 rounded-full flex justify-center items-center bg-gray-700 text-gray-200">
-            No Image
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* personal info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -119,14 +115,21 @@ const TelProfileCard = ({ profile, userInput }) => {
 
       {/* Other single-value fields */}
       <div className="grid md:grid-cols-2 gap-6 text-white text-md p-4">
-        <div>
-          <h3 className="font-semibold">Whatsapp Business Account</h3>
-          <p className="text-gray-300">{profile?.isBusiness ? "Yes" : "No"}</p>
-        </div>
-        <div>
-          <h3 className="font-semibold">Phone IMSI</h3>
-          <p className="text-gray-300">{profile?.imsi || "N/A"}</p>
-        </div>
+        {profile?.isBusiness && (
+          <div>
+            <h3 className="font-semibold">Whatsapp Business Account</h3>
+            <p className="text-gray-300">
+              {profile?.isBusiness ? "Yes" : "No"}
+            </p>
+          </div>
+        )}
+        {profile?.imsi && (
+          <div>
+            <h3 className="font-semibold">Phone IMSI</h3>
+            <p className="text-gray-300">{profile?.imsi || "N/A"}</p>
+          </div>
+        )}
+
         {profile.facebook?.profile_url && (
           <div className="md:col-span-2">
             <h3 className="font-semibold">Facebook Profile</h3>

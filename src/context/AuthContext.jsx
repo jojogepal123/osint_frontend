@@ -189,7 +189,6 @@ export const AuthProvider = ({ children }) => {
 
   const fetchEmailData = async () => {
     setLoading(true);
-
     try {
       const { data } = await instance.get("/api/email", {
         params: { email: inputValue },

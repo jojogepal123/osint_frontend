@@ -17,10 +17,12 @@ const Results = () => {
   const TelProfile = ProfileFromTelApis(results);
   const EmailProfile = ProfileFromEmailApis(results);
 
+  console.log(results);
+
   const emailData = results?.emailData || null;
   const hibpResults = results?.hibpData || [];
   const zehefResults = results?.zehefData?.data || [];
-  const osintDataResults = results?.osintData.data || null;
+  const osintDataResults = results?.osintData?.data || null;
 
   return (
     <>
@@ -35,9 +37,11 @@ const Results = () => {
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
             <TelProfileCard profile={TelProfile} userInput={userInput} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="mt-4">
-                <OsintCard data={osintDataResults} />
-              </div>
+              {osintDataResults !== null && (
+                <div className="mt-4">
+                  <OsintCard data={osintDataResults} />
+                </div>
+              )}
             </div>
           </div>
         </>
@@ -46,13 +50,13 @@ const Results = () => {
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
             <EmailProfileCard profile={EmailProfile} userInput={userInput} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {emailData && (
+              {emailData !== null && (
                 <div className="mt-4">
                   <GoogleCard emailData={emailData} />
                 </div>
               )}
-              <div className="mt-4">
-                {Array.isArray(hibpResults) && hibpResults.length > 0 && (
+              {Array.isArray(hibpResults) && hibpResults.length > 0 && (
+                <div className="mt-4">
                   <div className="w-full bg-green  border rounded-lg shadow border-gray-700 p-4">
                     <div className="flex items-center gap-3 mb-4">
                       <svg
@@ -90,12 +94,12 @@ const Results = () => {
                       ))}
                     </ul>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
               {zehefResults?.some(
                 (item) => item.source === "Gravatar" && item.status === "found"
               ) && (
-                <div className="">
+                <div className="mt-4">
                   <GravatarCard
                     data={zehefResults.filter(
                       (item) =>
@@ -104,7 +108,7 @@ const Results = () => {
                   />
                 </div>
               )}
-              {osintDataResults && (
+              {osintDataResults !== null && (
                 <div className="mt-4">
                   <OsintCard data={osintDataResults} />
                 </div>

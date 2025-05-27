@@ -42,7 +42,7 @@ const EmailProfileCard = ({ profile, userInput }) => {
         </h2>
       </div>
       <div className="flex flex-col md:flex-row items-center gap-4">
-        {profile.profileImages?.length > 0 ? (
+        {profile.profileImages?.length > 0 && (
           <div className="flex flex-wrap gap-4 items-center">
             {profile.profileImages.map((img, idx) => (
               <div key={idx} className="flex flex-col items-center">
@@ -60,8 +60,6 @@ const EmailProfileCard = ({ profile, userInput }) => {
               </div>
             ))}
           </div>
-        ) : (
-          <div className="w-32 h-32 text-center flex items-center justify-center bg-gray-700 rounded-full text-gray-400">No Image</div>
         )}
       </div>
 

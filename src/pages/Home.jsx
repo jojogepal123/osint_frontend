@@ -4,6 +4,7 @@ import Options from "./Options";
 import UserIcon from "../assets/userIcon.png"; // Import your user icon here
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { input } from "framer-motion/client";
 const Home = () => {
   const {
     user,
@@ -165,12 +166,11 @@ const Home = () => {
           Find out what's
         </div>
         <div className="text-white text-3xl sm:text-5xl font-semibold text-center pb-4">
-          behind any{" "}
+          behind any
           <span
             className="ml-1 text-[#AADE63] px-2 underline underline-offset-8"
             style={{ fontFamily: '"Times New Roman", Times, serif' }}
-          >
-            email
+          >{inputType === "tel" ? "Phone number" : "Email"}
           </span>
         </div>
       </div>
