@@ -32,11 +32,12 @@ export const ProfileFromEmailApis = (results) => {
     ),
   ].filter(Boolean);
 
-  const socialMediaPresence = {
-    google: results?.emailData?.PROFILE_CONTAINER?.profile?.personId
-      ? true
-      : false,
-  };
+  const socialMediaPresence = {};
+
+  const googleId = results?.emailData?.PROFILE_CONTAINER?.profile?.personId;
+  if (googleId) {
+    socialMediaPresence.google = googleId;
+  }
 
   const extractDomainName = (input) => {
     if (!input) return "";

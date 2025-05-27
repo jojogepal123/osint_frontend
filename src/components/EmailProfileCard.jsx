@@ -7,6 +7,7 @@ const InfoList = ({ title, items }) => {
       <ul className="ml-5 list-disc text-md text-gray-300">
         {items.map((item, idx) => (
           <li key={idx}>
+            {item.key ? item.key + " : " : ""}
             {item.value}
             {item.source && (
               <span className="text-sm text-gray-500"> ({item.source})</span>
@@ -60,7 +61,7 @@ const EmailProfileCard = ({ profile, userInput }) => {
             ))}
           </div>
         ) : (
-          <div className="w-full text-center text-gray-400">No Image</div>
+          <div className="w-32 h-32 text-center flex items-center justify-center bg-gray-700 rounded-full text-gray-400">No Image</div>
         )}
       </div>
 
