@@ -78,11 +78,11 @@ export const ProfileFromTelApis = (results) => {
 
   const socialMediaPresence = {};
 
-  const isSocialPresence = (platform,data) =>{
-      if(data){
-        socialMediaPresence[platform] = data;
-      }
-  }
+  const isSocialPresence = (platform, data) => {
+    if (data) {
+      socialMediaPresence[platform] = data;
+    }
+  };
   isSocialPresence("whatsapp", results?.whatsappData?.isUser);
   isSocialPresence("facebook", results?.socialMediaData?.response?.fb);
   isSocialPresence("telegram", results?.telegramData?.found);
@@ -224,14 +224,20 @@ export const ProfileFromTelApis = (results) => {
     });
   }
 
+  const telegramImage = results?.telegramData?.profile_photo
+    ? "/photo/" + results.telegramData.profile_photo
+    : null;
+
+  const profileImages = [
+    getIfExists(results?.whatsappData?.profilePic, "WhatsApp"),
+    telegramImage ? { value: telegramImage, source: "Social Media" } : null,
+  ].filter(Boolean);
+
   const TelProfile = {
     fullNames,
     userNames,
     emails,
-    profileImages: [
-      getIfExists(results?.whatsappData?.profilePic, "WhatsApp"),
-      getIfExists(results?.telegramData?.profile_photo, "Social Media"),
-    ].filter(Boolean),
+    profileImages,
 
     phones,
 
