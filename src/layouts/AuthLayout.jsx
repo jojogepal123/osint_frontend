@@ -47,7 +47,6 @@ const AuthLayout = () => {
   ) : (
     <>
       <Navigate to="/login" replace />
-      {console.log("not authorized")}
     </>
   );
 };

@@ -252,7 +252,7 @@ const Home = () => {
             </button>
           )}
         </div>
-        <div className="sm:mt-8 text-center text-xs flex flex-wrap justify-center">
+        <div className="sm:mt-4 text-center text-xs flex flex-wrap justify-center">
           <label className="flex items-center cursor-pointer gap-2">
             <input
               type="checkbox"
@@ -260,7 +260,7 @@ const Home = () => {
               onChange={(e) => setIsChecked(e.target.checked)}
               className="peer sr-only"
             />
-            <div className="h-5 w-5 rounded border border-lime-200 flex items-center justify-center peer-checked:bg-lime-200">
+            <div className="h-4 w-4 rounded border border-lime-200 flex items-center justify-center peer-checked:bg-lime-200">
               {isChecked && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
