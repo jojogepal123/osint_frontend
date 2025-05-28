@@ -1,6 +1,4 @@
-import React from "react";
 import useAuthContext from "../context/AuthContext";
-import logoMin from "../assets/web-logo.png";
 import webName from "../assets/web-name-logo.png";
 import { useLocation, useNavigate } from "react-router-dom";
 const Sidebar = () => {
@@ -18,7 +16,7 @@ const Sidebar = () => {
     setSidebarVisible(false);
   };
   const handleSubscription = () => {
-    window.location.href = "/subscription";
+    navigate("/subscription");
   };
 
   return (

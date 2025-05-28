@@ -4,7 +4,6 @@ import Options from "./Options";
 import UserIcon from "../assets/userIcon.png"; // Import your user icon here
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { input } from "framer-motion/client";
 const Home = () => {
   const {
     user,
@@ -33,7 +32,7 @@ const Home = () => {
   };
 
   const handleSubscription = () => {
-    window.location.href = "/subscription";
+    navigate("/subscription");
   };
 
   useEffect(() => {

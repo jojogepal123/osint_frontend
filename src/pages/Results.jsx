@@ -21,7 +21,6 @@ const Results = () => {
   const hibpResults = results?.hibpData || [];
   const zehefResults = results?.zehefData?.data || [];
   const osintDataResults = results?.osintData?.data || null;
-  console.log("Results:", results);
   const isResultEmpty = () => {
     if (!results) return true;
 

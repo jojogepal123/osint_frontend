@@ -1,8 +1,7 @@
-import React from "react";
 import useAuthContext from "../context/AuthContext";
 import logoMin from "../assets/web-logo.png";
 import webName from "../assets/web-name-logo.png";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -20,7 +19,7 @@ const Sidebar = () => {
   };
 
   const handleSubscription = () => {
-    window.location.href = "/subscription";
+    navigate("/subscription");
   };
   return (
     <>
@@ -243,8 +242,8 @@ const Sidebar = () => {
 
               <div>
                 <li>
-                  <a
-                    href="/help"
+                  <Link
+                    to={"/dashboard"}
                     className={`flex items-center rounded-lg
                                             transition-all duration-100 ease-in-out
                                             hover:bg-gray-800 text-white hover:text-lime-200 
@@ -279,7 +278,7 @@ const Sidebar = () => {
                     >
                       Help
                     </span>
-                  </a>
+                  </Link>
                 </li>
               </div>
             </ul>
