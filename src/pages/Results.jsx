@@ -9,6 +9,8 @@ import { ProfileFromEmailApis } from "../utils/ProfileFromEmailApis";
 import TelProfileCard from "../components/TelProfileCard";
 import EmailProfileCard from "../components/EmailProfileCard";
 
+import no_results_image from "../assets/noresults.png";
+
 const Results = () => {
   const location = useLocation();
   const { results, type, userInput } = location.state || {};
@@ -21,37 +23,95 @@ const Results = () => {
   const hibpResults = results?.hibpData || [];
   const zehefResults = results?.zehefData?.data || [];
   const osintDataResults = results?.osintData?.data || null;
+
+  console.log(results);
+
   const isResultEmpty = () => {
     if (!results) return true;
 
-    const isTelResultsEmpty =
-      TelProfile === null &&
-      (!osintDataResults || osintDataResults.length === 0);
+    // Handle tel-based search
+    if (type === "tel") {
+      const telEmpty =
+        !TelProfile ||
+        Object.values(TelProfile).every(
+          (val) =>
+            val === null ||
+            (Array.isArray(val) && val.length === 0) ||
+            (typeof val === "object" && Object.keys(val).length === 0)
+        );
 
-    const isEmailResultsEmpty =
-      !emailData &&
-      (!hibpResults || hibpResults.length === 0) &&
-      (!osintDataResults || osintDataResults.length === 0) &&
-      !results.zehefData?.data?.some((item) => item.status === "found") &&
-      (!results.holeheData?.used || results.holeheData.used.length === 0);
+      return telEmpty && (!osintDataResults || osintDataResults.length === 0);
+    }
 
-    return type === "tel" ? isTelResultsEmpty : isEmailResultsEmpty;
+    // Handle email-based search
+    if (type === "email") {
+      const zehefFound = Array.isArray(results.zehefData?.data)
+        ? results.zehefData.data.some((item) => item.status === "found")
+        : false;
+
+      const holeheUsed = Array.isArray(results.holeheData?.used)
+        ? results.holeheData.used.length > 0
+        : false;
+
+      const emailEmpty =
+        !emailData ||
+        emailData.success === null ||
+        emailData.error !== undefined;
+
+      const hibpEmpty = !hibpResults || hibpResults.length === 0;
+      const osintEmpty = !osintDataResults || osintDataResults.length === 0;
+
+      return (
+        emailEmpty && hibpEmpty && osintEmpty && !zehefFound && !holeheUsed
+      );
+    }
+    return true;
   };
 
   if (isResultEmpty()) {
     return (
       <div className="flex flex-col items-center justify-center h-screen z-10">
-        <h1 className="text-5xl font-bold text-gray-300 mb-4">
-          No results found
-        </h1>
+        <img
+          src={no_results_image}
+          className="w-96 sm:w-2/5"
+          alt="no-results"
+        />
         <button
           onClick={handleNewSearch}
-          className="px-4 py-2 bg-lime-500 font-bold uppercase text-gray-950 rounded hover:bg-lime-600"
+          className="px-4 py-2 bg-lime-400 font-bold uppercase text-gray-950 rounded hover:bg-lime-500"
         >
           Start a new search
         </button>
       </div>
     );
+  }
+
+  let resultsToSend = {};
+
+  const isEmailDataValid =
+    emailData && emailData.success !== null && emailData.error === undefined;
+
+  if (type === "tel") {
+    resultsToSend = {
+      profile: TelProfile || null,
+      osintData: osintDataResults || null,
+    };
+  } else if (type === "email") {
+    resultsToSend = {
+      profile: EmailProfile || null,
+      emailData: isEmailDataValid
+        ? emailData?.PROFILE_CONTAINER?.profile
+        : null,
+      breachData: hibpResults || null,
+      gravatar: zehefResults?.some(
+        (item) => item.source === "Gravatar" && item.status === "found"
+      )
+        ? zehefResults?.filter(
+            (item) => item.source === "Gravatar" && item.status === "found"
+          )
+        : null,
+      osintData: osintDataResults || null,
+    };
   }
 
   return (
@@ -60,7 +120,7 @@ const Results = () => {
         userInput={userInput}
         onNewSearch={handleNewSearch}
         type={type}
-        results={results}
+        results={resultsToSend}
       />
       {type === "tel" ? (
         <>
@@ -79,15 +139,17 @@ const Results = () => {
         <>
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
             <EmailProfileCard profile={EmailProfile} userInput={userInput} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {emailData !== null && (
-                <div className="mt-4">
-                  <GoogleCard emailData={emailData} />
-                </div>
-              )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              {!emailData ||
+                emailData.success === null ||
+                (emailData.error !== undefined && (
+                  <div className="">
+                    <GoogleCard emailData={emailData} />
+                  </div>
+                ))}
               {Array.isArray(hibpResults) && hibpResults.length > 0 && (
-                <div className="mt-4">
-                  <div className="w-full bg-green  border rounded-lg shadow border-gray-700 p-4">
+                <div className="">
+                  <div className="w-full bg-green border rounded-lg shadow border-gray-700 p-4">
                     <div className="flex items-center gap-3 mb-4">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +191,7 @@ const Results = () => {
               {zehefResults?.some(
                 (item) => item.source === "Gravatar" && item.status === "found"
               ) && (
-                <div className="mt-4">
+                <div className="">
                   <GravatarCard
                     data={zehefResults.filter(
                       (item) =>
@@ -138,14 +200,13 @@ const Results = () => {
                   />
                 </div>
               )}
-            </div>
-            <div className="grid grid-cols-1 gap-4">
               {osintDataResults !== null && (
-                <div className="mt-4">
+                <div className="">
                   <OsintCard data={osintDataResults} />
                 </div>
               )}
             </div>
+            {/* <div className="grid grid-cols-1 gap-4"></div> */}
           </div>
         </>
       )}

@@ -3,10 +3,10 @@ export const OsintCard = ({ data = [] }) => {
 
   return (
     <div className="w-full">
-      <h2 className="text-gray-200 text-xl font-semibold mb-4">
-        Other Results
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* <h2 className="text-gray-200 text-xl font-semibold my-4">
+        Other Results :
+      </h2> */}
+      <div className="grid grid-cols-1 gap-4">
         {data.map((result, index) => (
           <div
             key={index}

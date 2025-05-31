@@ -30,17 +30,17 @@ const Register = () => {
 
   if (import.meta.env.VITE_REGISTER_ENABLED === "false") {
     return (
-      <div className="relative min-h-screen flex flex-col items-center justify-center bg-gray-900 text-gray-100">
-        <h1 className="text-9xl font-extrabold tracking-widest text-red-600">
+      <div className="relative min-h-screen flex flex-col items-center justify-center bg-transparent text-gray-200">
+        <h1 className="text-5xl md:text-9xl font-extrabold tracking-widest text-[#AADE63]">
           403
         </h1>
-        <div className="bg-red-600 px-2 text-sm rounded mt-4 ">Forbidden</div>
-        <p className="mt-4 text-2xl  text-red-600">
+        <div className="bg-[#AADE63] py-1 px-2 text-sm rounded mt-2 text-black">Forbidden</div>
+        <p className="mt-2 text-xl md:text-2xl text-[#AADE63]">
           Registration is currently disabled.
         </p>
         <button
           onClick={() => navigate("/")}
-          className="mt-6 px-5 py-3 cursor-pointer rounded bg-gradient-to-r from-lime-200 to-teal-800 shadow p-2 text-white hover:bg-gradient-to-tl transition duration-300 ease-in-out"
+          className="mt-8 px-4 py-1.5 cursor-pointer rounded bg-gradient-to-r from-lime-200 to-teal-800 shadow text-gray-900 font-bold hover:bg-gradient-to-tl transition duration-300 ease-in-out"
         >
           Go Back Home
         </button>

@@ -1,3 +1,5 @@
+import { Check, X} from "lucide-react";
+
 const InfoList = ({ title, items }) => {
   if (!items || items.length === 0) return null;
 
@@ -89,11 +91,7 @@ const EmailProfileCard = ({ profile, userInput }) => {
                     className="flex items-center justify-between text-md text-gray-200"
                   >
                     <span className="capitalize">{platform}</span>
-                    <span
-                      className={`w-3 h-3 rounded-full ${
-                        isPresent ? "bg-green-500" : "bg-gray-500"
-                      }`}
-                    />
+                    {isPresent ? <span className="py-0.5 px-3 bg-green rounded-xl flex gap-2 items-center"><Check size={20} color="#34f000" />active</span> : <X /> }
                   </li>
                 )
               )}
