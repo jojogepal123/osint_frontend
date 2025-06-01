@@ -213,7 +213,6 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    // csrf,
     sidebarVisible,
     setSidebarVisible,
     validateInput,

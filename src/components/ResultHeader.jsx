@@ -2,16 +2,9 @@ import { useState } from "react";
 import instance from "../api/axios";
 import InlineLoader from "../components/InlineLoader";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const ResultHeader = ({
-  userInput,
-  type,
-  profile,
-  results,
-  hibpResults,
-  zehefResults,
-  osintDataResults,
-}) => {
+const ResultHeader = ({ userInput, type, results }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -25,21 +18,19 @@ const ResultHeader = ({
         {
           userInput,
           type,
-          profile,
           results,
-          hibpResults,
-          zehefResults,
-          osintDataResults,
         },
         {
           responseType: "blob",
         }
       );
-      const blob = new Blob([response.data], { type: "text/html" });
+      const filename = response?.data?.filename;
+      console.log(filename);
+      const blob = new Blob([response.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `search-results-${userInput}.html`;
+      a.download = `search-results-${userInput}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -51,25 +42,36 @@ const ResultHeader = ({
     }
   };
 
-  const handleGenerateReport = async () => {
-    try {
-      const res = await axios.post("/api/generate-report", {
-        userInput,
-        type,
-        results,
-      });
-
-      // If the API returns a download URL
-      if (res.data?.pdf_url) {
-        window.open(res.data.pdf_url, "_blank"); // open PDF in new tab
-      } else {
-        alert("Report generated but no PDF URL returned.");
-      }
-    } catch (error) {
-      console.error("Report generation failed:", error);
-      alert("Failed to generate report.");
-    }
-  };
+  // const handleGenerateReport = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const res = await instance.post(
+  //       "/api/generate-ai-report",
+  //       {
+  //         userInput,
+  //         type,
+  //         results,
+  //       },
+  //       {
+  //         responseType: "blob",
+  //       }
+  //     );
+  //     const blob = new Blob([res.data], { type: "application/pdf" });
+  //     const url = window.URL.createObjectURL(blob);
+  //     const a = document.createElement("a");
+  //     a.href = url;
+  //     a.download = `report-${userInput}.pdf`;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     document.body.removeChild(a);
+  //     window.URL.revokeObjectURL(url);
+  //   } catch (error) {
+  //     console.error("Download failed:", error);
+  //     toast.error("Failed to generate report");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <>
@@ -108,11 +110,11 @@ const ResultHeader = ({
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full md:w-auto">
-              {/* <div
+              <div
                 className="relative w-full sm:w-auto"
                 data-headlessui-state=""
-              > */}
-                {/* <button
+              >
+                <button
                   className="flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm bg-white/10 backdrop-blur-lg w-full sm:w-auto"
                   id="headlessui-menu-button-:r2:"
                   type="button"
@@ -154,19 +156,19 @@ const ResultHeader = ({
                   >
                     <path d="m6 9 6 6 6-6"></path>
                   </svg>
-                </button> */}
+                </button>
 
                 {/* Add dropdown menu */}
 
-                {/* {isDropdownOpen && (
+                {isDropdownOpen && (
                   <>
-                    <div className="absolute left-0 mt-2 w-full md:w-60 rounded-md shadow-lg bg-[#1A1F30] ring-1 ring-black ring-opacity-5 focus:outline-none z-50 float-end">
+                    <div className="absolute left-0 mt-2 w-full rounded-md shadow-lg bg-[#1A1F30] ring-1 ring-black ring-opacity-5 focus:outline-none z-50 float-end">
                       <div
                         className="py-1"
                         role="menu"
                         aria-orientation="vertical"
                       >
-                        <button
+                        {/* <button
                           className="flex items-center gap-2 w-full px-4 py-2 text-xs md:text-sm text-white hover:bg-white/10 backdrop-blur-lg transition-colors"
                           onClick={handleGenerateReport}
                           role="menuitem"
@@ -192,7 +194,7 @@ const ResultHeader = ({
                             </svg>
                           )}
                           Generate AI Report
-                        </button>
+                        </button> */}
                         <button
                           className="flex items-center gap-2 w-full px-4 py-2 text-sm text-white hover:bg-white/10 backdrop-blur-lg transition-colors"
                           onClick={handleSaveResults}
@@ -218,13 +220,13 @@ const ResultHeader = ({
                               <line x1="12" y1="15" x2="12" y2="3" />
                             </svg>
                           )}
-                          Save as HTML
+                          Save as pdf
                         </button>
                       </div>
                     </div>
                   </>
-                )} */}
-              {/* </div> */}
+                )}
+              </div>
               <button
                 className="text-[#060714] flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium bg-[#ABDE64] transition-colors w-full sm:w-auto"
                 onClick={handleBack}

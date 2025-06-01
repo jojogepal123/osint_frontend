@@ -157,8 +157,8 @@ const Home = () => {
           )}
         </div>
       </div>
-      <div className="max-w-4xl mx-auto h-full flex flex-col items-center md:-mt-20 justify-center space-y-4 mb-8">
-        <h1 className="text-4xl sm:text-7xl font-bold bg-gradient-to-r from-lime-200 to-teal-800 hover:bg-gradient-to-l bg-clip-text text-transparent">
+      <div className="max-w-4xl mx-auto h-full flex flex-col items-center md:-mt-20 justify-center space-y-4 mb-8 cursor-default">
+        <h1 className="text-4xl sm:text-7xl font-bold bg-gradient-to-r from-lime-200 to-teal-800 bg-clip-text text-transparent">
           OSINT WORK
         </h1>
         <div className="text-white text-3xl sm:text-5xl font-semibold text-center">
@@ -169,7 +169,8 @@ const Home = () => {
           <span
             className="ml-1 text-[#AADE63] px-2 underline underline-offset-8"
             style={{ fontFamily: '"Times New Roman", Times, serif' }}
-          >{inputType === "tel" ? "Phone number" : "Email"}
+          >
+            {inputType === "tel" ? "Phone number" : "Email"}
           </span>
         </div>
       </div>
@@ -251,37 +252,37 @@ const Home = () => {
             </button>
           )}
         </div>
-        <div className="sm:mt-4 text-center text-xs flex flex-wrap justify-center">
-          <label className="flex items-center cursor-pointer gap-2">
+        <div className="sm:mt-4 text-center text-xs flex flex-wrap items-center justify-start md:justify-center">
+          <label className="flex items-center cursor-pointer gap-2 text-left md:text-nowrap">
             <input
               type="checkbox"
               checked={isChecked}
               onChange={(e) => setIsChecked(e.target.checked)}
               className="peer sr-only"
             />
-            <div className="h-4 w-4 rounded border border-lime-200 flex items-center justify-center peer-checked:bg-lime-200">
+            <div className="min-w-[16px] min-h-[16px] w-4 h-4 rounded border border-lime-200 flex items-center justify-center peer-checked:bg-lime-200">
               {isChecked && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-[#1e2939]"
+                  className="w-4 h-4 text-[#1e2939]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-                  strokeWidth="3"
+                  strokeWidth={3}
                 >
                   <path d="M20 6 9 17l-5-5" />
                 </svg>
               )}
             </div>
-            <span className="text-[#CCCCCC]">
+            <div className="text-[#CCCCCC] text-xs leading-snug">
               By performing a search, you acknowledge and agree to our{" "}
               <Link
-                to="/privacy"
+                to={"/dashboard"}
                 className="font-medium text-lime-200 hover:underline"
               >
                 Terms of Services, Policies
               </Link>
-            </span>
+            </div>
           </label>
         </div>
       </form>

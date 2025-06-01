@@ -233,61 +233,61 @@ export const ProfileFromTelApis = (results) => {
     telegramImage ? { value: telegramImage, source: "Social Media" } : null,
   ].filter(Boolean);
 
+  const carriers = [
+    getIfExists(
+      results?.truecallerData?.data?.phoneInfo?.carrier,
+      "Truecaller"
+    ),
+    getIfExists(results?.hlrData?.original_network_name, "ISP Response"),
+    getIfExists(results?.allMobileData?.truecaller?.provieder, "Truecaller"),
+  ].filter(Boolean);
+
+  const numberIsActivate = results?.hlrData?.connectivity_status ? true : false;
+
+  const countryCodes = [
+    getIfExists(
+      results?.truecallerData?.data?.addressInfo?.countryCode,
+      "Truecaller"
+    ),
+    getIfExists(results?.whatsappData?.countryCode, "WhatsApp"),
+    getIfExists(results?.hlrData?.original_country_code, "ISP Response"),
+  ].filter(Boolean);
+
+  const jobProfiles = [
+    getIfExists(
+      results?.truecallerData?.data?.basicInfo?.jobTitle,
+      "Truecaller"
+    ),
+  ].filter(Boolean);
+
+  const lastUpdated = [
+    getIfExists(results?.hlrData?.timestamp, "ISP Response"),
+  ].filter(Boolean);
+
+  const isSpam = results?.socialMediaData?.response?.is_spam || false;
+  const isBusiness = results?.whatsappData?.isBusiness || false;
+  const imsi = results?.hlrData?.imsi || null;
+
   const TelProfile = {
     fullNames,
     userNames,
     emails,
     profileImages,
-
     phones,
-
     bankDetails,
-
     upiDetails,
-
-    numberIsActivate: results?.hlrData?.connectivity_status ? true : false,
-
+    numberIsActivate,
     basicInfo,
-
     idProofs,
-
-    carriers: [
-      getIfExists(
-        results?.truecallerData?.data?.phoneInfo?.carrier,
-        "Truecaller"
-      ),
-      getIfExists(results?.hlrData?.original_network_name, "ISP Response"),
-      getIfExists(results?.allMobileData?.truecaller?.provieder, "Truecaller"),
-    ].filter(Boolean),
-
+    carriers,
     locations,
-
     verifiedAddress,
-
-    countryCodes: [
-      getIfExists(
-        results?.truecallerData?.data?.addressInfo?.countryCode,
-        "Truecaller"
-      ),
-      getIfExists(results?.whatsappData?.countryCode, "WhatsApp"),
-      getIfExists(results?.hlrData?.original_country_code, "ISP Response"),
-    ].filter(Boolean),
-
-    jobProfiles: [
-      getIfExists(
-        results?.truecallerData?.data?.basicInfo?.jobTitle,
-        "Truecaller"
-      ),
-    ].filter(Boolean),
-
-    lastUpdated: [
-      getIfExists(results?.hlrData?.timestamp, "ISP Response"),
-    ].filter(Boolean),
-
-    isSpam: results?.socialMediaData?.response?.is_spam || false,
-    isBusiness: results?.whatsappData?.isBusiness || false,
-    imsi: results?.hlrData?.imsi || null,
-
+    countryCodes,
+    jobProfiles,
+    lastUpdated,
+    isSpam,
+    isBusiness,
+    imsi,
     socialMediaPresence,
   };
 
