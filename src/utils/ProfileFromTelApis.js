@@ -157,7 +157,6 @@ export const ProfileFromTelApis = (results) => {
       identityInfo[key].forEach((item) => {
         if (item.id_number) {
           let label = key;
-
           if (key === "pan_number") label = "PAN Number";
           else if (key === "aadhaar_number") label = "Aadhaar";
           else if (key === "voter_id") label = "Voter ID";
