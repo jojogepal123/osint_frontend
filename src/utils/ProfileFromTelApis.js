@@ -267,6 +267,15 @@ export const ProfileFromTelApis = (results) => {
   const isBusiness = results?.whatsappData?.isBusiness || false;
   const imsi = results?.hlrData?.imsi || null;
 
+  const panNumberExists = idProofs.some(
+    (proof) => proof.key === "PAN Number" && proof.value
+  );
+  const kycMobile = results?.surepassKyc?.data?.mobile || null;
+  const kycFullName = spKycData?.personal_info?.full_name || null;
+  const isCreditExists = [].filter(Boolean);
+  if (panNumberExists && kycMobile && kycFullName) {
+    isCreditExists.push(true);
+  }
   const TelProfile = {
     fullNames,
     userNames,
@@ -288,6 +297,7 @@ export const ProfileFromTelApis = (results) => {
     isBusiness,
     imsi,
     socialMediaPresence,
+    isCreditExists,
   };
 
   return TelProfile;
