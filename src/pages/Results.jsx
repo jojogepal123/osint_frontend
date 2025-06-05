@@ -24,7 +24,7 @@ const Results = () => {
   const zehefResults = results?.zehefData?.data || [];
   const osintDataResults = results?.osintData?.data || null;
 
-  console.log(results);
+  // console.log(results);
 
   const isResultEmpty = () => {
     if (!results) return true;
@@ -140,13 +140,11 @@ const Results = () => {
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
             <EmailProfileCard profile={EmailProfile} userInput={userInput} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              {!emailData ||
-                emailData.success === null ||
-                (emailData.error !== undefined && (
-                  <div className="">
-                    <GoogleCard emailData={emailData} />
-                  </div>
-                ))}
+              {emailData && (
+                <div className="">
+                  <GoogleCard emailData={emailData} />
+                </div>
+              )}
               {Array.isArray(hibpResults) && hibpResults.length > 0 && (
                 <div className="">
                   <div className="w-full bg-green border rounded-lg shadow border-gray-700 p-4">

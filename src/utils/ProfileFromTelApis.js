@@ -260,8 +260,9 @@ export const ProfileFromTelApis = (results) => {
   ].filter(Boolean);
 
   const lastUpdated = [
-    getIfExists(results?.hlrData?.timestamp, "ISP Response"),
-  ].filter(Boolean);
+    results?.hlrData?.timestamp ? "Acitve" : "Inactive",
+    // getIfExists(results?.hlrData?.timestamp, "ISP Response"),
+  ];
 
   const isSpam = results?.socialMediaData?.response?.is_spam || false;
   const isBusiness = results?.whatsappData?.isBusiness || false;

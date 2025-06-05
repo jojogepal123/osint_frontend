@@ -30,48 +30,48 @@ const DataCard = ({ title, items }) => {
     </div>
   );
 };
-const generateCreditReport = async (profile) => {
-  // Find PAN number from idProofs
-  const panProof = profile.idProofs?.find(
-    (proof) => proof.key === "PAN Number" && proof.value
-  );
-  const name = profile.fullNames?.[0]?.value || "";
-  const id_number = panProof?.value || "";
-  const mobile = profile.phones?.find((ph) => ph.source === "Gov")?.value || "";
-  console.log(name, id_number, mobile);
-  if (!name || !id_number || !mobile) {
-    alert("Missing required information for credit report.");
-    return;
-  }
+// const generateCreditReport = async (profile) => {
+//   // Find PAN number from idProofs
+//   const panProof = profile.idProofs?.find(
+//     (proof) => proof.key === "PAN Number" && proof.value
+//   );
+//   const name = profile.fullNames?.[0]?.value || "";
+//   const id_number = panProof?.value || "";
+//   const mobile = profile.phones?.find((ph) => ph.source === "Gov")?.value || "";
+//   console.log(name, id_number, mobile);
+//   if (!name || !id_number || !mobile) {
+//     alert("Missing required information for credit report.");
+//     return;
+//   }
 
-  try {
-    const response = await instance.post(
-      "/api/generate-credit-report",
-      { name, id_number, mobile },
-      { responseType: "blob" } // <--- important here
-    );
+//   try {
+//     const response = await instance.post(
+//       "/api/generate-credit-report",
+//       { name, id_number, mobile },
+//       { responseType: "blob" } // <--- important here
+//     );
 
-    const blob = new Blob([response.data], { type: "application/pdf" });
-    const url = window.URL.createObjectURL(blob);
+//     const blob = new Blob([response.data], { type: "application/pdf" });
+//     const url = window.URL.createObjectURL(blob);
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "credit-report.pdf");
+//     const link = document.createElement("a");
+//     link.href = url;
+//     link.setAttribute("download", "credit-report.pdf");
 
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+//     document.body.appendChild(link);
+//     link.click();
+//     link.remove();
 
-    window.URL.revokeObjectURL(url);
+//     window.URL.revokeObjectURL(url);
 
-    console.log("Credit report generated and downloaded");
-  } catch (error) {
-    console.error(
-      "Error generating credit report:",
-      error.response?.data || error.message
-    );
-  }
-};
+//     console.log("Credit report generated and downloaded");
+//   } catch (error) {
+//     console.error(
+//       "Error generating credit report:",
+//       error.response?.data || error.message
+//     );
+//   }
+// };
 
 const TelProfileCard = ({ profile, userInput }) => {
   if (!profile) return null;
@@ -91,7 +91,7 @@ const TelProfileCard = ({ profile, userInput }) => {
           )}
         </div>
 
-        {profile.isCreditExists && profile.isCreditExists[0] && (
+        {/* {profile.isCreditExists && profile.isCreditExists[0] && (
           <button
             type="button"
             className="text-[#060714] flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium bg-[#ABDE64] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ABDE64] transition-colors w-full sm:w-auto mt-3 md:mt-0"
@@ -99,7 +99,7 @@ const TelProfileCard = ({ profile, userInput }) => {
           >
             Credit Report
           </button>
-        )}
+        )} */}
       </div>
 
       {profile.profileImages?.length > 0 && (
@@ -136,7 +136,7 @@ const TelProfileCard = ({ profile, userInput }) => {
         <DataCard title="Identity Proofs" items={profile.idProofs} />
         <DataCard title="Verified Address" items={profile.verifiedAddress} />
         <DataCard title="Locations" items={profile.locations} />
-        <DataCard title="Last Updated" items={profile.lastUpdated} />
+        {/* <DataCard title="Last Updated" items={profile.lastUpdated} /> */}
         <DataCard title="Country Codes" items={profile.countryCodes} />
         <DataCard title="Carriers" items={profile.carriers} />
         <DataCard title="Job Profiles" items={profile.jobProfiles} />
@@ -187,6 +187,18 @@ const TelProfileCard = ({ profile, userInput }) => {
           <div>
             <h3 className="font-semibold">Phone IMSI</h3>
             <p className="text-gray-300">{profile?.imsi || "N/A"}</p>
+          </div>
+        )}
+        {profile?.lastUpdated && (
+          <div>
+            <h3 className="font-semibold">Phone Status</h3>
+            <p
+              className={
+                profile?.lastUpdated ? "text-green-500" : "text-red-500"
+              }
+            >
+              {profile?.lastUpdated}
+            </p>
           </div>
         )}
 

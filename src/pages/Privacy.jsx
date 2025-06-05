@@ -1,5 +1,6 @@
 import React from "react";
 import Navbar from "../components/Navbar";
+import { Link } from "react-router-dom";
 
 const Privacy = () => {
   return (
@@ -31,15 +32,15 @@ const Privacy = () => {
             <br />
             Osintwork collects information in the following ways:
             <br />
-            Publicly Available Data: We gather data from open
-            sources and collection APIs for investigative and research purposes.
+            Publicly Available Data: We gather data from open sources and
+            collection APIs for investigative and research purposes.
             <br />
-            User-Provided Information: When you interact with our
-            platform, such as contacting us or subscribing to services, we may
-            collect basic details like your email or name.
+            User-Provided Information: When you interact with our platform, such
+            as contacting us or subscribing to services, we may collect basic
+            details like your email or name.
             <br />
-            Usage Data: We collect non-personal information such as
-            IP addresses, browser type, and device details to improve our
+            Usage Data: We collect non-personal information such as IP
+            addresses, browser type, and device details to improve our
             platform’s performance and security.
             <br />
             <br />
@@ -47,13 +48,12 @@ const Privacy = () => {
             <br />
             We use the collected information to:
             <br />
-            Provide OSINT-based investigative services to law
-            enforcement, investigators, and journalists.
+            Provide OSINT-based investigative services to law enforcement,
+            investigators, and journalists.
             <br />
             Enhance our platform's functionality and security.
             <br />
-            Improve user experience by analyzing trends and usage
-            patterns.
+            Improve user experience by analyzing trends and usage patterns.
             <br />
             Ensure compliance with legal and ethical standards.
             <br />
@@ -70,11 +70,11 @@ const Privacy = () => {
             <br />
             We do not sell or trade personal information.
             <br />
-            Certain publicly available data may be analyzed using
-            third-party services for enhanced intelligence gathering.
+            Certain publicly available data may be analyzed using third-party
+            services for enhanced intelligence gathering.
             <br />
-            We comply with legal requests if required by law
-            enforcement or regulatory authorities.
+            We comply with legal requests if required by law enforcement or
+            regulatory authorities.
             <br />
             <br />
             5. Your Rights & Choices
@@ -82,14 +82,11 @@ const Privacy = () => {
             Depending on your location, you may have rights regarding your data,
             including:
             <br />
-            The right to access, correct, or delete personal data
-            we hold.
+            The right to access, correct, or delete personal data we hold.
             <br />
-            The right to opt out of certain data processing
-            activities.
+            The right to opt out of certain data processing activities.
             <br />
-            The right to request details about how your data is
-            used.
+            The right to request details about how your data is used.
             <br />
             <br />
             6. Compliance & Legal Considerations
@@ -114,6 +111,33 @@ const Privacy = () => {
             <br />
             📧 <span className="text-[#9acc14]">info@osintwork.com</span> 🌐
             <span className="text-[#9acc14]">osintwork.com</span>
+            <br />
+            <br />
+            Policies :
+            <br />
+            <Link to="/terms-conditions">
+              <span className="text-[#9acc14]">
+                <strong>&#9758;</strong> Terms of Service
+              </span>
+            </Link>
+            <br />
+            <Link to="/refund-policy">
+              <span className="text-[#9acc14]">
+                <strong>&#9758;</strong> Refund Policy
+              </span>
+            </Link>
+            <br />
+            <Link to="/return-policy">
+              <span className="text-[#9acc14]">
+                <strong>&#9758;</strong> Return Policy
+              </span>
+            </Link>
+            <br />
+            <Link to="/shipping-policy">
+              <span className="text-[#9acc14]">
+                <strong>&#9758;</strong> Shipping Policy
+              </span>
+            </Link>
           </p>
         </div>
       </div>

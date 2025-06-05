@@ -18,6 +18,10 @@ import Main from "./pages/Main";
 import Privacy from "./pages/Privacy";
 import { AnimatePresence, motion } from "framer-motion";
 import PageTransition from "./components/PageTransition";
+import RefundPolicy from "./pages/RefundPolicy";
+import ShippingPolicy from "./pages/ShippingPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import ReturnPolicy from "./pages/ReturnPolicy";
 
 function App() {
   const { sidebarVisible, setSidebarVisible } = useAuthContext();
@@ -33,10 +37,7 @@ function App() {
         <ParticlesComponent id="particle-background" />
         <div
           className={`absolute top-4 left-4 z-30 md:hidden ${
-            (sidebarVisible ||
-              location.pathname === "/dashboard")
-              ? ""
-              : "hidden"
+            sidebarVisible || location.pathname === "/dashboard" ? "" : "hidden"
           }`}
         >
           <button
@@ -119,6 +120,10 @@ function App() {
                 }
               />
             </Route>
+            <Route path="/refund-policy" element={<RefundPolicy />} />
+            <Route path="/shipping-policy" element={<ShippingPolicy />} />
+            <Route path="/terms-conditions" element={<TermsConditions />} />
+            <Route path="/return-policy" element={<ReturnPolicy />} />
           </Routes>
         </AnimatePresence>
       </div>
