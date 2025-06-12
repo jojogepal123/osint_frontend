@@ -144,7 +144,6 @@ export const AuthProvider = ({ children }) => {
     return true;
   };
 
-  
   const fetchTelData = async () => {
     const fullPhoneNumber = `${countryCode.replace(
       "+",
@@ -163,16 +162,17 @@ export const AuthProvider = ({ children }) => {
           : data.hlrData;
 
       const newResults = {
-        whatsappData: data.whatsappData || null,
-        hlrData: parsedHLR,
-        truecallerData: data.truecallerData || null,
-        allMobileData: data.allMobileData || null,
-        socialMediaData: data.socialMediaData || null,
+        wpData: data.wpData || null,
+        hData: parsedHLR,
+        tcData: data.tcData || null,
+        allMData: data.allData || null,
+        smData: data.smData || null,
         osintData: data.osintData || null,
-        surepassKyc: data.surepassKyc || null,
-        surepassUpi: data.surepassUpi || null,
-        surepassBank: data.surepassBank || null,
-        telegramData: data.telegramData || null,
+        spkData: data.skData || null,
+        spuData: data.suData || null,
+        spbData: data.sbData || null,
+        sprcData: data.srData || null,
+        tlgData: data.telData || null,
         errors: data.errors || {},
       };
 

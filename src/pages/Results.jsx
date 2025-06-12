@@ -22,9 +22,9 @@ const Results = () => {
   const emailData = results?.emailData || null;
   const hibpResults = results?.hibpData || [];
   const zehefResults = results?.zehefData?.data || [];
-  const osintDataResults = results?.osintData?.data || null;
+  const osResults = results?.osintData?.data || null;
 
-  // console.log(results);
+  console.log(results);
 
   const isResultEmpty = () => {
     if (!results) return true;
@@ -40,7 +40,7 @@ const Results = () => {
             (typeof val === "object" && Object.keys(val).length === 0)
         );
 
-      return telEmpty && (!osintDataResults || osintDataResults.length === 0);
+      return telEmpty && (!osResults || osResults.length === 0);
     }
 
     // Handle email-based search
@@ -59,7 +59,7 @@ const Results = () => {
         emailData.error !== undefined;
 
       const hibpEmpty = !hibpResults || hibpResults.length === 0;
-      const osintEmpty = !osintDataResults || osintDataResults.length === 0;
+      const osintEmpty = !osResults || osResults.length === 0;
 
       return (
         emailEmpty && hibpEmpty && osintEmpty && !zehefFound && !holeheUsed
@@ -94,7 +94,7 @@ const Results = () => {
   if (type === "tel") {
     resultsToSend = {
       profile: TelProfile || null,
-      osintData: osintDataResults || null,
+      osintData: osResults || null,
     };
   } else if (type === "email") {
     resultsToSend = {
@@ -110,7 +110,7 @@ const Results = () => {
             (item) => item.source === "Gravatar" && item.status === "found"
           )
         : null,
-      osintData: osintDataResults || null,
+      osintData: osResults || null,
     };
   }
 
@@ -127,9 +127,9 @@ const Results = () => {
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
             <TelProfileCard profile={TelProfile} userInput={userInput} />
             <div className="grid grid-cols-1 gap-4">
-              {osintDataResults !== null && (
+              {osResults !== null && (
                 <div className="mt-4">
-                  <OsintCard data={osintDataResults} />
+                  <OsintCard data={osResults} />
                 </div>
               )}
             </div>
@@ -198,9 +198,9 @@ const Results = () => {
                   />
                 </div>
               )}
-              {osintDataResults !== null && (
+              {osResults !== null && (
                 <div className="">
-                  <OsintCard data={osintDataResults} />
+                  <OsintCard data={osResults} />
                 </div>
               )}
             </div>

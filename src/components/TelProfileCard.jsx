@@ -140,6 +140,10 @@ const TelProfileCard = ({ profile, userInput }) => {
         <DataCard title="Country Codes" items={profile.countryCodes} />
         <DataCard title="Carriers" items={profile.carriers} />
         <DataCard title="Job Profiles" items={profile.jobProfiles} />
+        <DataCard
+          title="RC Numbers"
+          items={profile.rcNumber.map((rc) => ({ value: rc }))}
+        />
       </div>
 
       {/* Social Media Links */}
@@ -174,9 +178,9 @@ const TelProfileCard = ({ profile, userInput }) => {
       )}
 
       {/* Other single-value fields */}
-      <div className="grid md:grid-cols-2 gap-6 text-white text-md p-4">
+      <div className="grid md:grid-cols-2 gap-6 text-white text-md ">
         {profile?.isBusiness && (
-          <div>
+          <div className="bg-gray-900 p-4 rounded-lg text-gray-200">
             <h3 className="font-semibold">Whatsapp Business Account</h3>
             <p className="text-gray-300">
               {profile?.isBusiness ? "Yes" : "No"}
@@ -184,13 +188,13 @@ const TelProfileCard = ({ profile, userInput }) => {
           </div>
         )}
         {profile?.imsi && (
-          <div>
+          <div className="bg-gray-900 p-4 rounded-lg text-gray-200">
             <h3 className="font-semibold">Phone IMSI</h3>
             <p className="text-gray-300">{profile?.imsi || "N/A"}</p>
           </div>
         )}
         {profile?.lastUpdated && (
-          <div>
+          <div className="bg-gray-900 p-4 rounded-lg text-gray-200">
             <h3 className="font-semibold">Phone Status</h3>
             <p
               className={

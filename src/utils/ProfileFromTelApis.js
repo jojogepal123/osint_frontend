@@ -1,65 +1,59 @@
 export const ProfileFromTelApis = (results) => {
-  const osintResults = results?.osintData?.data || [];
-  const spKycData = results?.surepassKyc?.data?.details || null;
+  const osResults = results?.osintData?.data || [];
+  const spKResults = results?.spkData?.data?.details || null;
   const getIfExists = (val, source, key) =>
     val ? { value: val, source, key } : null;
 
   const fullNames = [
     getIfExists(
-      results?.truecallerData?.data?.basicInfo?.name?.fullName,
+      results?.tcData?.data?.basicInfo?.name?.fullName,
       "Social Media"
     ),
-    getIfExists(results?.socialMediaData?.response?.name, "Social Media"),
-    getIfExists(results?.whatsappData?.pushname, "WhatsApp"),
+    getIfExists(results?.smData?.response?.name, "Social Media"),
+    getIfExists(results?.wpData?.pushname, "WhatsApp"),
     getIfExists(
-      results?.truecallerData?.data?.basicInfo?.name?.altName,
+      results?.tcData?.data?.basicInfo?.name?.altName,
       "Social Media"
     ),
-    getIfExists(results?.allMobileData?.callapp?.name, "Social Media"),
-    getIfExists(results?.allMobileData?.viewcaller?.[0]?.name, "Social Media"),
-    getIfExists(results?.allMobileData?.eyecon, "Social Media"),
-    getIfExists(spKycData?.name, "Gov"),
-    getIfExists(spKycData?.personal_info?.full_name, "Gov"),
-    getIfExists(results?.surepassBank?.data?.name, "Gov"),
-    getIfExists(results?.surepassUpi?.data?.name, "Gov"),
+    getIfExists(results?.allMData?.callapp?.name, "Social Media"),
+    getIfExists(results?.allMData?.viewcaller?.[0]?.name, "Social Media"),
+    getIfExists(results?.allMData?.eyecon, "Social Media"),
+    getIfExists(spKResults?.name, "Gov"),
+    getIfExists(spKResults?.personal_info?.full_name, "Gov"),
+    getIfExists(results?.spbData?.data?.name, "Gov"),
+    getIfExists(results?.spuData?.data?.name, "Gov"),
     getIfExists(
-      `${results?.telegramData?.first_name || ""} ${
-        results?.telegramData?.last_name || ""
+      `${results?.tlgData?.first_name || ""} ${
+        results?.tlgData?.last_name || ""
       }`.trim(),
       "Social Media"
     ),
   ].filter(Boolean);
 
   const userNames = [
-    getIfExists(results?.telegramData?.username, "Social Media"),
+    getIfExists(results?.tlgData?.username, "Social Media"),
   ].filter(Boolean);
 
   const locations = [
-    getIfExists(
-      results?.truecallerData?.data?.addressInfo?.address,
-      "Social Media"
-    ),
-    getIfExists(results?.hlrData?.original_country_name, "ISP Response"),
-    getIfExists(results?.truecaller?.addressInfo?.city, "Social Media"),
-    getIfExists(results?.truecaller?.addressInfo?.street, "Social Media"),
-    getIfExists(results?.truecaller?.addressInfo?.address, "Social Media"),
+    getIfExists(results?.tcData?.data?.addressInfo?.address, "Social Media"),
+    getIfExists(results?.hData?.original_country_name, "ISP Response"),
+    getIfExists(results?.tcData?.addressInfo?.city, "Social Media"),
+    getIfExists(results?.tcData?.addressInfo?.street, "Social Media"),
+    getIfExists(results?.tcData?.addressInfo?.address, "Social Media"),
   ].filter(Boolean);
 
   const phones = [
-    getIfExists(
-      results?.truecallerData?.data?.phoneInfo?.number,
-      "Social Media"
-    ),
-    getIfExists(results?.whatsappData?.number, "WhatsApp"),
-    getIfExists(results?.hlrData?.msisdn, "ISP Response"),
-    getIfExists(results?.osintData?.data?.phone, "Social Media"),
-    getIfExists(results?.allMobileData?.truecaller?.number, "Social Media"),
-    getIfExists(results?.surepassUpi?.data?.mobile_number, "Gov"),
-    getIfExists(results?.surepassKyc?.data?.mobile, "Gov"),
+    getIfExists(results?.tcData?.data?.phoneInfo?.number, "Social Media"),
+    getIfExists(results?.wpData?.number, "WhatsApp"),
+    getIfExists(results?.hData?.msisdn, "ISP Response"),
+    getIfExists(results?.osData?.data?.phone, "Social Media"),
+    getIfExists(results?.allMData?.tcData?.number, "Social Media"),
+    getIfExists(results?.spuData?.data?.mobile_number, "Gov"),
+    getIfExists(results?.spkData?.data?.mobile, "Gov"),
   ].filter(Boolean);
 
-  if (Array.isArray(spKycData?.phone_info)) {
-    spKycData.phone_info.forEach((item) => {
+  if (Array.isArray(spKResults?.phone_info)) {
+    spKResults.phone_info.forEach((item) => {
       if (item?.number) {
         phones.push({ value: item.number, source: "Gov" });
       }
@@ -68,8 +62,8 @@ export const ProfileFromTelApis = (results) => {
 
   const emails = [].filter(Boolean);
 
-  if (Array.isArray(spKycData?.email_info)) {
-    spKycData.email_info.forEach((item) => {
+  if (Array.isArray(spKResults?.email_info)) {
+    spKResults.email_info.forEach((item) => {
       if (item?.email_address) {
         emails.push({ value: item.email_address, source: "Gov" });
       }
@@ -83,13 +77,13 @@ export const ProfileFromTelApis = (results) => {
       socialMediaPresence[platform] = data;
     }
   };
-  isSocialPresence("whatsapp", results?.whatsappData?.isUser);
-  isSocialPresence("facebook", results?.socialMediaData?.response?.fb);
-  isSocialPresence("telegram", results?.telegramData?.found);
+  isSocialPresence("whatsapp", results?.wpData?.isUser);
+  isSocialPresence("facebook", results?.smData?.response?.fb);
+  isSocialPresence("telegram", results?.tlgData?.found);
 
-  // Add sources from osintData
-  if (Array.isArray(osintResults)) {
-    osintResults?.forEach((item) => {
+  // Add sources from osData
+  if (Array.isArray(osResults)) {
+    osResults?.forEach((item) => {
       const sourceKey = item.source?.toLowerCase();
       if (sourceKey && !socialMediaPresence[sourceKey]) {
         socialMediaPresence[sourceKey] = true;
@@ -98,16 +92,16 @@ export const ProfileFromTelApis = (results) => {
   }
 
   const basicInfo = [
-    getIfExists(results?.truecallerData?.data?.basicInfo?.gender, "Truecaller"),
-    getIfExists(spKycData?.personal_info?.dob, "Gov", "DOB"),
-    getIfExists(spKycData?.personal_info?.age, "Gov", "Age"),
-    getIfExists(spKycData?.personal_info?.gender, "Gov", "Gender"),
-    getIfExists(spKycData?.personal_info?.total_income, "Gov", "Total Income"),
-    getIfExists(spKycData?.personal_info?.occupation, "Gov", "Occupation"),
+    getIfExists(results?.tcData?.data?.basicInfo?.gender, "Social Media"),
+    getIfExists(spKResults?.personal_info?.dob, "Gov", "DOB"),
+    getIfExists(spKResults?.personal_info?.age, "Gov", "Age"),
+    getIfExists(spKResults?.personal_info?.gender, "Gov", "Gender"),
+    getIfExists(spKResults?.personal_info?.total_income, "Gov", "Total Income"),
+    getIfExists(spKResults?.personal_info?.occupation, "Gov", "Occupation"),
   ].filter(Boolean);
 
-  if (Array.isArray(osintResults)) {
-    osintResults?.forEach((item) => {
+  if (Array.isArray(osResults)) {
+    osResults?.forEach((item) => {
       if (item.age) {
         basicInfo.push({ key: "Age", value: item.age, source: "Social Media" });
       }
@@ -150,7 +144,7 @@ export const ProfileFromTelApis = (results) => {
 
   const idProofs = [].filter(Boolean);
 
-  const identityInfo = spKycData?.identity_info || {};
+  const identityInfo = spKResults?.identity_info || {};
 
   Object.keys(identityInfo).forEach((key) => {
     if (Array.isArray(identityInfo[key])) {
@@ -180,8 +174,8 @@ export const ProfileFromTelApis = (results) => {
 
   const verifiedAddress = [].filter(Boolean);
 
-  if (Array.isArray(spKycData?.address_info)) {
-    spKycData.address_info.forEach((item) => {
+  if (Array.isArray(spKResults?.address_info)) {
+    spKResults.address_info.forEach((item) => {
       if (item.address) {
         const formatted = [
           `Address: ${item.address}`,
@@ -203,17 +197,17 @@ export const ProfileFromTelApis = (results) => {
 
   const bankDetails = [
     getIfExists(
-      results?.surepassBank?.data?.bank_account_no,
+      results?.spbData?.data?.bank_account_no,
       "Gov",
       "Bank Account No"
     ),
-    getIfExists(results?.surepassBank?.data?.bank_ifsc, "Gov", "IFSC Code"),
-    getIfExists(results?.surepassBank?.data?.bank_details, "Gov", "Bank Name"),
+    getIfExists(results?.spbData?.data?.bank_ifsc, "Gov", "IFSC Code"),
+    getIfExists(results?.spbData?.data?.bank_details, "Gov", "Bank Name"),
   ].filter(Boolean);
 
   const upiDetails = [].filter(Boolean);
 
-  const upiData = results?.surepassUpi?.data?.upi_id || null;
+  const upiData = results?.spuData?.data?.upi_id || null;
 
   if (Array.isArray(upiData)) {
     upiData.forEach((item) => {
@@ -223,59 +217,69 @@ export const ProfileFromTelApis = (results) => {
     });
   }
 
-  const telegramImage = results?.telegramData?.profile_photo
-    ? "/photo/" + results.telegramData.profile_photo
+  const telegramImage = results?.tlgData?.profile_photo
+    ? "/photo/" + results.tlgData.profile_photo
     : null;
 
   const profileImages = [
-    getIfExists(results?.whatsappData?.profilePic, "WhatsApp"),
+    getIfExists(results?.wpData?.profilePic, "WhatsApp"),
     telegramImage ? { value: telegramImage, source: "Social Media" } : null,
   ].filter(Boolean);
 
   const carriers = [
+    getIfExists(results?.tcData?.data?.phoneInfo?.carrier, "Social Media"),
     getIfExists(
-      results?.truecallerData?.data?.phoneInfo?.carrier,
-      "Truecaller"
+      results?.hData?.original_network_name,
+      "ISP Response",
+      "Original Network"
     ),
-    getIfExists(results?.hlrData?.original_network_name, "ISP Response"),
-    getIfExists(results?.allMobileData?.truecaller?.provieder, "Truecaller"),
+    getIfExists(
+      results?.hData?.ported_network_name,
+      "ISP Response",
+      "Ported Network"
+    ),
+    getIfExists(results?.allMData?.tcData?.provieder, "Social Media"),
   ].filter(Boolean);
 
-  const numberIsActivate = results?.hlrData?.connectivity_status ? true : false;
+  const numberIsActivate = results?.hData?.connectivity_status ? true : false;
 
   const countryCodes = [
     getIfExists(
-      results?.truecallerData?.data?.addressInfo?.countryCode,
-      "Truecaller"
+      results?.tcData?.data?.addressInfo?.countryCode,
+      "Social Media"
     ),
-    getIfExists(results?.whatsappData?.countryCode, "WhatsApp"),
-    getIfExists(results?.hlrData?.original_country_code, "ISP Response"),
+    getIfExists(results?.wpData?.countryCode, "WhatsApp"),
+    getIfExists(results?.hData?.original_country_code, "ISP Response"),
   ].filter(Boolean);
 
   const jobProfiles = [
-    getIfExists(
-      results?.truecallerData?.data?.basicInfo?.jobTitle,
-      "Truecaller"
-    ),
+    getIfExists(results?.tcData?.data?.basicInfo?.jobTitle, "Social Media"),
   ].filter(Boolean);
 
   const lastUpdated = [
-    results?.hlrData?.timestamp ? "Acitve" : "Inactive",
-    // getIfExists(results?.hlrData?.timestamp, "ISP Response"),
-  ];
+    results?.hData?.timestamp ? "Acitve" : "Inactive",
+  ].filter(Boolean);
 
-  const isSpam = results?.socialMediaData?.response?.is_spam || false;
-  const isBusiness = results?.whatsappData?.isBusiness || false;
-  const imsi = results?.hlrData?.imsi || null;
+  const isSpam = results?.smData?.response?.is_spam || false;
+  const isBusiness = results?.wpData?.isBusiness || false;
+  const imsi = results?.hData?.imsi || null;
 
   const panNumberExists = idProofs.some(
     (proof) => proof.key === "PAN Number" && proof.value
   );
-  const kycMobile = results?.surepassKyc?.data?.mobile || null;
-  const kycFullName = spKycData?.personal_info?.full_name || null;
+  const kycMobile = results?.spkData?.data?.mobile || null;
+  const kycFullName = spKResults?.personal_info?.full_name || null;
   const isCreditExists = [].filter(Boolean);
   if (panNumberExists && kycMobile && kycFullName) {
     isCreditExists.push(true);
+  }
+
+  let rcNumber = [];
+  const rcData = results?.sprcData?.data;
+  if (Array.isArray(rcData?.rc_number)) {
+    rcNumber = rcData.rc_number.filter(Boolean);
+  } else if (rcData?.rc_number) {
+    rcNumber = [rcData.rc_number];
   }
   const TelProfile = {
     fullNames,
@@ -297,6 +301,7 @@ export const ProfileFromTelApis = (results) => {
     isSpam,
     isBusiness,
     imsi,
+    rcNumber,
     socialMediaPresence,
     isCreditExists,
   };
