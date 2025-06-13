@@ -127,13 +127,7 @@ const Results = () => {
         <>
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
             <TelProfileCard profile={TelProfile} userInput={userInput} />
-            <div className="grid grid-cols-1 gap-4">
-              {osResults !== null && (
-                <div className="mt-4">
-                  <OsintCard data={osResults} />
-                </div>
-              )}
-            </div>
+            {osintDataResults !== null && <OsintCard data={osintDataResults} />}
           </div>
         </>
       ) : (
