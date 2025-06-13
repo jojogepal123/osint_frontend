@@ -2,15 +2,12 @@ export const OsintCard = ({ data = [] }) => {
   if (!Array.isArray(data) || data.length === 0) return null;
 
   return (
-    <div className="w-full">
-      {/* <h2 className="text-gray-200 text-xl font-semibold my-4">
-        Other Results :
-      </h2> */}
-      <div className="grid grid-cols-1 gap-4">
+    <div className="w-full mt-4 bg-green p-4 rounded-lg">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {data.map((result, index) => (
           <div
             key={index}
-            className="bg-green border border-gray-700 rounded-lg shadow p-4"
+            className="bg-gray-900 border border-gray-700 rounded-lg shadow p-4"
           >
             <div className="text-gray-200 space-y-2">
               {Object.entries(result).map(([key, value], i) => (

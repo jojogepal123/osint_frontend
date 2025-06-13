@@ -1,5 +1,7 @@
 import { Check, X } from "lucide-react";
+import { useIsEmpty } from "../hook/useIsEmpty";
 import instance from "../api/axios";
+
 const InfoList = ({ title, items }) => {
   if (!items || items.length === 0) return null;
 
@@ -74,7 +76,8 @@ const DataCard = ({ title, items }) => {
 // };
 
 const TelProfileCard = ({ profile, userInput }) => {
-  if (!profile) return null;
+  const isEmpty = useIsEmpty(profile);
+  if (isEmpty) return null;
 
   return (
     <div className="space-y-4 bg-[#0b323d] rounded-xl shadow-md p-6 text-white border border-gray-700">
