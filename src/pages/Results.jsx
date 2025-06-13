@@ -8,6 +8,7 @@ import { ProfileFromTelApis } from "../utils/ProfileFromTelApis";
 import { ProfileFromEmailApis } from "../utils/ProfileFromEmailApis";
 import TelProfileCard from "../components/TelProfileCard";
 import EmailProfileCard from "../components/EmailProfileCard";
+import Map from "../components/Map";
 
 import no_results_image from "../assets/noresults.png";
 
@@ -140,13 +141,12 @@ const Results = () => {
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
             <EmailProfileCard profile={EmailProfile} userInput={userInput} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              {!emailData ||
-                emailData.success === null ||
-                (emailData.error !== undefined && (
-                  <div className="">
-                    <GoogleCard emailData={emailData} />
-                  </div>
-                ))}
+              {emailData?.PROFILE_CONTAINER?.profile?.personId && (
+                <div className="">
+                  <GoogleCard emailData={emailData} />
+                </div>
+              )}
+              {/* <GoogleCard emailData={emailData} /> */}
               {Array.isArray(hibpResults) && hibpResults.length > 0 && (
                 <div className="">
                   <div className="w-full bg-green border rounded-lg shadow border-gray-700 p-4">
@@ -200,13 +200,20 @@ const Results = () => {
                   />
                 </div>
               )}
-              {osintDataResults !== null && (
-                <div className="">
-                  <OsintCard data={osintDataResults} />
-                </div>
-              )}
             </div>
             {/* <div className="grid grid-cols-1 gap-4"></div> */}
+
+            {(emailData?.PROFILE_CONTAINER?.maps?.failed === undefined ||
+              emailData?.PROFILE_CONTAINER?.maps?.failed !== "failed") &&
+              (emailData?.success === undefined ||
+                emailData?.success !== null) && (
+                <>
+                  <h1>Leaked Locations</h1>
+                  <Map data={emailData} />
+                </>
+              )}
+
+            {osintDataResults !== null && <OsintCard data={osintDataResults} />}
           </div>
         </>
       )}

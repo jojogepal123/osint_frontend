@@ -1,4 +1,5 @@
 import { Check, X} from "lucide-react";
+import { useIsEmpty } from "../hook/useIsEmpty";
 
 const InfoList = ({ title, items }) => {
   if (!items || items.length === 0) return null;
@@ -33,7 +34,9 @@ const DataCard = ({ title, items }) => {
 
 const EmailProfileCard = ({ profile, userInput }) => {
   //   console.log(profile);
-  if (!profile) return null;
+  const isEmpty = useIsEmpty(profile);
+  if (isEmpty) return null;
+  // if (Object.keys(profile).length < 1) return null;
 
   return (
     <div className="space-y-4 bg-[#0b323d] rounded-xl shadow-md p-6 text-white border border-gray-700">

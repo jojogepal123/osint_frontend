@@ -105,41 +105,41 @@ export const ProfileFromEmailApis = (results) => {
   if (Array.isArray(osintResults)) {
     osintResults?.forEach((item) => {
       if (item.age) {
-        basicInfo.push({ key: "Age", value: item.age, source: "Social Media" });
+        basicInfo.push({ key: "Age", value: item.age, source: item.source });
       }
       if (item.gender) {
         basicInfo.push({
           key: "Gender",
           value: item.gender,
-          source: "Social Media",
+          source: item.source,
         });
       }
       if (item.dob) {
-        basicInfo.push({ value: item.dob, source: "Social Media" });
+        basicInfo.push({ value: item.dob, source: item.source });
       }
       if (item.name) {
-        fullNames.push({ value: item.name, source: "Social Media" });
+        fullNames.push({ value: item.name, source: item.source });
       }
       if (item.username) {
-        userNames.push({ value: item.username, source: "Social Media" });
+        userNames.push({ value: item.username, source: item.source });
       }
       if (item.address) {
-        locations.push({ value: item.address, source: "Social Media" });
+        locations.push({ value: item.address, source: item.source });
       }
       if (item.phone) {
-        phones.push({ value: item.phone, source: "Social Media" });
+        phones.push({ value: item.phone, source: item.source });
       }
       if (item.phone_secondary) {
         phones.push({
           value: item.phone_secondary,
-          source: "Social Media",
+          source: item.source,
         });
       }
       if (item.email) {
-        emails.push({ value: item.email, source: "Social Media" });
+        emails.push({ value: item.email, source: item.source });
       }
       if (item.email_secondary) {
-        emails.push({ value: item.email_secondary, source: "Social Media" });
+        emails.push({ value: item.email_secondary, source: item.source });
       }
     });
   }
