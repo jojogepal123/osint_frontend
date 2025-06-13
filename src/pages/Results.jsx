@@ -197,8 +197,9 @@ const Results = () => {
             </div>
             {/* <div className="grid grid-cols-1 gap-4"></div> */}
 
-            {(emailData?.PROFILE_CONTAINER?.maps?.failed === undefined ||
-              emailData?.PROFILE_CONTAINER?.maps?.failed !== "failed") &&
+            {emailData &&
+              (emailData?.PROFILE_CONTAINER?.maps?.failed === undefined ||
+                emailData?.PROFILE_CONTAINER?.maps?.failed !== "failed") &&
               (emailData?.success === undefined ||
                 emailData?.success !== null) && (
                 <>
@@ -207,7 +208,7 @@ const Results = () => {
                 </>
               )}
 
-            {osintDataResults !== null && <OsintCard data={osintDataResults} />}
+            {osResults !== null && <OsintCard data={osResults} />}
           </div>
         </>
       )}
