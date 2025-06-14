@@ -8,7 +8,7 @@ import { ProfileFromTelApis } from "../utils/ProfileFromTelApis";
 import { ProfileFromEmailApis } from "../utils/ProfileFromEmailApis";
 import TelProfileCard from "../components/TelProfileCard";
 import EmailProfileCard from "../components/EmailProfileCard";
-import Map from "../components/Map";
+// import Map from "../components/Map";
 
 import no_results_image from "../assets/noresults.png";
 
@@ -197,7 +197,7 @@ const Results = () => {
             </div>
             {/* <div className="grid grid-cols-1 gap-4"></div> */}
 
-            {emailData &&
+            {/* {emailData &&
               (emailData?.PROFILE_CONTAINER?.maps?.failed === undefined ||
                 emailData?.PROFILE_CONTAINER?.maps?.failed !== "failed") &&
               (emailData?.success === undefined ||
@@ -206,7 +206,7 @@ const Results = () => {
                   <h1>Leaked Locations</h1>
                   <Map data={emailData} />
                 </>
-              )}
+              )} */}
 
             {osResults !== null && <OsintCard data={osResults} />}
           </div>
