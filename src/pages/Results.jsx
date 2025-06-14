@@ -25,7 +25,7 @@ const Results = () => {
   const zehefResults = results?.zehefData?.data || [];
   const osResults = results?.osintData?.data || null;
 
-  console.log(results);
+  // console.log(results);
 
   const isResultEmpty = () => {
     if (!results) return true;
@@ -127,7 +127,7 @@ const Results = () => {
         <>
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
             <TelProfileCard profile={TelProfile} userInput={userInput} />
-            {osintDataResults !== null && <OsintCard data={osintDataResults} />}
+            {osResults !== null && <OsintCard data={osResults} />}
           </div>
         </>
       ) : (

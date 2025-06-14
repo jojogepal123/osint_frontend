@@ -237,30 +237,35 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
   ];
 
   // Fetch country data
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await fetch("https://restcountries.com/v3.1/all", {
-          headers: { "Content-Type": "application/json" },
-        });
-        if (!response.ok) throw new Error("Network response not ok");
-        const data = await response.json();
-        const countryList = data.map((country) => ({
-          name: country.name.common,
-          code: country.idd?.root + (country.idd?.suffixes?.[0] || ""),
-          shortName: country.cca2,
-          flag: country.flags.svg || country.flags.png,
-        }));
-        setCountries(countryList);
-        const india = countryList.find((country) => country.name === "India");
-        setSelectedCountryCode(india ? india.code : "+91");
-      } catch (error) {
-        console.error("Failed to fetch countries, using fallback:", error);
-        setCountries(countriesFallback);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchCountries = async () => {
+  //     try {
+  //       const response = await fetch("https://restcountries.com/v3.1/all", {
+  //         headers: { "Content-Type": "application/json" },
+  //       });
+  //       if (!response.ok) throw new Error("Network response not ok");
+  //       const data = await response.json();
+  //       const countryList = data.map((country) => ({
+  //         name: country.name.common,
+  //         code: country.idd?.root + (country.idd?.suffixes?.[0] || ""),
+  //         shortName: country.cca2,
+  //         flag: country.flags.svg || country.flags.png,
+  //       }));
+  //       setCountries(countryList);
+  //       const india = countryList.find((country) => country.name === "India");
+  //       setSelectedCountryCode(india ? india.code : "+91");
+  //     } catch (error) {
+  //       console.error("Failed to fetch countries, using fallback:", error);
+  //       setCountries(countriesFallback);
+  //     }
+  //   };
 
-    fetchCountries();
+  //   fetchCountries();
+  // }, [setSelectedCountryCode]);
+  useEffect(() => {
+    setCountries(countriesFallback);
+    const india = countriesFallback.find((country) => country.name === "India");
+    setSelectedCountryCode(india ? india.code : "+91");
   }, [setSelectedCountryCode]);
 
   const toggleDropdown = () => {
