@@ -41,12 +41,16 @@ const Login = () => {
         await getUser();
         navigate("/dashboard");
       } catch (err) {
-        console.error("Google login failed:", err);
+        toast.error("Google login failed. Please try again.");
+        // console.error("Google login failed:", err);
       } finally {
         setLoading(false);
       }
     },
-    onError: (err) => console.error("Google Login Error:", err),
+    onError: (err) => {
+      // console.error("Google login error:", err);
+      toast.error("Google login failed.");
+    },
     flow: "implicit",
     scope: "openid email profile",
   });

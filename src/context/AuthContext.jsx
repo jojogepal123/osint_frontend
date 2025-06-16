@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
           navigate("/login");
         }
       } else {
-        console.error("Error fetching user:", error);
+        // console.error("Error fetching user:", error);
       }
     } finally {
       setIsLoading(false);
@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
 
       navigate("/dashboard");
     } catch (error) {
-      console.error("Login error:", error);
+      // console.error("Login error:", error);
       if (error.response?.status === 422) {
         setErrors(error.response.data.errors);
       }
@@ -109,7 +109,7 @@ export const AuthProvider = ({ children }) => {
       await getUser(); // get user info after registering
       navigate("/dashboard");
     } catch (error) {
-      console.error("Register error:", error);
+      // console.error("Register error:", error);
       if (error.response?.status === 422) {
         setErrors(error.response.data.errors);
       }
@@ -120,7 +120,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await instance.post("/api/logout");
     } catch (error) {
-      console.error("Logout error:", error);
+      // console.error("Logout error:", error);
     } finally {
       localStorage.removeItem("auth_token");
       delete instance.defaults.headers.common["Authorization"];
@@ -168,7 +168,7 @@ export const AuthProvider = ({ children }) => {
         allMData: data.allData || null,
         smData: data.smData || null,
         osintData: data.osintData || null,
-        spkData: data.skData || null,
+        spkData: data.sKData || null,
         spuData: data.suData || null,
         spbData: data.sbData || null,
         sprcData: data.srData || null,
@@ -179,7 +179,7 @@ export const AuthProvider = ({ children }) => {
       setResults(JSON.parse(JSON.stringify(newResults)));
       return newResults;
     } catch (error) {
-      console.error("Error in fetchTelData:", error);
+      // console.error("Error in fetchTelData:", error);
       toast.error("Internal server error, please try again.");
       setResults({});
     } finally {

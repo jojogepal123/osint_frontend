@@ -25,7 +25,7 @@ const ResultHeader = ({ userInput, type, results }) => {
         }
       );
       const filename = response?.data?.filename;
-      console.log(filename);
+      // console.log(filename);
       const blob = new Blob([response.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -36,7 +36,7 @@ const ResultHeader = ({ userInput, type, results }) => {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Download failed:", error);
+      // console.error("Download failed:", error);
     } finally {
       setIsLoading(false);
     }
