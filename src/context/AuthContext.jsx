@@ -23,7 +23,18 @@ export const AuthProvider = ({ children }) => {
 
   // const csrf = useCallback(() => instance.get("/sanctum/csrf-cookie"), []);
 
-  const PUBLIC_ROUTES = ["/", "/about", "/contact-us", "/product", "/privacy"];
+  const PUBLIC_ROUTES = [
+    "/",
+    "/about",
+    "/contact-us",
+    "/product",
+    "/privacy",
+    "/pricing",
+    "/terms-conditions",
+    "/refund-policy",
+    "/shipping-policy",
+    "/return-policy",
+  ];
   const AUTH_ROUTE_PREFIXES = ["/password-reset", "/login", "/register"];
 
   const getUser = async () => {
@@ -59,14 +70,17 @@ export const AuthProvider = ({ children }) => {
 
     if (token) {
       instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    }
-
-    const currentPath = window.location.pathname;
-    const isPublicRoute = PUBLIC_ROUTES.includes(currentPath);
-
-    if (!isPublicRoute && user === null) {
       getUser();
+    } else {
+      setIsLoading(false);
     }
+
+    // const currentPath = window.location.pathname;
+    // const isPublicRoute = PUBLIC_ROUTES.includes(currentPath);
+
+    // if (!isPublicRoute && user === null) {
+    //   getUser();
+    // }
   }, []);
 
   const login = async ({ ...data }) => {

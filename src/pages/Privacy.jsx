@@ -111,33 +111,6 @@ const Privacy = () => {
             <br />
             📧 <span className="text-[#9acc14]">info@osintwork.com</span> 🌐
             <span className="text-[#9acc14]">osintwork.com</span>
-            <br />
-            <br />
-            Policies :
-            <br />
-            <Link to="/terms-conditions">
-              <span className="text-[#9acc14]">
-                <strong>&#9758;</strong> Terms of Service
-              </span>
-            </Link>
-            <br />
-            <Link to="/refund-policy">
-              <span className="text-[#9acc14]">
-                <strong>&#9758;</strong> Refund Policy
-              </span>
-            </Link>
-            <br />
-            <Link to="/return-policy">
-              <span className="text-[#9acc14]">
-                <strong>&#9758;</strong> Return Policy
-              </span>
-            </Link>
-            <br />
-            <Link to="/shipping-policy">
-              <span className="text-[#9acc14]">
-                <strong>&#9758;</strong> Shipping Policy
-              </span>
-            </Link>
           </p>
         </div>
       </div>

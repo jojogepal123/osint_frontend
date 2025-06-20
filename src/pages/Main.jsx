@@ -1,9 +1,9 @@
 import Navbar from "../components/Navbar";
-
+import Footer from "../components/Footer";
 const Main = () => {
   return (
     <>
-      <div className="lg:h-screen flex flex-col lg:flex-row justify-center items-center space-y-4 md:px-24 2xl:px-32 relative shadow-xl z-10">
+      <div className="lg:h-screen flex flex-col lg:flex-row justify-center items-center space-y-4 md:px-24 2xl:px-32 relative shadow-sm z-10">
         <Navbar />
         <div className="w-full md:max-w-[80%] lg:max-w-[60%] md:h-[75%] bg-gray-700 bg-opacity-30 backdrop-blur-sm p-8 rounded-md md:rounded-r-md overflow-hidden">
           {/* <!-- Tab Contents --> */}
@@ -49,6 +49,7 @@ const Main = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };
