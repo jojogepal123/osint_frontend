@@ -19,12 +19,9 @@ import Privacy from "./pages/Privacy";
 import { AnimatePresence, motion } from "framer-motion";
 import PageTransition from "./components/PageTransition";
 import RefundPolicy from "./pages/RefundPolicy";
-import ShippingPolicy from "./pages/ShippingPolicy";
 import TermsConditions from "./pages/TermsConditions";
-import ReturnPolicy from "./pages/ReturnPolicy";
 import Pricing from "./pages/Pricing";
-import Footer from "./components/Footer";
-import Loader from "./components/Loader";
+import NotFound from "./pages/NotFound";
 
 function App() {
   const { sidebarVisible, setSidebarVisible, user, isLoading } =
@@ -125,10 +122,9 @@ function App() {
               />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/refund-policy" element={<RefundPolicy />} />
-              <Route path="/shipping-policy" element={<ShippingPolicy />} />
               <Route path="/terms-conditions" element={<TermsConditions />} />
-              <Route path="/return-policy" element={<ReturnPolicy />} />
             </Route>
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>
       </div>
