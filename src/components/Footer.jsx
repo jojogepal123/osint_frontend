@@ -112,14 +112,14 @@ const Footer = () => {
                 Policy
               </h3>
               <ul className="mt-6 space-y-4">
-                <li>
+                {/* <li>
                   <Link
                     to="/return-policy"
                     className="text-sm leading-6 text-gray-400 hover:text-lime-400"
                   >
                     Return
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link
                     to="/terms-conditions"
@@ -136,14 +136,14 @@ const Footer = () => {
                     Refund
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link
                     to="/shipping-policy"
                     className="text-sm leading-6 text-gray-400 hover:text-lime-400"
                   >
                     shipping
                   </Link>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>
