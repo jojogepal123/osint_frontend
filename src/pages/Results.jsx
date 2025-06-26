@@ -134,16 +134,16 @@ const Results = () => {
         <>
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
             <EmailProfileCard profile={EmailProfile} userInput={userInput} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 items-stretch">
               {emailData?.PROFILE_CONTAINER?.profile?.personId && (
-                <div className="">
+                <div className="h-full">
                   <GoogleCard emailData={emailData} />
                 </div>
               )}
               {/* <GoogleCard emailData={emailData} /> */}
               {Array.isArray(hibpResults) && hibpResults.length > 0 && (
-                <div className="">
-                  <div className="w-full bg-green border rounded-lg shadow border-gray-700 p-4">
+                <div className="h-full">
+                  <div className="w-full h-full bg-green border rounded-lg shadow border-gray-700 p-4">
                     <div className="flex items-center gap-3 mb-4">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -185,7 +185,7 @@ const Results = () => {
               {zehefResults?.some(
                 (item) => item.source === "Gravatar" && item.status === "found"
               ) && (
-                <div className="">
+                <div className="h-full">
                   <GravatarCard
                     data={zehefResults.filter(
                       (item) =>

@@ -8,6 +8,7 @@ const ResultHeader = ({ userInput, type, results }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [copied, setCopied] = useState(false);
   const handleBack = () => navigate(-1);
 
   const handleSaveResults = async () => {
@@ -75,8 +76,8 @@ const ResultHeader = ({ userInput, type, results }) => {
 
   return (
     <>
-      <div className="max-w-7xl w-full mx-auto mt-16 sm:mt-12 z-40 transition-all duration-300 ease-in-out hide-on-pdf">
-        <div className="rounded-xl mx-8 md:mx-16 text-white p-3 md:p-4 bg-teal-700 bg-opacity-30 backdrop-blur-sm shadow-lg">
+      <div className="max-w-6xl w-full mx-auto mt-16 sm:mt-12 z-40 transition-all duration-300 ease-in-out hide-on-pdf">
+        <div className="rounded-xl mx-auto text-white p-3 md:p-4 bg-teal-700 bg-opacity-30 backdrop-blur-sm shadow-lg">
           <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-3 md:gap-4">
             <div className="w-full md:w-auto">
               <div className="flex justify-center items-center gap-3">
@@ -84,10 +85,14 @@ const ResultHeader = ({ userInput, type, results }) => {
                   {userInput}
                 </span>
                 <button
-                  className="text-[#ABDE64] hover:text-[#8200FF] transition-colors relative"
+                  className="text-[#ABDE64] relative"
                   onClick={() => {
                     if (userInput) {
                       navigator.clipboard.writeText(userInput);
+                      setCopied(true);
+                      setTimeout(() => {
+                        setCopied(false);
+                      }, 3000);
                     }
                   }}
                 >
@@ -107,6 +112,30 @@ const ResultHeader = ({ userInput, type, results }) => {
                     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
                   </svg>
                 </button>
+                {copied && (
+                  <span
+                    className={`text-xs text-white bg-green-500 px-4 py-1.5 rounded-md transition-opacity duration-500 flex items-center ${
+                      copied ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
+                    <svg
+                      className="w-3 h-3 text-white me-1.5"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 16 12"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M1 5.917 5.724 10.5 15 1.5"
+                      />
+                    </svg>
+                    Copied!
+                  </span>
+                )}
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full md:w-auto">
