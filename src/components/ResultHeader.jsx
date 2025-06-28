@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 const ResultHeader = ({ userInput, type, results }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAiLoading, setIsAiLoading] = useState(false);
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const handleBack = () => navigate(-1);
@@ -38,41 +39,42 @@ const ResultHeader = ({ userInput, type, results }) => {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       // console.error("Download failed:", error);
+      toast.error("Error generating report. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // const handleGenerateReport = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     const res = await instance.post(
-  //       "/api/generate-ai-report",
-  //       {
-  //         userInput,
-  //         type,
-  //         results,
-  //       },
-  //       {
-  //         responseType: "blob",
-  //       }
-  //     );
-  //     const blob = new Blob([res.data], { type: "application/pdf" });
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.href = url;
-  //     a.download = `report-${userInput}.pdf`;
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     document.body.removeChild(a);
-  //     window.URL.revokeObjectURL(url);
-  //   } catch (error) {
-  //     console.error("Download failed:", error);
-  //     toast.error("Failed to generate report");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  const handleGenerateReport = async () => {
+    setIsAiLoading(true);
+    try {
+      const res = await instance.post(
+        "/api/generate-ai-report",
+        {
+          userInput,
+          type,
+          results,
+        },
+        {
+          responseType: "blob",
+        }
+      );
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `report-${userInput}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      // console.error("Download failed:", error);
+      toast.error("Error generating AI report. Please try again.");
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
 
   return (
     <>
@@ -197,12 +199,12 @@ const ResultHeader = ({ userInput, type, results }) => {
                         role="menu"
                         aria-orientation="vertical"
                       >
-                        {/* <button
+                        <button
                           className="flex items-center gap-2 w-full px-4 py-2 text-xs md:text-sm text-white hover:bg-white/10 backdrop-blur-lg transition-colors"
                           onClick={handleGenerateReport}
                           role="menuitem"
                         >
-                          {isLoading ? (
+                          {isAiLoading ? (
                             <InlineLoader />
                           ) : (
                             <svg
@@ -223,7 +225,7 @@ const ResultHeader = ({ userInput, type, results }) => {
                             </svg>
                           )}
                           Generate AI Report
-                        </button> */}
+                        </button>
                         <button
                           className="flex items-center gap-2 w-full px-4 py-2 text-sm text-white hover:bg-white/10 backdrop-blur-lg transition-colors"
                           onClick={handleSaveResults}
