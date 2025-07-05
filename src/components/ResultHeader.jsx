@@ -3,6 +3,7 @@ import instance from "../api/axios";
 import InlineLoader from "../components/InlineLoader";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import FullScreenLoader from "./FullScreenLoader";
 
 const ResultHeader = ({ userInput, type, results }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -78,6 +79,7 @@ const ResultHeader = ({ userInput, type, results }) => {
 
   return (
     <>
+      {isAiLoading && <FullScreenLoader text="Generating AI Report..." />}
       <div className="max-w-6xl w-full mx-auto mt-16 sm:mt-12 z-40 transition-all duration-300 ease-in-out hide-on-pdf">
         <div className="rounded-xl mx-auto text-white p-3 md:p-4 bg-teal-700 bg-opacity-30 backdrop-blur-sm shadow-lg">
           <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-3 md:gap-4">
@@ -87,7 +89,7 @@ const ResultHeader = ({ userInput, type, results }) => {
                   {userInput}
                 </span>
                 <button
-                  className="text-[#ABDE64] relative"
+                  className="text-[#abde64] relative"
                   onClick={() => {
                     if (userInput) {
                       navigator.clipboard.writeText(userInput);
@@ -116,12 +118,11 @@ const ResultHeader = ({ userInput, type, results }) => {
                 </button>
                 {copied && (
                   <span
-                    className={`text-xs text-white bg-green-500 px-4 py-1.5 rounded-md transition-opacity duration-500 flex items-center ${
-                      copied ? "opacity-100" : "opacity-0"
-                    }`}
+                    className={`text-xs text-black bg-[#b0de6a] px-4 py-1.5 rounded-md transition-opacity duration-500 flex items-center ${copied ? "opacity-100" : "opacity-0"
+                      }`}
                   >
                     <svg
-                      className="w-3 h-3 text-white me-1.5"
+                      className="w-3 h-3 text-black me-1.5"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -204,27 +205,23 @@ const ResultHeader = ({ userInput, type, results }) => {
                           onClick={handleGenerateReport}
                           role="menuitem"
                         >
-                          {isAiLoading ? (
-                            <InlineLoader />
-                          ) : (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="mr-2"
-                            >
-                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                              <polyline points="7 10 12 15 17 10" />
-                              <line x1="12" y1="15" x2="12" y2="3" />
-                            </svg>
-                          )}
-                          Generate AI Report
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="mr-2"
+                          >
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                          </svg>
+                          AI Report
                         </button>
                         <button
                           className="flex items-center gap-2 w-full px-4 py-2 text-sm text-white hover:bg-white/10 backdrop-blur-lg transition-colors"

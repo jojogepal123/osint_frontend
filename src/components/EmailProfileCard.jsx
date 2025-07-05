@@ -1,5 +1,6 @@
-import { Check, X} from "lucide-react";
+import { Check, Icon, X } from "lucide-react";
 import { useIsEmpty } from "../hook/useIsEmpty";
+import IconWithFallback from "./IconWithFallback";
 
 const InfoList = ({ title, items }) => {
   if (!items || items.length === 0) return null;
@@ -31,6 +32,19 @@ const DataCard = ({ title, items }) => {
     </div>
   );
 };
+
+const iconMap = {
+  "X (Twitter)": "twitter",
+  "Chess.Com": "chesscom",
+  "Google+": "googleplus",
+  "Picsart": "picsartstudio",
+};
+
+const getIconUrl = (platform) => {
+  const key = iconMap[platform] || platform.toLowerCase().replace(/[\s().]/g, '');
+  return `https://cdn.jsdelivr.net/npm/simple-icons@v10/icons/${key}.svg`;
+};
+
 
 const EmailProfileCard = ({ profile, userInput }) => {
   //   console.log(profile);
@@ -84,7 +98,7 @@ const EmailProfileCard = ({ profile, userInput }) => {
         <div className="bg-gray-900 p-4 rounded-lg">
           <div className="bg-gray-900 p-4 rounded w-full md:w-2/3 text-white">
             <h3 className="text-xl font-semibold mb-3">
-              Social Media Presence
+              Internet Presence
             </h3>
             <ul className="space-y-2">
               {Object.entries(profile.socialMediaPresence).map(
@@ -93,8 +107,11 @@ const EmailProfileCard = ({ profile, userInput }) => {
                     key={platform}
                     className="flex items-center justify-between text-md text-gray-200"
                   >
-                    <span className="capitalize">{platform}</span>
-                    {isPresent ? <span className="py-0.5 px-3 bg-green rounded-xl flex gap-2 items-center"><Check size={20} color="#34f000" />active</span> : <X /> }
+                    <div className="flex items-center gap-3">
+                      <IconWithFallback platform={platform} size={20} />
+                      <span className="capitalize">{platform}</span>
+                    </div>
+                    {isPresent ? <span className="py-0.5 px-3 bg-green rounded-xl flex gap-2 items-center"><Check size={20} color="#34f000" />active</span> : <X />}
                   </li>
                 )
               )}
