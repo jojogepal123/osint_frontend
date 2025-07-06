@@ -1,6 +1,7 @@
 export const ProfileFromTelApis = (results) => {
   const osResults = results?.osintData?.data || [];
   const spKResults = results?.spkData?.data?.details || null;
+
   const getIfExists = (val, source, key) =>
     val ? { value: val, source, key } : null;
 

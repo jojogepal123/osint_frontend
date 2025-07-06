@@ -1,22 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Monoton&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-.bg-custom{
+.bg-custom {
   @apply bg-[#081629];
 }
-.bg-green{
+.bg-green {
   @apply bg-[#0b323d];
 }
 
-body{
-  font-family: "Outfit", sans-serif;;
+body {
+  font-family: "Outfit", sans-serif;
 }
 
-.main-heading{
+.main-heading {
   font-family: "Monoton", sans-serif;
 }
 

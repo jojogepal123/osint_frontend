@@ -74,7 +74,17 @@ export const AuthProvider = ({ children }) => {
     } else {
       setIsLoading(false);
     }
+    // 🔐 Token expiry check every minute
+    const interval = setInterval(() => {
+      const expiry = localStorage.getItem("token_expiry");
+      // console.log("Token Expires At:", expiry);
+      if (expiry && new Date(expiry) <= new Date()) {
+        logout();
+        toast.warning("Session expired. Please log in again.");
+      }
+    }, 60000); // every 60 seconds
 
+    return () => clearInterval(interval);
     // const currentPath = window.location.pathname;
     // const isPublicRoute = PUBLIC_ROUTES.includes(currentPath);
 
@@ -91,7 +101,7 @@ export const AuthProvider = ({ children }) => {
 
       // Save token in localStorage
       localStorage.setItem("auth_token", response.data.token);
-
+      localStorage.setItem("token_expiry", response.data.expires_at); // Save token expiry
       // Set the token in axios headers globally
       instance.defaults.headers.common[
         "Authorization"
@@ -116,6 +126,7 @@ export const AuthProvider = ({ children }) => {
       const response = await instance.post("/api/register", data);
 
       localStorage.setItem("auth_token", response.data.token);
+      localStorage.setItem("token_expiry", response.data.expires_at); // save expiry
       instance.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${response.data.token}`;
@@ -137,6 +148,7 @@ export const AuthProvider = ({ children }) => {
       // console.error("Logout error:", error);
     } finally {
       localStorage.removeItem("auth_token");
+      localStorage.removeItem("token_expiry");
       delete instance.defaults.headers.common["Authorization"];
       setUser(null);
       navigate("/");

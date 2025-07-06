@@ -15,7 +15,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); // Set loading to true when the register process starts
@@ -34,7 +34,9 @@ const Register = () => {
         <h1 className="text-5xl md:text-9xl font-extrabold tracking-widest text-[#AADE63]">
           403
         </h1>
-        <div className="bg-[#AADE63] py-1 px-2 text-sm rounded mt-2 text-black">Forbidden</div>
+        <div className="bg-[#AADE63] py-1 px-2 text-sm rounded mt-2 text-black">
+          Forbidden
+        </div>
         <p className="mt-2 text-xl md:text-2xl text-[#AADE63]">
           Registration is currently disabled.
         </p>
@@ -54,6 +56,7 @@ const Register = () => {
           <Loader />
         </div>
       )}
+      {!loading && (
         <section className="my-auto relative">
           <div className="container mx-auto max-w-6xl z-90">
             <div className="flex flex-row p-0 mx-0 sm:mx-4">
@@ -211,6 +214,7 @@ const Register = () => {
             </div>
           </div>
         </section>
+      )}
     </>
   );
 };

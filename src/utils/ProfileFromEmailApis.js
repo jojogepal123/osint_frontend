@@ -81,7 +81,24 @@ export const ProfileFromEmailApis = (results) => {
       }
     });
   }
+  // 3. Add from socialScanData if not already present
+  const socialScanEntries = Object.entries(results?.socialScanData?.data || {});
+  const scanResults =
+    socialScanEntries.length > 0 ? socialScanEntries[0][1] : [];
 
+  if (Array.isArray(scanResults)) {
+    scanResults.forEach((entry) => {
+      const platformKey = entry.platform?.toLowerCase();
+      if (
+        entry.available === "True" &&
+        platformKey &&
+        !socialMediaPresence[platformKey]
+      ) {
+        socialMediaPresence[platformKey] = true;
+        // console.log(`Added from socialScan: ${platformKey}`);
+      }
+    });
+  }
   const profileImages = [
     getIfExists(
       results?.emailData?.PROFILE_CONTAINER?.profile?.profilePhotos?.PROFILE
