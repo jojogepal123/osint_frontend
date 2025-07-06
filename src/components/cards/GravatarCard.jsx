@@ -4,7 +4,7 @@ export const GravatarCard = ({ data }) => {
   return data.map((item, index) => (
     <div
       key={index}
-      className="w-full bg-green border border-gray-700 rounded-lg shadow p-4"
+      className="w-full h-full bg-green border border-gray-700 rounded-lg shadow p-4"
     >
       <div className="flex items-center gap-3 mb-4">
         <img

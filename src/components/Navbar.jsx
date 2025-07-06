@@ -16,11 +16,10 @@ const Navbar = () => {
       >
         <Link to="/">
           <div
-            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer  ${
-              location.pathname === "/"
-                ? "text-[#9acc14] font-bold"
-                : "font-medium"
-            }`}
+            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer  ${location.pathname === "/"
+              ? "text-[#9acc14] font-bold"
+              : "font-medium"
+              }`}
           >
             <div className="p-2">
               <svg
@@ -39,11 +38,10 @@ const Navbar = () => {
 
         <Link to="/login">
           <div
-            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${
-              location.pathname === "/login"
-                ? "text-[#9acc14] font-bold"
-                : "font-medium"
-            }`}
+            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${location.pathname === "/login"
+              ? "text-[#9acc14] font-bold"
+              : "font-medium"
+              }`}
           >
             <div className="p-2">
               <svg
@@ -65,11 +63,10 @@ const Navbar = () => {
 
         <Link to="/about">
           <div
-            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${
-              location.pathname === "/about"
-                ? "text-[#9acc14] font-bold"
-                : "font-medium"
-            }`}
+            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${location.pathname === "/about"
+              ? "text-[#9acc14] font-bold"
+              : "font-medium"
+              }`}
           >
             <div className="p-2">
               <svg
@@ -90,11 +87,10 @@ const Navbar = () => {
         </Link>
         <Link to="/privacy">
           <div
-            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${
-              location.pathname === "/privacy"
-                ? "text-[#9acc14] font-bold"
-                : "font-medium"
-            }`}
+            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${location.pathname === "/privacy"
+              ? "text-[#9acc14] font-bold"
+              : "font-medium"
+              }`}
           >
             <div className="p-2">
               <svg
@@ -111,11 +107,10 @@ const Navbar = () => {
         </Link>
         <Link to="/contact-us">
           <div
-            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${
-              location.pathname === "/contact-us"
-                ? "text-[#9acc14] font-bold"
-                : "font-medium"
-            }`}
+            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${location.pathname === "/contact-us"
+              ? "text-[#9acc14] font-bold"
+              : "font-medium"
+              }`}
           >
             <div className="p-2">
               <svg

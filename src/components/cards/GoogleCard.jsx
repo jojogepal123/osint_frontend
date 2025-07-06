@@ -10,7 +10,7 @@ export const GoogleCard = ({ emailData }) => {
   const sourceId = profile.sourceIds?.PROFILE?.lastUpdated;
 
   return (
-    <div className="w-full bg-green border border-gray-700 rounded-lg shadow p-4">
+    <div className="w-full h-full bg-green border border-gray-700 rounded-lg shadow p-4">
       <div className="flex items-center gap-3 mb-4">
         <img
           src="https://www.google.com/favicon.ico"
