@@ -52,28 +52,25 @@ const Subscription = () => {
   const navigate = useNavigate();
 
   const handlePayment = async (plan) => {
-    try {
-      const res = await instance.post("/api/create-cashfree-order", {
-        amount: plan.amount,
-        plan: plan.name,
-      });
-
-      const sessionId = res.data.payment_session_id;
-
-      if (!sessionId) {
-        alert("Failed to get session ID");
-        return;
-      }
-
-      const cashfree = new window.Cashfree();
-      cashfree.checkout({
-        paymentSessionId: sessionId,
-        returnUrl: `${window.location.origin}/payment-success?order_id={order_id}`,
-      });
-    } catch (error) {
-      console.error("Payment error:", error);
-      alert("Payment initiation failed");
-    }
+    // try {
+    //   const res = await instance.post("/api/create-cashfree-order", {
+    //     amount: plan.amount,
+    //     plan: plan.name,
+    //   });
+    //   const sessionId = res.data.payment_session_id;
+    //   if (!sessionId) {
+    //     alert("Failed to get session ID");
+    //     return;
+    //   }
+    //   const cashfree = new window.Cashfree();
+    //   cashfree.checkout({
+    //     paymentSessionId: sessionId,
+    //     returnUrl: `${window.location.origin}/payment-success?order_id={order_id}`,
+    //   });
+    // } catch (error) {
+    //   console.error("Payment error:", error);
+    //   alert("Payment initiation failed");
+    // }
   };
 
   return (
