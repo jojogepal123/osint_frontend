@@ -1,7 +1,10 @@
 import { Check, X } from "lucide-react";
 import { useIsEmpty } from "../hook/useIsEmpty";
+import React, { useState } from "react";
 import instance from "../api/axios";
 import IconWithFallback from "./IconWithFallback";
+import RcPopup from "./RcPopup"; // ✅ OK now
+import ViewDetailsIcon from "../assets/view-details.svg";
 
 const InfoList = ({ title, items }) => {
   if (!items || items.length === 0) return null;
@@ -76,10 +79,31 @@ const DataCard = ({ title, items }) => {
 //   }
 // };
 
-
 const TelProfileCard = ({ profile, userInput }) => {
   const isEmpty = useIsEmpty(profile);
   if (isEmpty) return null;
+  // ✅ Move state here
+  const [selectedRC, setSelectedRC] = useState(null);
+  const [rcData, setRcData] = useState(null);
+  const [loading, setLoading] = useState(false); // <-- NEW
+  // Inside the handleRCClick
+  const handleRCClick = async (rc) => {
+    setSelectedRC(rc);
+    setRcData(null);
+    setLoading(true); // Start loading
+    try {
+      const response = await instance.post("/api/rcfull-details", {
+        id_number: rc,
+      });
+      setRcData(response.data?.data || {});
+      console.log("RC Data:", response.data?.data);
+    } catch (err) {
+      console.error("Failed to load RC data", err);
+      setRcData(null);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
 
   return (
     <div className="space-y-4 bg-[#0b323d] rounded-xl shadow-md p-6 text-white border border-gray-700">
@@ -145,9 +169,22 @@ const TelProfileCard = ({ profile, userInput }) => {
         <DataCard title="Country Codes" items={profile.countryCodes} />
         <DataCard title="Carriers" items={profile.carriers} />
         <DataCard title="Job Profiles" items={profile.jobProfiles} />
+        {/* RC Numbers with button */}
         <DataCard
           title="RC Numbers"
-          items={profile.rcNumber.map((rc) => ({ value: rc }))}
+          items={profile.rcNumber.map((rc) => ({
+            value: (
+              <div key={rc} className="flex items-center justify-between gap-4">
+                <span className="text-gray-300 font-medium">{rc}</span>
+                <button
+                  onClick={() => handleRCClick(rc)}
+                  className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-sm"
+                >
+                  <span>View Details</span>
+                </button>
+              </div>
+            ),
+          }))}
         />
       </div>
 
@@ -155,9 +192,7 @@ const TelProfileCard = ({ profile, userInput }) => {
       {Object.keys(profile.socialMediaPresence).length > 0 && (
         <div className="bg-gray-900 p-4 rounded-lg">
           <div className="bg-gray-900 rounded w-full md:w-2/3 text-white">
-            <h3 className="text-xl font-semibold mb-3">
-              Internet Presence
-            </h3>
+            <h3 className="text-xl font-semibold mb-3">Internet Presence</h3>
             <ul className="space-y-2 px-2">
               {Object.entries(profile.socialMediaPresence).map(
                 ([platform, isPresent]) => (
@@ -171,7 +206,7 @@ const TelProfileCard = ({ profile, userInput }) => {
                     </div>
                     {isPresent ? (
                       <span className="py-0.5 px-3 bg-green rounded-xl flex gap-2 items-center">
-                        <Check size={20} color="#34f000" />
+                        <Check size={20} color="#abde64" />
                         active
                       </span>
                     ) : (
@@ -206,7 +241,7 @@ const TelProfileCard = ({ profile, userInput }) => {
             <h3 className="font-semibold">Phone Status</h3>
             <p
               className={
-                profile?.lastUpdated ? "text-green-500" : "text-red-500"
+                profile?.lastUpdated ? "text-custom-lime" : "text-red-500"
               }
             >
               {profile?.lastUpdated}
@@ -229,6 +264,16 @@ const TelProfileCard = ({ profile, userInput }) => {
           </div>
         )}
       </div>
+      {/* RC Modal */}
+      <RcPopup
+        rc={selectedRC}
+        data={rcData}
+        loading={loading}
+        onClose={() => {
+          setSelectedRC(null);
+          setRcData(null);
+        }}
+      />
     </div>
   );
 };

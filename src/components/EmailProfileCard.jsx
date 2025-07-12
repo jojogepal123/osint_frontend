@@ -16,6 +16,16 @@ const InfoList = ({ title, items }) => {
             {item.source && (
               <span className="text-sm text-gray-500"> ({item.source})</span>
             )}
+            {item.url && (
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-sm text-blue-400 hover:underline"
+              >
+                {item.urlLabel || "View"}
+              </a>
+            )}
           </li>
         ))}
       </ul>
@@ -37,14 +47,14 @@ const iconMap = {
   "X (Twitter)": "twitter",
   "Chess.Com": "chesscom",
   "Google+": "googleplus",
-  "Picsart": "picsartstudio",
+  Picsart: "picsartstudio",
 };
 
 const getIconUrl = (platform) => {
-  const key = iconMap[platform] || platform.toLowerCase().replace(/[\s().]/g, '');
+  const key =
+    iconMap[platform] || platform.toLowerCase().replace(/[\s().]/g, "");
   return `https://cdn.jsdelivr.net/npm/simple-icons@v10/icons/${key}.svg`;
 };
-
 
 const EmailProfileCard = ({ profile, userInput }) => {
   //   console.log(profile);
@@ -91,15 +101,123 @@ const EmailProfileCard = ({ profile, userInput }) => {
         <DataCard title="Basic Info" items={profile.basicInfo} />
         <DataCard title="Locations" items={profile.locations} />
         <DataCard title="Last Updated" items={profile.lastUpdated} />
-      </div>
+        {/* Qualifications */}
+        {profile.qualifications?.length > 0 && (
+          <DataCard
+            title="Qualifications"
+            items={profile.qualifications.map((q) => ({
+              key: `${q.degree} in ${q.field}`,
+              value: `${q.school} (${q.startYear} - ${q.endYear})`,
+              source: q.source,
+              url: q.url,
+              urlLabel: "View School",
+            }))}
+          />
+        )}
 
+        {/* Experience */}
+        {profile.experience?.length > 0 && (
+          <DataCard
+            title="Experience"
+            items={profile.experience.map((e) => ({
+              key: e.title,
+              value: `${e.company} (${e.startYear} - ${e.endYear})`,
+              source: e.source,
+              url: e.url,
+              urlLabel: "View Company",
+            }))}
+          />
+        )}
+
+        {/* Skills */}
+        {profile.skills?.length > 0 && (
+          <DataCard
+            title="Skills"
+            items={profile.skills.map((s) => ({
+              value: s.value,
+              source: s.source,
+            }))}
+          />
+        )}
+      </div>
+      {/* {Array.isArray(profile.qualifications) &&
+        profile.qualifications.length > 0 && (
+          <div className="bg-gray-900 p-4 rounded-lg text-white ">
+            <h3 className="text-xl font-semibold mb-3">Qualifications</h3>
+            <ul className="space-y-2 list-disc ml-6 text-gray-300">
+              {profile.qualifications.map((q, idx) => (
+                <li key={idx}>
+                  <div className="text-md">
+                    <span className="font-semibold">{q.degree}</span>
+                    {q.field && ` in ${q.field}`},{" "}
+                    <span className="italic">{q.school}</span>{" "}
+                    {q.startYear && q.endYear && (
+                      <span className="text-sm text-gray-400">
+                        ({q.startYear} - {q.endYear})
+                      </span>
+                    )}
+                    {q.url && (
+                      <a
+                        href={q.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-sm text-blue-400 hover:underline"
+                      >
+                        View School on LinkedIn
+                      </a>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      {Array.isArray(profile.experience) && profile.experience.length > 0 && (
+        <div className="bg-gray-900 p-4 rounded-lg text-white border border-gray-700">
+          <h3 className="text-xl font-semibold mb-3">Work Experience</h3>
+          <ul className="space-y-2 list-disc ml-6 text-gray-300">
+            {profile.experience.map((exp, idx) => (
+              <li key={idx}>
+                <div className="text-md">
+                  <span className="font-semibold">{exp.title}</span>
+                  {exp.company && ` at ${exp.company}`},{" "}
+                  {exp.startYear && exp.endYear && (
+                    <span className="text-sm text-gray-400">
+                      ({exp.startYear} - {exp.endYear})
+                    </span>
+                  )}
+                  {exp.url && (
+                    <a
+                      href={exp.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-sm text-blue-400 hover:underline"
+                    >
+                      View Company
+                    </a>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {Array.isArray(profile.skills) && profile.skills.length > 0 && (
+        <div className="bg-gray-900 p-4 rounded-lg text-white border border-gray-700">
+          <h3 className="text-xl font-semibold mb-3">Skills</h3>
+          <ul className="space-y-2 list-disc ml-6 text-gray-300">
+            {profile.skills.map((skill, idx) => (
+              <li key={idx}>{skill}</li>
+            ))}
+          </ul>
+        </div>
+      )} */}
       {/* Social Media Links */}
       {Object.keys(profile.socialMediaPresence).length > 0 && (
         <div className="bg-gray-900 p-4 rounded-lg">
           <div className="bg-gray-900 p-4 rounded w-full md:w-2/3 text-white">
-            <h3 className="text-xl font-semibold mb-3">
-              Internet Presence
-            </h3>
+            <h3 className="text-xl font-semibold mb-3">Internet Presence</h3>
             <ul className="space-y-2">
               {Object.entries(profile.socialMediaPresence).map(
                 ([platform, isPresent]) => (
@@ -111,7 +229,14 @@ const EmailProfileCard = ({ profile, userInput }) => {
                       <IconWithFallback platform={platform} size={20} />
                       <span className="capitalize">{platform}</span>
                     </div>
-                    {isPresent ? <span className="py-0.5 px-3 bg-green rounded-xl flex gap-2 items-center"><Check size={20} color="#34f000" />active</span> : <X />}
+                    {isPresent ? (
+                      <span className="py-0.5 px-3 bg-green rounded-xl flex gap-2 items-center">
+                        <Check size={20} color="#34f000" />
+                        active
+                      </span>
+                    ) : (
+                      <X />
+                    )}
                   </li>
                 )
               )}

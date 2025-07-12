@@ -25,7 +25,7 @@ const Results = () => {
   const zehefResults = results?.zehefData?.data || [];
   const osResults = results?.osintData?.data || null;
 
-  // console.log(results);
+  console.log(results);
 
   const isResultEmpty = () => {
     if (!results) return true;

@@ -89,7 +89,7 @@ const ResultHeader = ({ userInput, type, results }) => {
                   {userInput}
                 </span>
                 <button
-                  className="text-[#abde64] relative"
+                  className="text-custom-lime relative"
                   onClick={() => {
                     if (userInput) {
                       navigator.clipboard.writeText(userInput);
@@ -110,7 +110,7 @@ const ResultHeader = ({ userInput, type, results }) => {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="lucide lucide-clipboard w-6 h-6 text-[#ABDE64]"
+                    className="lucide lucide-clipboard w-6 h-6 text-custom-lime"
                   >
                     <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
                     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
@@ -118,8 +118,9 @@ const ResultHeader = ({ userInput, type, results }) => {
                 </button>
                 {copied && (
                   <span
-                    className={`text-xs text-black bg-[#b0de6a] px-4 py-1.5 rounded-md transition-opacity duration-500 flex items-center ${copied ? "opacity-100" : "opacity-0"
-                      }`}
+                    className={`text-xs text-black bg-custom-lime px-4 py-1.5 rounded-md transition-opacity duration-500 flex items-center ${
+                      copied ? "opacity-100" : "opacity-0"
+                    }`}
                   >
                     <svg
                       className="w-3 h-3 text-black me-1.5"
@@ -256,7 +257,7 @@ const ResultHeader = ({ userInput, type, results }) => {
                 )}
               </div>
               <button
-                className="text-[#060714] flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium bg-[#ABDE64] transition-colors w-full sm:w-auto"
+                className="text-[#060714] flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium bg-custom-lime transition-colors w-full sm:w-auto"
                 onClick={handleBack}
               >
                 <svg

@@ -181,7 +181,7 @@ export const AuthProvider = ({ children }) => {
       const { data } = await instance.get("/api/tel", {
         params: { number: fullPhoneNumber },
       });
-
+      // console.log("Raw /api/tel response:", data); // ✅ Log full response
       const parsedHLR =
         typeof data.hlrData === "string"
           ? JSON.parse(data.hlrData)
@@ -199,9 +199,10 @@ export const AuthProvider = ({ children }) => {
         spbData: data.sbData || null,
         sprcData: data.srData || null,
         tlgData: data.telData || null,
+        // srfullData: data.srfullData || null, // ✅ Make sure you access this
         errors: data.errors || {},
       };
-
+      // console.log("Parsed srfullData:", newResults.srfullData); // ✅ Extra log
       setResults(JSON.parse(JSON.stringify(newResults)));
       return newResults;
     } catch (error) {

@@ -1,6 +1,7 @@
 export const ProfileFromEmailApis = (results) => {
   const osintResults = results?.osintData?.data || [];
   const holeheResults = results?.holeheData || [];
+  const getUserResults = results?.getuserData || [];
 
   const getIfExists = (val, source) => (val ? { value: val, source } : null);
 
@@ -9,6 +10,7 @@ export const ProfileFromEmailApis = (results) => {
       results?.emailData?.PROFILE_CONTAINER?.profile?.names?.PROFILE?.fullname,
       "Google"
     ),
+    getIfExists(getUserResults?.person?.displayName, "GetUser"),
   ].filter(Boolean);
 
   const userNames = [].filter(Boolean);
@@ -21,10 +23,22 @@ export const ProfileFromEmailApis = (results) => {
     });
   }
 
-  const locations = [].filter(Boolean);
+  const locations = [
+    getIfExists(getUserResults?.person?.location, "GetUser"),
+  ].filter(Boolean);
 
   const phones = [].filter(Boolean);
-
+  if (Array.isArray(getUserResults?.person?.phoneNumbers)) {
+    getUserResults.person.phoneNumbers.forEach((phone) => {
+      if (phone) {
+        phones.push({
+          key: "Phone",
+          value: phone,
+          source: "LinkedIn",
+        });
+      }
+    });
+  }
   const emails = [
     getIfExists(
       results?.emailData?.PROFILE_CONTAINER?.profile?.emails?.PROFILE?.value,
@@ -80,6 +94,13 @@ export const ProfileFromEmailApis = (results) => {
         socialMediaPresence[platform] = true;
       }
     });
+  }
+
+  if (
+    getUserResults?.person?.linkedInUrl &&
+    getUserResults.person.linkedInUrl.includes("linkedin.com/in/")
+  ) {
+    socialMediaPresence.linkedin = true;
   }
   // 3. Add from socialScanData if not already present
   const socialScanEntries = Object.entries(results?.socialScanData?.data || {});
@@ -160,6 +181,41 @@ export const ProfileFromEmailApis = (results) => {
       }
     });
   }
+  const educationHistory =
+    getUserResults?.person?.schools?.educationHistory || [];
+
+  const positions = getUserResults?.person?.positions?.positionHistory || [];
+
+  const qualifications = Array.isArray(educationHistory)
+    ? educationHistory.map((s) => ({
+        degree: s.degreeName || "",
+        field: s.fieldOfStudy || "",
+        school: s.schoolName || "",
+        url: s.linkedInUrl || s.school?.linkedInUrl || "",
+        startYear: s.startEndDate?.start?.year || "",
+        endYear: s.startEndDate?.end?.year || "",
+        source: "LinkedIn",
+      }))
+    : [];
+
+  const experience = Array.isArray(positions)
+    ? positions.map((p) => ({
+        title: p.title || "",
+        company: p.companyName || p.company?.companyName || "",
+        url: p.linkedInUrl || p.company?.linkedInUrl || "",
+        startYear: p.startEndDate?.start?.year || "",
+        endYear: p.startEndDate?.end?.year || "",
+        source: "LinkedIn",
+      }))
+    : [];
+
+  const skills = Array.isArray(getUserResults?.person?.skills)
+    ? getUserResults.person.skills.map((skill) => ({
+        key: "Skill",
+        value: skill,
+        source: "LinkedIn",
+      }))
+    : [];
 
   const EmailProfile = {
     fullNames,
@@ -177,6 +233,9 @@ export const ProfileFromEmailApis = (results) => {
     basicInfo,
     locations,
     socialMediaPresence,
+    qualifications,
+    experience,
+    skills,
   };
 
   return EmailProfile;
