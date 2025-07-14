@@ -1,7 +1,9 @@
 import useAuthContext from "../context/AuthContext";
 import webName from "../assets/web-name-logo.png";
 import { useLocation, useNavigate } from "react-router-dom";
-const Sidebar = () => {
+import { Link } from "react-router-dom";
+
+const SidebarSmall = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const {
@@ -18,36 +20,28 @@ const Sidebar = () => {
   const handleSubscription = () => {
     navigate("/subscription");
   };
+  const handleLeakDataFinder = () => {
+    navigate("/leak-data-finder");
+  };
+
+  const isLeakDataFinderActive = location.pathname === "/leak-data-finder";
+  const dashboardActive = location.pathname === "/dashboard";
+  const handleCorporateDataFinder = () => {
+    navigate("/corporate");
+  };
+
+  const isCorporateDataFinderActive = location.pathname === "/corporate";
+
+  const Logout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <>
-      {sidebarVisible && (
-        <button
-          onClick={closeMenu}
-          className={`md:hidden fixed top-5 z-[60] lg:hidden p-1 rounded-lg 
-                    bg-[#212121]/90 backdrop-blur-sm hover:bg-[#8200FF]/40
-                    text-white transition-all duration-300
-                    left-6 translate-x-64`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M18 6 6 18"></path>
-            <path d="m6 6 12 12"></path>
-          </svg>
-        </button>
-      )}
       <aside
         className={`
-          fixed z-50 mt-4 mb-4 h-[calc(100%-2rem)] 
+          fixed z-[9999] mt-4 mb-4 h-[calc(100%-2rem)] 
           bg-gray-900 bg-opacity-30 backdrop-blur-md rounded-xl shadow-lg 
           transition-all  
           flex flex-col w-64  lg:left-4 left-4
@@ -55,30 +49,47 @@ const Sidebar = () => {
           ${!sidebarVisible ? "hidden md:flex" : "flex"}
         `}
       >
-        <div className="flex-1">
-          <div className="flex items-center justify-center h-16 overflow-hidden relative">
-            <div
+        <div className="flex-1 z-[9999]">
+          <div className="flex items-center justify-between h-16 gap-4">
+            {/* <img
+              src={webName}
+              alt="Logo"
               className="
-          transition-all  flex items-center justify-center
-          w-48
-      "
-            >
-              <div className="relative flex items-center justify-center w-full h-8 mt-2">
-                <img
-                  src={webName}
-                  alt="Logo"
-                  className="
-                      absolute h-24 w-auto object-contain
+                      w-auto object-contain
                       transition-all 
                       transform 
                       opacity-100 scale-100 translate-x-0
                   "
-                />
-              </div>
+            /> */}
+            <div className="text-3xl text-transparent bg-clip-text bg-gradient-to-r from-lime-200 to-teal-800 font-bold ml-4">
+              OSINTWORK
             </div>
+            {sidebarVisible && (
+              <button
+                onClick={closeMenu}
+                className={`md:hidden z-[9999] p-1 rounded-lg 
+                    bg-gray-700/60 backdrop-blur-sm hover:bg-gray-700/90
+                    text-white transition-all duration-300 mr-4`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6 6 18"></path>
+                  <path d="m6 6 12 12"></path>
+                </svg>
+              </button>
+            )}
           </div>
           <div className="px-3 py-1 pb-2">
-            <hr className="border-white/5" />
+            <hr className="border-white/10" />
           </div>
           <nav className="px-1.5">
             <ul className="space-y-4">
@@ -88,18 +99,17 @@ const Sidebar = () => {
                     onClick={() => {
                       setInputType("email");
                       closeMenu();
-                      if (window.location.pathname !== "/dashboard") {
-                          navigate("/dashboard");
+                      if (!dashboardActive) {
+                        navigate("/dashboard");
                       }
                     }}
                     className={`
                           flex items-center rounded-lg
                           transition-all duration-100 ease-in-out
-                         ${
-                           inputType === "email"
-                             ? "bg-gradient-to-r hover:bg-gradient-to-l from-lime-200 to-teal-800 text-teal-900"
-                             : "hover:bg-gray-800 text-white hover:text-lime-200"
-                         }
+                         ${inputType === "email" && dashboardActive
+                        ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
+                        : "hover:bg-gray-800 text-white hover:text-lime-200"
+                      }
                           group relative
                           px-3 py-2.5 w-full
                       `}
@@ -144,18 +154,65 @@ const Sidebar = () => {
                     onClick={() => {
                       setInputType("tel");
                       closeMenu();
-                      if (window.location.pathname !== "/dashboard") {
+                      if (!dashboardActive) {
                         navigate("/dashboard");
                       }
                     }}
                     className={`
                           flex items-center rounded-lg
                           transition-all duration-100 ease-in-out
-                          ${
-                            inputType === "tel"
-                              ? "bg-gradient-to-r hover:bg-gradient-to-l from-lime-200 to-teal-800 text-teal-900"
-                              : "hover:bg-gray-800 text-white hover:text-lime-200"
-                          }
+                          ${inputType === "tel" && dashboardActive
+                        ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
+                        : "hover:bg-gray-800 text-white hover:text-lime-200"
+                      }
+                          group relative
+                          px-3 py-2.5 w-full
+                      `}
+                  >
+                    <span
+                      className="
+                          min-w-[24px] flex items-center justify-center
+                          transition-transform duration-100
+                          
+                      "
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-phone"
+                      >
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                      </svg>
+                    </span>
+                    <span
+                      className="
+                              whitespace-nowrap transition-all  text-sm
+                              opacity-100 ml-2.5 translate-x-0
+                          "
+                    >
+                      Phone Analyzer
+                    </span>
+                  </button>
+                </li>
+              </div>
+              <div>
+                <li>
+                  <button
+                    onClick={handleLeakDataFinder}
+                    className={`
+                          flex items-center rounded-lg
+                          transition-all duration-100 ease-in-out
+                          ${isLeakDataFinderActive
+                        ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
+                        : "hover:bg-gray-800 text-white hover:text-lime-200"
+                      }
                           group relative
                           px-3 py-2.5 w-full
                       `}
@@ -189,7 +246,44 @@ const Sidebar = () => {
                               opacity-100 ml-2.5 translate-x-0
                           "
                     >
-                      Phone Analyzer
+                      Leak Data Finder
+                    </span>
+                  </button>
+                </li>
+              </div>
+              <div>
+                <li>
+                  <button
+                    onClick={handleCorporateDataFinder}
+                    className={`
+                          flex items-center rounded-lg
+                          transition-all duration-100 ease-in-out
+                          ${isCorporateDataFinderActive
+                        ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
+                        : "hover:bg-gray-800 text-white hover:text-lime-200"
+                      }
+                          group relative
+                          px-3 py-2.5 w-full
+                      `}
+                  >
+                    <span
+                      className="
+                          min-w-[24px] flex items-center justify-center
+                          transition-transform duration-100
+                          
+                      "
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
+                      </svg>
+                    </span>
+                    <span
+                      className="
+                              whitespace-nowrap transition-all  text-sm
+                              opacity-100 ml-2.5 translate-x-0
+                          "
+                    >
+                      Corporate Intelligence
                     </span>
                   </button>
                 </li>
@@ -246,7 +340,7 @@ const Sidebar = () => {
                 {user && (
                   <li>
                     <button
-                      onClick={logout}
+                      onClick={Logout}
                       className={`
                           flex items-center rounded-lg
                           transition-all duration-100 ease-in-out
@@ -294,8 +388,8 @@ const Sidebar = () => {
               </div>
               <div>
                 <li>
-                  <a
-                    href="/help"
+                  <Link
+                    to="/help"
                     className="
                           flex items-center rounded-lg
                           transition-all duration-100 ease-in-out
@@ -336,16 +430,16 @@ const Sidebar = () => {
                     >
                       Help
                     </span>
-                  </a>
+                  </Link>
                 </li>
               </div>
             </ul>
           </nav>
         </div>
-        <div className="mt-auto px-4 pb-4 overflow-hidden transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100">
+        <div className="mt-auto px-4 pb-4 overflow-hidden transition-all duration-300 ease-in-out opacity-100">
           <div className="text-center transform transition-all duration-300 ease-out">
-            <p className="text-xs text-gray-600 mb-1">OSINTWORK</p>
-            <p className="text-xs text-gray-600">© 2025 All rights reserved</p>
+            <p className="text-xs text-gray-400 mb-1">OSINTWORK</p>
+            <p className="text-xs text-gray-400">© {new Date().getFullYear()} All rights reserved</p>
           </div>
         </div>
       </aside>
@@ -353,4 +447,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SidebarSmall;

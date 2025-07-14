@@ -11,6 +11,7 @@ import EmailProfileCard from "../components/EmailProfileCard";
 // import Map from "../components/Map";
 
 import no_results_image from "../assets/noresults.png";
+import { useState } from "react";
 
 const Results = () => {
   const location = useLocation();
@@ -25,7 +26,10 @@ const Results = () => {
   const zehefResults = results?.zehefData?.data || [];
   const osResults = results?.osintData?.data || null;
 
-  // console.log(results);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  console.log(results);
 
   const isResultEmpty = () => {
     if (!results) return true;
@@ -108,8 +112,8 @@ const Results = () => {
         (item) => item.source === "Gravatar" && item.status === "found"
       )
         ? zehefResults?.filter(
-            (item) => item.source === "Gravatar" && item.status === "found"
-          )
+          (item) => item.source === "Gravatar" && item.status === "found"
+        )
         : null,
       osintData: osResults || null,
     };
@@ -122,18 +126,19 @@ const Results = () => {
         onNewSearch={handleNewSearch}
         type={type}
         results={resultsToSend}
+        modalOpen={modalOpen}
       />
       {type === "tel" ? (
         <>
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
-            <TelProfileCard profile={TelProfile} userInput={userInput} />
+            <TelProfileCard profile={TelProfile} userInput={userInput} modalOpen={modalOpen} setModalOpen={setModalOpen} selectedImage={selectedImage} setSelectedImage={setSelectedImage} />
             {osResults !== null && <OsintCard data={osResults} />}
           </div>
         </>
       ) : (
         <>
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
-            <EmailProfileCard profile={EmailProfile} userInput={userInput} />
+            <EmailProfileCard profile={EmailProfile} userInput={userInput} modalOpen={modalOpen} setModalOpen={setModalOpen} selectedImage={selectedImage} setSelectedImage={setSelectedImage} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 items-stretch">
               {emailData?.PROFILE_CONTAINER?.profile?.personId && (
                 <div className="h-full">
@@ -141,59 +146,18 @@ const Results = () => {
                 </div>
               )}
               {/* <GoogleCard emailData={emailData} /> */}
-              {Array.isArray(hibpResults) && hibpResults.length > 0 && (
-                <div className="h-full">
-                  <div className="w-full h-full bg-green border rounded-lg shadow border-gray-700 p-4">
-                    <div className="flex items-center gap-3 mb-4">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="50"
-                        height="50"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="#FFF"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-blocks w-6 h-6"
-                      >
-                        <rect width="7" height="7" x="14" y="3" rx="1"></rect>
-                        <path d="M10 21V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H3"></path>
-                      </svg>
-                      <h2 className="text-gray-200 text-xl font-semibold">
-                        Found breaches
-                      </h2>
-                    </div>
-                    <ul className="list-disc pl-6 text-gray-200 space-y-2">
-                      {hibpResults.map((result, index) => (
-                        <li key={index} className="flex items-center gap-2">
-                          <img
-                            src={
-                              result.LogoPath ||
-                              "https://via.placeholder.com/50"
-                            }
-                            alt={result.Name}
-                            className="w-6 h-6 rounded-full"
-                          />
-                          {result.Name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
               {zehefResults?.some(
                 (item) => item.source === "Gravatar" && item.status === "found"
               ) && (
-                <div className="h-full">
-                  <GravatarCard
-                    data={zehefResults.filter(
-                      (item) =>
-                        item.source === "Gravatar" && item.status === "found"
-                    )}
-                  />
-                </div>
-              )}
+                  <div className="h-full">
+                    <GravatarCard
+                      data={zehefResults.filter(
+                        (item) =>
+                          item.source === "Gravatar" && item.status === "found"
+                      )}
+                    />
+                  </div>
+                )}
             </div>
             {/* <div className="grid grid-cols-1 gap-4"></div> */}
 
@@ -207,7 +171,53 @@ const Results = () => {
                   <Map data={emailData} />
                 </>
               )} */}
-
+            {/* hibp Data Card */}
+            {Array.isArray(hibpResults) && hibpResults.length > 0 && (
+              <div className="h-full mt-4">
+                <div className="w-full h-full bg-green border border-gray-700/60 rounded-2xl shadow-2xl p-6 backdrop-blur-md">
+                  <div className="flex items-center gap-3 mb-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="50"
+                      height="50"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#FFF"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-blocks w-6 h-6"
+                    >
+                      <rect width="7" height="7" x="14" y="3" rx="1"></rect>
+                      <path d="M10 21V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H3"></path>
+                    </svg>
+                    <h2 className="text-white text-xl font-bold tracking-wide">Found breaches</h2>
+                  </div>
+                  <ul className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {hibpResults.map((result, index) => (
+                      <li
+                        key={index}
+                        className="flex items-center gap-3 p-3 rounded-lg bg-gray-900 hover:bg-gray-950 transition-all duration-200 shadow group"
+                      >
+                        <img
+                          src={result.LogoPath || "https://via.placeholder.com/50"}
+                          alt={result.Name}
+                          className="w-8 h-8 rounded-full border border-gray-700 shadow-sm bg-white object-contain"
+                        />
+                        <span className="font-semibold text-gray-100 group-hover:text-lime-200">{result.Name}</span>
+                        {/* Example badge for year or type */}
+                        {result.BreachDate && (
+                          <span className="ml-auto px-2 py-0.5 rounded-full bg-lime-700/20 text-xs text-lime-200 font-medium">
+                            {new Date(result.BreachDate).getFullYear()}
+                            {/* {result.BreachDate} */}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
             {osResults !== null && <OsintCard data={osResults} />}
           </div>
         </>

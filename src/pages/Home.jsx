@@ -1,14 +1,13 @@
 import useAuthContext from "../context/AuthContext";
 import { useEffect, useState, useRef } from "react";
-import Options from "./Options";
-import UserIcon from "../assets/userIcon.png"; // Import your user icon here
+import Options from "./Options"; // Import your user icon here
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import FullScreenLoader from "../components/FullScreenLoader";
+import UserCard from "../components/UserCard";
 
 const Home = () => {
   const {
-    user,
     logout,
     inputValue,
     setInputValue,
@@ -25,17 +24,8 @@ const Home = () => {
   } = useAuthContext();
   const navigate = useNavigate();
   const inputRef = useRef(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const handleLogout = () => {
-    logout().then(() => {
-      window.location.href = "/"; // Redirect to login page after logout
-    });
-  };
 
-  const handleSubscription = () => {
-    navigate("/subscription");
-  };
 
   useEffect(() => {
     setResults({});
@@ -81,94 +71,18 @@ const Home = () => {
   return (
     <>
       {loading && <FullScreenLoader text="Searching..." />}
+      <UserCard />
       <main className="flex-1 flex flex-col items-center justify-center p-8 -mt-28 sm:-mt-20 z-10">
-        <div className="fixed right-4 top-4 z-50">
-          <div className="relative">
-            {/* Profile Image Button */}
-            <button
-              className="h-10 w-10 rounded-full shadow bg-white/10 transition-opacity duration-300"
-              title={user?.name || "User"}
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-            >
-              <img
-                className="h-10 w-10 rounded-full border-2 border-lime-200"
-                src={UserIcon}
-                alt={`${user?.name}'s profile`}
-                title={user?.name || "User"}
-              />
-            </button>
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-80 border border-[#9acc14] bg-gray-900 bg-opacity-30 backdrop-blur-lg shadow-md rounded-lg px-4 divide-y divide-[#9acc14]">
-                <div className="flex items-center justify-start space-x-4 mb-4 py-2">
-                  <div className="text-white">
-                    <span className="">
-                      <img
-                        className="h-10 w-10 rounded-full border-2 border-lime-200"
-                        src={UserIcon}
-                        alt={`${user?.name}'s profile`}
-                        title={user?.name || "User"} // Show name on hover
-                      />
-                    </span>
-                  </div>
-                  <div className=" text-white hover:text-lime-200 flex flex-col">
-                    <span className="">
-                      <span className="">{user?.name || "User"}</span>
-                    </span>
-                    <span className="">{user?.email || ""}</span>
-                  </div>
-                </div>
-                <button
-                  className="flex items-center px-4 py-3  hover:bg-gray-800 text-white hover:text-lime-200 space-x-3 w-full "
-                  onClick={handleSubscription}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="size-4"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
-                    />
-                  </svg>
-
-                  <span className=" text-sm">Subscription</span>
-                </button>
-                <button
-                  className="flex items-center px-4 py-3 space-x-3 w-full hover:bg-gray-800 text-white hover:text-lime-200"
-                  onClick={handleLogout}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="size-4"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm5.03 4.72a.75.75 0 0 1 0 1.06l-1.72 1.72h10.94a.75.75 0 0 1 0 1.5H10.81l1.72 1.72a.75.75 0 1 1-1.06 1.06l-3-3a.75.75 0 0 1 0-1.06l3-3a.75.75 0 0 1 1.06 0Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <span className="text-sm">Logout</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="max-w-4xl mx-auto h-full flex flex-col items-center md:-mt-20 justify-center space-y-4 mb-8 cursor-default">
-          <h1 className="text-4xl sm:text-7xl font-bold bg-gradient-to-r from-lime-200 to-teal-800 bg-clip-text text-transparent">
-            OSINT WORK
+        <div className="max-w-4xl mx-auto h-full flex flex-col items-center md:-mt-20 justify-center space-y-1.5 md:space-y-4 mb-8 cursor-default">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-lime-200 to-teal-800 bg-clip-text text-transparent">
+            OSINTWORK
           </h1>
           <div className="text-white text-3xl sm:text-5xl font-semibold text-center">
             Find out what's
           </div>
           <div className="text-white text-3xl sm:text-5xl font-semibold text-center pb-4">
             behind any
+            <br className="block md:hidden" />
             <span
               className="ml-1 text-[#AADE63] px-2 underline underline-offset-8"
               style={{ fontFamily: '"Times New Roman", Times, serif' }}
@@ -201,7 +115,7 @@ const Home = () => {
             />
             <button
               type="submit"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-10 w-10 flex items-center justify-center text-sm font-medium rounded-xl bg-gradient-to-r from-lime-200 to-teal-800 shadow p-2 text-white"
+              className="absolute right-1 md:right-2 top-1/2 transform -translate-y-1/2 h-10 w-10 flex items-center justify-center text-sm font-medium rounded-xl bg-gradient-to-r from-lime-200 to-teal-800 shadow p-2 text-white"
               disabled={loading}
             >
               <svg
@@ -254,16 +168,6 @@ const Home = () => {
             </label>
           </div>
         </form>
-
-        {/* <Results results={results} type={inputType} /> */}
-
-        {/* <Results
-          results={results}
-          type={inputType}
-          onBack={handleBack}
-          onNewSearch={handleNewSearch}
-          userInput={inputValue}
-        /> */}
       </main>
     </>
   );
