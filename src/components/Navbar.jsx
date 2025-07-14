@@ -17,7 +17,7 @@ const Navbar = () => {
         <Link to="/">
           <div
             className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer  ${location.pathname === "/"
-              ? "text-[#9acc14] font-bold"
+              ? "text-lime-300 font-bold"
               : "font-medium"
               }`}
           >
@@ -39,7 +39,7 @@ const Navbar = () => {
         <Link to="/login">
           <div
             className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${location.pathname === "/login"
-              ? "text-[#9acc14] font-bold"
+              ? "text-lime-300 font-bold"
               : "font-medium"
               }`}
           >
@@ -64,7 +64,7 @@ const Navbar = () => {
         <Link to="/about">
           <div
             className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${location.pathname === "/about"
-              ? "text-[#9acc14] font-bold"
+              ? "text-lime-300 font-bold"
               : "font-medium"
               }`}
           >
@@ -88,7 +88,7 @@ const Navbar = () => {
         <Link to="/privacy">
           <div
             className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${location.pathname === "/privacy"
-              ? "text-[#9acc14] font-bold"
+              ? "text-lime-300 font-bold"
               : "font-medium"
               }`}
           >
@@ -108,7 +108,7 @@ const Navbar = () => {
         <Link to="/contact-us">
           <div
             className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${location.pathname === "/contact-us"
-              ? "text-[#9acc14] font-bold"
+              ? "text-lime-300 font-bold"
               : "font-medium"
               }`}
           >
@@ -128,7 +128,7 @@ const Navbar = () => {
       </div>
       <div
         id="second"
-        className="flex flex-col justify-center items-center min-h-96 lg:min-h-[80%] lg:w-[30%] md:w-[60%] w-[75%] relative"
+        className="flex flex-col justify-center items-center min-h-96 lg:min-h-[80%] lg:w-[30%] md:w-[60%] w-[75%] relative shadow-2xl rounded-lg"
       >
         <img
           className="w-full h-48 md:min-h-[50%] rounded-t-md absolute top-0"
@@ -147,14 +147,14 @@ const Navbar = () => {
           <img
             className="w-32 h-32 sm:w-40 sm:h-40 lg:w-80 lg:h-64 rounded-full"
             src={r}
-            alt=""
+            alt="logo"
           />
         </div>
-        <div className="h-48 md:min-h-[50%] bg-gray-800 bg-opacity-30 backdrop-blur-lg flex-col flex justify-center items-center w-full p-8 rounded-b-md space-y-4 text-center absolute bottom-0">
-          <h1 className="text-2xl sm:text-3xl lg:text-5xl mt-4 font-bold drop-shadow-2xl text-[#9acc14]">
-            OSINT WORK
+        <div className="h-48 md:min-h-[50%] bg-gray-700 bg-opacity-30 backdrop-blur-lg flex-col flex justify-center items-center w-full p-8 rounded-b-md space-y-2 text-center absolute bottom-0">
+          <h1 className="text-2xl sm:text-3xl lg:text-5xl mt-4 font-bold drop-shadow-2xl text-transparent bg-clip-text bg-gradient-to-r from-lime-200 to-teal-800">
+            OSINTWORK
           </h1>
-          <p className="text-sm md:text-xl text-[#9acc14] ">
+          <p className="text-sm md:text-md text-lime-300 ">
             FIND YOUR DIGITAL FOOTPRINT
           </p>
         </div>

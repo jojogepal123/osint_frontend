@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import FullScreenLoader from "./FullScreenLoader";
 
-const ResultHeader = ({ userInput, type, results }) => {
+const ResultHeader = ({ userInput, type, results, modalOpen }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -80,7 +80,7 @@ const ResultHeader = ({ userInput, type, results }) => {
   return (
     <>
       {isAiLoading && <FullScreenLoader text="Generating AI Report..." />}
-      <div className="max-w-6xl w-full mx-auto mt-16 sm:mt-12 z-40 transition-all duration-300 ease-in-out hide-on-pdf">
+      <div className={`max-w-6xl w-full mx-auto mt-10 sm:mt-12 ${modalOpen ? "z-10" : "z-40"} transition-all duration-300 ease-in-out hide-on-pdf`}>
         <div className="rounded-xl mx-auto text-white p-3 md:p-4 bg-teal-700 bg-opacity-30 backdrop-blur-sm shadow-lg">
           <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-3 md:gap-4">
             <div className="w-full md:w-auto">

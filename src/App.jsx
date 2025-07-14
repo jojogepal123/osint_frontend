@@ -22,11 +22,14 @@ import RefundPolicy from "./pages/RefundPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
+import LeakDataFinder from "./pages/LeakDataFinder";
+import CorporateFinder from "./pages/CorporateFinder";
 
 function App() {
   const { sidebarVisible, setSidebarVisible, user, isLoading } =
     useAuthContext();
   const location = useLocation();
+  const hideSidebar = location.pathname.startsWith("/subscription") || location.pathname.startsWith("/results");
   const openMenu = () => {
     setSidebarVisible(!sidebarVisible);
   };
@@ -37,9 +40,8 @@ function App() {
       <div className="relative flex flex-col min-h-screen w-full">
         <ParticlesComponent id="particle-background" />
         <div
-          className={`absolute top-4 left-4 z-30 md:hidden ${
-            sidebarVisible || location.pathname === "/dashboard" ? "" : "hidden"
-          }`}
+          className={`absolute top-4 left-4 z-[9999] md:hidden ${sidebarVisible || hideSidebar ? "hidden" : ""
+            }`}
         >
           <button
             onClick={openMenu}
@@ -70,6 +72,8 @@ function App() {
               <Route path="/dashboard" element={<Home />} />
               <Route path="/subscription" element={<Subscription />} />
               <Route path="/results" element={<Results />} />
+              <Route path="/leak-data-finder" element={<LeakDataFinder />} />
+              <Route path="/corporate" element={<CorporateFinder />} />
             </Route>
 
             {/* Guest routes */}

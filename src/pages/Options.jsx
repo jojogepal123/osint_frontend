@@ -304,7 +304,7 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
               ?.flag
           }
           alt="Selected Flag"
-          className="w-6 h-6 ml-2"
+          className="w-6 h-6 ml-2 hidden md:block"
         />
       </div>
       {isDropdownOpen && (

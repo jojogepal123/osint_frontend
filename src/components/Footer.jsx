@@ -6,14 +6,14 @@ const Footer = () => {
   return (
     <footer className="bg-blur relative z-10" aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">
-        OsintWork Tool
+        OsintWork
       </h2>
-      <div className="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
+      <div className="mx-auto max-w-6xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-8">
             <Link
               to="/"
-              className="flex text-2xl font-bold text-lime-400 items-center gap-2"
+              className="flex text-2xl font-bold text-lime-300 items-center gap-2"
             >
               <img src={smile} alt="Logo" className="w-6 h-6" />
               OsintWork
@@ -26,14 +26,14 @@ const Footer = () => {
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 xl:col-span-2 xl:mt-0">
             {/* Support */}
             <div>
-              <h3 className="text-sm font-semibold leading-6 text-lime-400">
+              <h3 className="text-sm font-semibold leading-6 text-lime-300">
                 Support
               </h3>
               <ul className="mt-6 space-y-4">
                 <li>
                   <Link
                     to="/pricing"
-                    className="text-sm leading-6 text-gray-400 hover:text-lime-400"
+                    className="text-sm leading-6 text-gray-400 hover:text-lime-300"
                   >
                     Pricing
                   </Link>
@@ -49,7 +49,7 @@ const Footer = () => {
                 <li>
                   <Link
                     to="/contact-us"
-                    className="text-sm leading-6 text-gray-400 hover:text-lime-400"
+                    className="text-sm leading-6 text-gray-400 hover:text-lime-300"
                   >
                     Contact Us
                   </Link>
@@ -57,7 +57,7 @@ const Footer = () => {
                 {/* <li>
                   <a
                     href="/"
-                    className="text-sm leading-6 text-gray-400 hover:text-lime-400"
+                    className="text-sm leading-6 text-gray-400 hover:text-lime-300"
                   >
                     Status
                   </a>
@@ -67,14 +67,14 @@ const Footer = () => {
 
             {/* Company */}
             <div>
-              <h3 className="text-sm font-semibold leading-6 text-lime-400">
+              <h3 className="text-sm font-semibold leading-6 text-lime-300">
                 Company
               </h3>
               <ul className="mt-6 space-y-4">
                 <li>
                   <Link
                     to="/about"
-                    className="text-sm leading-6 text-gray-400 hover:text-lime-400"
+                    className="text-sm leading-6 text-gray-400 hover:text-lime-300"
                   >
                     About
                   </Link>
@@ -82,7 +82,7 @@ const Footer = () => {
                 {/* <li>
                   <a
                     href="/"
-                    className="text-sm leading-6 text-gray-400 hover:text-lime-400"
+                    className="text-sm leading-6 text-gray-400 hover:text-lime-300"
                   >
                     Blog
                   </a>
@@ -90,7 +90,7 @@ const Footer = () => {
                 <li>
                   <a
                     href="/"
-                    className="text-sm leading-6 text-gray-400 hover:text-lime-400"
+                    className="text-sm leading-6 text-gray-400 hover:text-lime-300"
                   >
                     Partners
                   </a>
@@ -98,7 +98,7 @@ const Footer = () => {
                 <li>
                   <a
                     href="/"
-                    className="text-sm leading-6 text-gray-400 hover:text-lime-400"
+                    className="text-sm leading-6 text-gray-400 hover:text-lime-300"
                   >
                     Press
                   </a>
@@ -108,14 +108,14 @@ const Footer = () => {
 
             {/* Legal */}
             <div>
-              <h3 className="text-sm font-semibold leading-6 text-lime-400">
+              <h3 className="text-sm font-semibold leading-6 text-lime-300">
                 Policy
               </h3>
               <ul className="mt-6 space-y-4">
                 {/* <li>
                   <Link
                     to="/return-policy"
-                    className="text-sm leading-6 text-gray-400 hover:text-lime-400"
+                    className="text-sm leading-6 text-gray-400 hover:text-lime-300"
                   >
                     Return
                   </Link>
@@ -123,7 +123,7 @@ const Footer = () => {
                 <li>
                   <Link
                     to="/terms-conditions"
-                    className="text-sm leading-6 text-gray-400 hover:text-lime-400"
+                    className="text-sm leading-6 text-gray-400 hover:text-lime-300"
                   >
                     Terms
                   </Link>
@@ -131,7 +131,7 @@ const Footer = () => {
                 <li>
                   <Link
                     to="/refund-policy"
-                    className="text-sm leading-6 text-gray-400 hover:text-lime-400"
+                    className="text-sm leading-6 text-gray-400 hover:text-lime-300"
                   >
                     Refund
                   </Link>
@@ -139,7 +139,7 @@ const Footer = () => {
                 {/* <li>
                   <Link
                     to="/shipping-policy"
-                    className="text-sm leading-6 text-gray-400 hover:text-lime-400"
+                      className="text-sm leading-6 text-gray-400 hover:text-lime-300"
                   >
                     shipping
                   </Link>
@@ -151,7 +151,7 @@ const Footer = () => {
 
         <div className="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
           <p className="text-xs leading-5 text-gray-400">
-            © 2025 Osintwork, Inc. All rights reserved.
+            © {new Date().getFullYear()} Osintwork, Inc. All rights reserved.
           </p>
         </div>
       </div>
