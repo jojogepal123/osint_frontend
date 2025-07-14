@@ -1,8 +1,8 @@
 import useAuthContext from "../context/AuthContext";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Loader from "../components/Loader";
-import SidebarSherlock from "../components/Sidebar-sherlock";
-import SidebarNew from "../components/SidebarNew";
+import SidebarLarge from "../components/SidebarLarge";
+import SidebarSmall from "../components/SidebarSmall";
 
 const AuthLayout = () => {
   const { user, setSidebarVisible, sidebarVisible, isLoading } =
@@ -32,13 +32,13 @@ const AuthLayout = () => {
           {/* Mobile Sidebar - Only visible when sidebarVisible is true */}
           {sidebarVisible && (
             <div className="block md:hidden fixed inset-0 bg-black/50 z-50">
-              <SidebarNew />
+              <SidebarSmall />
             </div>
           )}
 
           {/* Desktop Sidebar - Always visible on md+ screens */}
           <div className="hidden md:block">
-            <SidebarSherlock />
+            <SidebarLarge />
           </div>
         </>
       )}

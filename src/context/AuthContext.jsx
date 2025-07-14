@@ -46,7 +46,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       if (error.response?.status === 401) {
         setUser(null);
-
         const currentPath = window.location.pathname;
         const isPublicRoute = PUBLIC_ROUTES.includes(currentPath);
         const isAuthRoute = AUTH_ROUTE_PREFIXES.some((prefix) =>

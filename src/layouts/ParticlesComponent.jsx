@@ -19,7 +19,7 @@ const particlesOptions = {
         mode: "grab",
       },
       onClick: {
-        enable: true,
+        enable: false,
         mode: "push",
       },
     },
