@@ -1,6 +1,6 @@
 import { Check, X } from "lucide-react";
 import { useIsEmpty } from "../hook/useIsEmpty";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import instance from "../api/axios";
 import IconWithFallback from "./IconWithFallback";
 import RcPopup from "./RcPopup"; // ✅ OK now
@@ -331,15 +331,13 @@ const TelProfileCard = ({
           )}
         </div>
       </div>
-      {selectedRC && (
-        <RcPopup
-          isOpen={!!selectedRC}
-          onClose={() => setSelectedRC(null)}
-          rcNumber={selectedRC}
-          rcData={rcData}
-          loading={loading} // Pass loading state
-        />
-      )}
+
+      <RcPopup
+        rc={selectedRC}
+        data={rcData}
+        loading={loading}
+        onClose={() => setSelectedRC(null)}
+      />
     </>
   );
 };
