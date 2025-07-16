@@ -124,9 +124,9 @@ const TelProfileCard = ({
         id_number: rc,
       });
       setRcData(response.data?.data || {});
-      console.log("RC Data:", response.data?.data);
+      // console.log("RC Data:", response.data?.data);
     } catch (err) {
-      console.error("Failed to load RC data", err);
+      // console.error("Failed to load RC data", err);
       setRcData(null);
     } finally {
       setLoading(false); // Stop loading

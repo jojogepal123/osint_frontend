@@ -60,7 +60,7 @@ const RcPopup = ({ rc, data, loading, onClose }) => {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Failed to generate RC report", err);
+      // console.error("Failed to generate RC report", err);
     } finally {
       setDownloading(false);
     }

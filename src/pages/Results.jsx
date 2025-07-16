@@ -29,7 +29,7 @@ const Results = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  console.log(results);
+  // console.log(results);
 
   const isResultEmpty = () => {
     if (!results) return true;
