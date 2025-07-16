@@ -25,11 +25,13 @@ import NotFound from "./pages/NotFound";
 import LeakDataFinder from "./pages/LeakDataFinder";
 import CorporateFinder from "./pages/CorporateFinder";
 
+const showSidebarPaths = ["/dashboard", "/leak-data-finder", "/corporate"];
+
 function App() {
   const { sidebarVisible, setSidebarVisible, user, isLoading } =
     useAuthContext();
   const location = useLocation();
-  const hideSidebar = location.pathname.startsWith("/subscription") || location.pathname.startsWith("/results");
+  const showSidebar = showSidebarPaths.some(path => location.pathname.startsWith(path));
   const openMenu = () => {
     setSidebarVisible(!sidebarVisible);
   };
@@ -40,7 +42,7 @@ function App() {
       <div className="relative flex flex-col min-h-screen w-full">
         <ParticlesComponent id="particle-background" />
         <div
-          className={`absolute top-4 left-4 z-[9999] md:hidden ${sidebarVisible || hideSidebar ? "hidden" : ""
+          className={`absolute top-4 left-4 z-[9999] md:hidden ${!sidebarVisible && showSidebar ? "" : "hidden"
             }`}
         >
           <button

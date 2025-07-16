@@ -2,9 +2,12 @@ import useAuthContext from "../context/AuthContext";
 import webName from "../assets/web-name-logo.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import Loader from "./Loader";
 
 const SidebarSmall = () => {
   const location = useLocation();
+  const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const navigate = useNavigate();
   const {
     user,
@@ -14,6 +17,7 @@ const SidebarSmall = () => {
     inputType,
     sidebarVisible,
   } = useAuthContext();
+
   const closeMenu = () => {
     setSidebarVisible(false);
   };
@@ -30,15 +34,26 @@ const SidebarSmall = () => {
     navigate("/corporate");
   };
 
+
   const isCorporateDataFinderActive = location.pathname === "/corporate";
 
-  const Logout = () => {
-    logout();
-    navigate("/");
+  const Logout = async () => {
+    setIsLogoutLoading(true);
+    try {
+      await logout();
+      navigate("/");
+    } finally {
+      setIsLogoutLoading(false);
+    }
   };
 
   return (
     <>
+      {isLogoutLoading && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]">
+          <Loader />
+        </div>
+      )}
       <aside
         className={`
           fixed z-[9999] mt-4 mb-4 h-[calc(100%-2rem)] 

@@ -220,7 +220,7 @@ const CorporateFinder = () => {
                                                                 key={opt}
                                                                 value={opt}
                                                                 className={({ active, selected }) =>
-                                                                    `cursor-pointer select-none px-4 py-2 rounded ${active ? 'bg-lime-200 text-black' : 'text-white'
+                                                                    `cursor-pointer select-none px-4 py-2 rounded ${active ? 'bg-lime-300 text-black' : 'text-white'
                                                                     } ${selected ? 'font-bold' : ''}`
                                                                 }
                                                             >

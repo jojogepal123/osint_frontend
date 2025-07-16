@@ -138,7 +138,7 @@ const LeakDataFinder = () => {
                             {index === 0 ? (
                                 <button
                                     onClick={handleAddField}
-                                    className="p-1.5 md:p-3 border rounded-md font-bold text-gray-200 hover:bg-lime-200 hover:text-black border-lime-200"
+                                    className="p-1.5 md:p-3 border rounded-md font-bold text-gray-200 hover:bg-lime-300 hover:text-black border-lime-300"
                                 >
                                     <Plus size={24} />
                                 </button>
@@ -163,7 +163,7 @@ const LeakDataFinder = () => {
                                 onChange={(e) =>
                                     handleChange(field.id, "value", e.target.value)
                                 }
-                                className={`relative w-full flex-1 py-2 md:py-2.5 px-4 border rounded-md ${field.isValid === false ? "border-red-500" : "border-lime-200"
+                                className={`relative w-full flex-1 py-2 md:py-2.5 px-4 border rounded-md ${field.isValid === false ? "border-red-500" : "border-lime-300"
                                     } bg-transparent text-gray-200 placeholder:text-gray-200 focus:outline-none transition-all text-sm md:text-lg`}
                                 maxLength={50}
                             />
@@ -198,7 +198,7 @@ const LeakDataFinder = () => {
                         <>
                             {totalResults < 10 && (
                                 <div className="mt-4">
-                                    <h1 className="text-2xl font-bold text-start text-lime-200">{totalResults} Results Found</h1>
+                                    <h1 className="text-2xl font-bold text-start text-lime-300">{totalResults} Results Found</h1>
                                 </div>
                             )}
                             {totalResults > 10 && (
@@ -244,7 +244,7 @@ const LeakDataFinder = () => {
                                                 <button
                                                     onClick={() => handleSearch(currentPage - 1)}
                                                     disabled={currentPage === 1}
-                                                    className="px-4 py-1 border rounded text-white border-lime-200 hover:bg-lime-400 hover:text-black disabled:opacity-40"
+                                                    className="px-4 py-1 border rounded text-white border-lime-300 hover:bg-lime-400 hover:text-black disabled:opacity-40"
                                                 >
                                                     Previous
                                                 </button>
@@ -265,7 +265,7 @@ const LeakDataFinder = () => {
                                                             onClick={() => handleSearch(page)}
                                                             className={`px-3 py-1 rounded border ${page === currentPage
                                                                 ? "bg-lime-400 text-black"
-                                                                : "border-lime-200 text-white hover:bg-lime-400 hover:text-black"
+                                                                : "border-lime-300 text-white hover:bg-lime-400 hover:text-black"
                                                                 }`}
                                                         >
                                                             {page}
@@ -277,7 +277,7 @@ const LeakDataFinder = () => {
                                                 <button
                                                     onClick={() => handleSearch(currentPage + 1)}
                                                     disabled={currentPage === totalPages}
-                                                    className="px-4 py-1 border rounded text-white border-lime-200 hover:bg-lime-400 hover:text-black disabled:opacity-40"
+                                                    className="px-4 py-1 border rounded text-white border-lime-300 hover:bg-lime-400 hover:text-black disabled:opacity-40"
                                                 >
                                                     Next
                                                 </button>
