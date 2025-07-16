@@ -24,12 +24,15 @@ import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 import LeakDataFinder from "./pages/LeakDataFinder";
 import CorporateFinder from "./pages/CorporateFinder";
-
+import CorporateResults from "./pages/CorporateResults";
 function App() {
   const { sidebarVisible, setSidebarVisible, user, isLoading } =
     useAuthContext();
   const location = useLocation();
-  const hideSidebar = location.pathname.startsWith("/subscription") || location.pathname.startsWith("/results");
+  const hideSidebar =
+    location.pathname.startsWith("/subscription") ||
+    location.pathname.startsWith("/results") ||
+    location.pathname.startsWith("/corporate-results");
   const openMenu = () => {
     setSidebarVisible(!sidebarVisible);
   };
@@ -40,8 +43,9 @@ function App() {
       <div className="relative flex flex-col min-h-screen w-full">
         <ParticlesComponent id="particle-background" />
         <div
-          className={`absolute top-4 left-4 z-[9999] md:hidden ${sidebarVisible || hideSidebar ? "hidden" : ""
-            }`}
+          className={`absolute top-4 left-4 z-[9999] md:hidden ${
+            sidebarVisible || hideSidebar ? "hidden" : ""
+          }`}
         >
           <button
             onClick={openMenu}
@@ -74,6 +78,7 @@ function App() {
               <Route path="/results" element={<Results />} />
               <Route path="/leak-data-finder" element={<LeakDataFinder />} />
               <Route path="/corporate" element={<CorporateFinder />} />
+              <Route path="/corporate-results" element={<CorporateResults />} />
             </Route>
 
             {/* Guest routes */}

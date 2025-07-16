@@ -1,16 +1,17 @@
 import { useState } from "react";
 import instance from "../api/axios";
 import InlineLoader from "../components/InlineLoader";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import FullScreenLoader from "./FullScreenLoader";
 
-const ResultHeader = ({ userInput, type, results, modalOpen }) => {
+const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const location = useLocation();
   const handleBack = () => navigate(-1);
 
   const handleSaveResults = async () => {
@@ -80,19 +81,23 @@ const ResultHeader = ({ userInput, type, results, modalOpen }) => {
   return (
     <>
       {isAiLoading && <FullScreenLoader text="Generating AI Report..." />}
-      <div className={`max-w-6xl w-full mx-auto mt-10 sm:mt-12 ${modalOpen ? "z-10" : "z-40"} transition-all duration-300 ease-in-out hide-on-pdf`}>
+      <div
+        className={`max-w-6xl w-full mx-auto mt-10 sm:mt-12 ${
+          modalOpen ? "z-10" : "z-40"
+        } transition-all duration-300 ease-in-out hide-on-pdf`}
+      >
         <div className="rounded-xl mx-auto text-white p-3 md:p-4 bg-teal-700 bg-opacity-30 backdrop-blur-sm shadow-lg">
           <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-3 md:gap-4">
             <div className="w-full md:w-auto">
               <div className="flex justify-center items-center gap-3">
                 <span className="text-white text-lg sm:text-xl font-medium truncate">
-                  {userInput}
+                  {userInput || searchInput}
                 </span>
                 <button
                   className="text-custom-lime relative"
                   onClick={() => {
-                    if (userInput) {
-                      navigator.clipboard.writeText(userInput);
+                    if (userInput || searchInput) {
+                      navigator.clipboard.writeText(userInput || searchInput);
                       setCopied(true);
                       setTimeout(() => {
                         setCopied(false);
@@ -147,50 +152,51 @@ const ResultHeader = ({ userInput, type, results, modalOpen }) => {
                 className="relative w-full sm:w-auto"
                 data-headlessui-state=""
               >
-                <button
-                  className="flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm bg-white/10 backdrop-blur-lg w-full sm:w-auto"
-                  id="headlessui-menu-button-:r2:"
-                  type="button"
-                  aria-haspopup="menu"
-                  aria-expanded="false"
-                  data-headlessui-state=""
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  title="Copy to clipboard"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-file-down w-4 h-4 text-white"
+                {location.pathname !== "/corporate-results" && (
+                  <button
+                    className="flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm bg-white/10 backdrop-blur-lg w-full sm:w-auto"
+                    id="headlessui-menu-button-:r2:"
+                    type="button"
+                    aria-haspopup="menu"
+                    aria-expanded="false"
+                    data-headlessui-state=""
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    title="Copy to clipboard"
                   >
-                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
-                    <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
-                    <path d="M12 18v-6"></path>
-                    <path d="m9 15 3 3 3-3"></path>
-                  </svg>
-                  <span>Save Results</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-chevron-down w-3 h-3 text-white"
-                  >
-                    <path d="m6 9 6 6 6-6"></path>
-                  </svg>
-                </button>
-
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-file-down w-4 h-4 text-white"
+                    >
+                      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+                      <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                      <path d="M12 18v-6"></path>
+                      <path d="m9 15 3 3 3-3"></path>
+                    </svg>
+                    <span>Save Results</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-chevron-down w-3 h-3 text-white"
+                    >
+                      <path d="m6 9 6 6 6-6"></path>
+                    </svg>
+                  </button>
+                )}
                 {/* Add dropdown menu */}
 
                 {isDropdownOpen && (
