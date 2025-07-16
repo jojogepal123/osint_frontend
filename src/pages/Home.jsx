@@ -22,6 +22,7 @@ const Home = () => {
     fetchEmailData,
     setHibpResults,
   } = useAuthContext();
+
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const [isChecked, setIsChecked] = useState(false);
@@ -72,8 +73,8 @@ const Home = () => {
     <>
       {loading && <FullScreenLoader text="Searching..." />}
       <UserCard />
-      <main className="flex-1 flex flex-col items-center justify-center p-8 -mt-28 sm:-mt-20 z-10">
-        <div className="max-w-4xl mx-auto h-full flex flex-col items-center md:-mt-20 justify-center space-y-1.5 md:space-y-4 mb-8 cursor-default">
+      <main className="flex-1 flex flex-col items-center justify-center p-8 -mt-36 sm:-mt-20 z-10">
+        <div className="max-w-4xl mx-auto h-full flex flex-col items-center md:-mt-20 justify-center space-y-1.5 md:space-y-4 mb-2 md:mb-8 cursor-default">
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-lime-200 to-teal-800 bg-clip-text text-transparent">
             OSINTWORK
           </h1>

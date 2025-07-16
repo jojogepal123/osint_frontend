@@ -230,16 +230,6 @@ const CorporateFinder = () => {
 
   return (
     <>
-      {loading && (
-        <FullScreenLoader
-          text={`${
-            selectedOption.key === "credit_report"
-              ? "Downloading PDF..."
-              : "Searching..."
-          }`}
-        />
-      )}
-
       <UserCard />
       <div className="w-full flex flex-col items-center z-10 text-white mt-10 sm:mt-20">
         <MainHeader header="Corporate Intelligence" />
@@ -385,14 +375,7 @@ const CorporateFinder = () => {
                           type="checkbox"
                           checked={!!inputValues[field.name]}
                           onChange={(e) =>
-                            handleInputChange(
-                              field.name,
-                              selectedOption.key === "credit_report"
-                                ? e.target.checked
-                                  ? "Y"
-                                  : "N"
-                                : e.target.checked
-                            )
+                            handleInputChange(field.name, e.target.checked)
                           }
                           className={`form-checkbox h-4 w-4 rounded-md border-lime-400 text-lime-600 focus:ring-2 focus:ring-lime-400 accent-lime-200 transition ${
                             errors[field.name]

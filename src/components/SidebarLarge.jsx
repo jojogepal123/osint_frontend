@@ -2,10 +2,12 @@ import useAuthContext from "../context/AuthContext";
 import logoMin from "../assets/web-logo.png";
 import webName from "../assets/web-name-logo.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Loader from "./Loader";
 
 const SidebarLarge = () => {
   const location = useLocation();
+  const [isLogoutLoading, setIsLogoutLoading] = useState(false);
 
   const navigate = useNavigate();
   const {
@@ -35,9 +37,14 @@ const SidebarLarge = () => {
     setSidebarVisible(false);
   }, [location.pathname]);
 
-  const Logout = () => {
-    logout();
-    navigate("/");
+  const Logout = async () => {
+    setIsLogoutLoading(true);
+    try {
+      await logout();
+      navigate("/");
+    } finally {
+      setIsLogoutLoading(false);
+    }
   };
 
   const isLeakDataFinderActive = location.pathname === "/leak-data-finder";
@@ -45,6 +52,11 @@ const SidebarLarge = () => {
   const dashboardActive = location.pathname === "/dashboard";
   return (
     <>
+      {isLogoutLoading && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]">
+          <Loader />
+        </div>
+      )}
       <aside
         className={`
         fixed z-[50] mt-4 mb-4 h-[calc(100%-2rem)] 
@@ -64,8 +76,19 @@ const SidebarLarge = () => {
                   alt="Logo"
                   className="absolute h-16 w-16 object-contain transition-all duration-700 ease-in-out opacity-100 group-hover:opacity-0"
                 /> */}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-10 text-lime-300 group-hover:opacity-0 transition-all duration-300 ease-in-out opacity-100 cursor-pointer">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m20.893 13.393-1.135-1.135a2.252 2.252 0 0 1-.421-.585l-1.08-2.16a.414.414 0 0 0-.663-.107.827.827 0 0 1-.812.21l-1.273-.363a.89.89 0 0 0-.738 1.595l.587.39c.59.395.674 1.23.172 1.732l-.2.2c-.212.212-.33.498-.33.796v.41c0 .409-.11.809-.32 1.158l-1.315 2.191a2.11 2.11 0 0 1-1.81 1.025 1.055 1.055 0 0 1-1.055-1.055v-1.172c0-.92-.56-1.747-1.414-2.089l-.655-.261a2.25 2.25 0 0 1-1.383-2.46l.007-.042a2.25 2.25 0 0 1 .29-.787l.09-.15a2.25 2.25 0 0 1 2.37-1.048l1.178.236a1.125 1.125 0 0 0 1.302-.795l.208-.73a1.125 1.125 0 0 0-.578-1.315l-.665-.332-.091.091a2.25 2.25 0 0 1-1.591.659h-.18c-.249 0-.487.1-.662.274a.931.931 0 0 1-1.458-1.137l1.411-2.353a2.25 2.25 0 0 0 .286-.76m11.928 9.869A9 9 0 0 0 8.965 3.525m11.928 9.868A9 9 0 1 1 8.965 3.525" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="size-10 text-lime-300 group-hover:opacity-0 transition-all duration-300 ease-in-out opacity-100 cursor-pointer"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m20.893 13.393-1.135-1.135a2.252 2.252 0 0 1-.421-.585l-1.08-2.16a.414.414 0 0 0-.663-.107.827.827 0 0 1-.812.21l-1.273-.363a.89.89 0 0 0-.738 1.595l.587.39c.59.395.674 1.23.172 1.732l-.2.2c-.212.212-.33.498-.33.796v.41c0 .409-.11.809-.32 1.158l-1.315 2.191a2.11 2.11 0 0 1-1.81 1.025 1.055 1.055 0 0 1-1.055-1.055v-1.172c0-.92-.56-1.747-1.414-2.089l-.655-.261a2.25 2.25 0 0 1-1.383-2.46l.007-.042a2.25 2.25 0 0 1 .29-.787l.09-.15a2.25 2.25 0 0 1 2.37-1.048l1.178.236a1.125 1.125 0 0 0 1.302-.795l.208-.73a1.125 1.125 0 0 0-.578-1.315l-.665-.332-.091.091a2.25 2.25 0 0 1-1.591.659h-.18c-.249 0-.487.1-.662.274a.931.931 0 0 1-1.458-1.137l1.411-2.353a2.25 2.25 0 0 0 .286-.76m11.928 9.869A9 9 0 0 0 8.965 3.525m11.928 9.868A9 9 0 1 1 8.965 3.525"
+                  />
                 </svg>
 
                 {/* <img
@@ -73,7 +96,9 @@ const SidebarLarge = () => {
                   alt="Logo"
                   className="absolute h-24 w-auto object-contain transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4"
                 /> */}
-                <span className="text-3xl text-transparent bg-clip-text bg-gradient-to-r from-lime-200 to-teal-800 font-bold absolute w-auto object-contain transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 cursor-pointer">OSINTWORK</span>
+                <span className="text-3xl text-transparent bg-clip-text bg-gradient-to-r from-lime-200 to-teal-800 font-bold absolute w-auto object-contain transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 cursor-pointer">
+                  OSINTWORK
+                </span>
               </div>
             </div>
           </div>
@@ -235,8 +260,19 @@ const SidebarLarge = () => {
                     <span
                       className={`min-w-[24px] flex items-center justify-center transition-transform duration-100 group-hover:scale-110`}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="size-5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"
+                        />
                       </svg>
                     </span>
                     <span
@@ -382,7 +418,9 @@ const SidebarLarge = () => {
         <div className="mt-auto px-4 pb-4 overflow-hidden transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100">
           <div className="text-center transform transition-all duration-300 ease-out">
             <p className="text-xs text-gray-400 mb-1">OSINTWORK</p>
-            <p className="text-xs text-gray-400">© {new Date().getFullYear()} All rights reserved</p>
+            <p className="text-xs text-gray-400">
+              © {new Date().getFullYear()} All rights reserved
+            </p>
           </div>
         </div>
       </aside>
