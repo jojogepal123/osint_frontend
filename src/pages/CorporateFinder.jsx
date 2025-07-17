@@ -230,6 +230,15 @@ const CorporateFinder = () => {
 
   return (
     <>
+      {loading && (
+        <FullScreenLoader
+          text={`${
+            selectedOption.key === "credit_report"
+              ? "Generating PDF..."
+              : "Searching..."
+          }`}
+        />
+      )}
       <UserCard />
       <div className="w-full flex flex-col items-center z-10 text-white mt-10 sm:mt-20">
         <MainHeader header="Corporate Intelligence" />
@@ -241,7 +250,7 @@ const CorporateFinder = () => {
               <div className="relative">
                 <Listbox.Button className="w-full py-2 px-4 rounded bg-gray-800 border border-lime-300 text-white font-semibold focus:outline-none flex justify-between items-center">
                   {selectedOption.label}
-                  <ChevronDown className="w-5 h-5 text-lime-200" />
+                  <ChevronDown className="w-5 h-5 text-lime-300" />
                 </Listbox.Button>
                 <Listbox.Options className="absolute mt-2 w-full bg-gray-800 border border-lime-300 rounded-md z-10">
                   {SEARCH_OPTIONS.map((option) => (
@@ -375,7 +384,14 @@ const CorporateFinder = () => {
                           type="checkbox"
                           checked={!!inputValues[field.name]}
                           onChange={(e) =>
-                            handleInputChange(field.name, e.target.checked)
+                            handleInputChange(
+                              field.name,
+                              selectedOption.key === "credit_report"
+                                ? e.target.checked
+                                  ? "Y"
+                                  : "N"
+                                : e.target.checked
+                            )
                           }
                           className={`form-checkbox h-4 w-4 rounded-md border-lime-400 text-lime-600 focus:ring-2 focus:ring-lime-400 accent-lime-200 transition ${
                             errors[field.name]
