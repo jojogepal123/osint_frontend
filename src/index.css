@@ -27,10 +27,10 @@ body {
 }
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #9acc14 #374151; /* thumb and track colors */
+  scrollbar-color: #dafa9d #374151; /* thumb and track colors */
 }
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
+  width: 5px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {

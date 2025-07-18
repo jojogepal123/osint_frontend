@@ -1,8 +1,10 @@
 import { Check, X } from "lucide-react";
 import { useIsEmpty } from "../hook/useIsEmpty";
+import React, { useState, useEffect } from "react";
 import instance from "../api/axios";
 import IconWithFallback from "./IconWithFallback";
-import { useState, useEffect } from "react";
+import RcPopup from "./RcPopup"; // ✅ OK now
+import ViewDetailsIcon from "../assets/view-details.svg";
 
 const InfoList = ({ title, items }) => {
   if (!items || items.length === 0) return null;
@@ -17,11 +19,15 @@ const InfoList = ({ title, items }) => {
         {items.map((item, idx) => (
           <li key={idx} className="flex items-center gap-2">
             <span>
-              {item.key ? <span className="font-semibold">{item.key}:</span> : null}{" "}
+              {item.key ? (
+                <span className="font-semibold">{item.key}:</span>
+              ) : null}{" "}
               {item.value}
             </span>
             {item.source && (
-              <span className="text-xs text-gray-400 ml-2">({item.source})</span>
+              <span className="text-xs text-gray-400 ml-2">
+                ({item.source})
+              </span>
             )}
           </li>
         ))}
@@ -82,8 +88,14 @@ const DataCard = ({ title, items }) => {
 //   }
 // };
 
-
-const TelProfileCard = ({ profile, userInput, modalOpen, setModalOpen, selectedImage, setSelectedImage }) => {
+const TelProfileCard = ({
+  profile,
+  userInput,
+  modalOpen,
+  setModalOpen,
+  selectedImage,
+  setSelectedImage,
+}) => {
   const isEmpty = useIsEmpty(profile);
   if (isEmpty) return null;
 
@@ -98,6 +110,28 @@ const TelProfileCard = ({ profile, userInput, modalOpen, setModalOpen, selectedI
       document.body.style.overflow = "";
     };
   }, [modalOpen]);
+  // ✅ Move state here
+  const [selectedRC, setSelectedRC] = useState(null);
+  const [rcData, setRcData] = useState(null);
+  const [loading, setLoading] = useState(false); // <-- NEW
+  // Inside the handleRCClick
+  const handleRCClick = async (rc) => {
+    setSelectedRC(rc);
+    setRcData(null);
+    setLoading(true); // Start loading
+    try {
+      const response = await instance.post("/api/rcfull-details", {
+        id_number: rc,
+      });
+      setRcData(response.data?.data || {});
+      // console.log("RC Data:", response.data?.data);
+    } catch (err) {
+      // console.error("Failed to load RC data", err);
+      setRcData(null);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
 
   return (
     <>
@@ -110,7 +144,7 @@ const TelProfileCard = ({ profile, userInput, modalOpen, setModalOpen, selectedI
             src={selectedImage}
             alt="Full View"
             className="max-w-[90vw] max-h-[90vh] min-w-[400px] rounded-lg shadow-2xl"
-            onClick={e => e.stopPropagation()} // Prevent modal close on image click
+            onClick={(e) => e.stopPropagation()} // Prevent modal close on image click
           />
           <button
             className="absolute top-6 right-8 text-white text-3xl font-bold bg-black bg-opacity-50 rounded-full px-3 py-1 hover:bg-opacity-80 transition"
@@ -126,7 +160,8 @@ const TelProfileCard = ({ profile, userInput, modalOpen, setModalOpen, selectedI
           <div className="mb-8 flex items-center gap-3">
             <span className="inline-block w-2 h-8 bg-lime-400 rounded-full"></span>
             <h2 className="text-3xl font-extrabold text-white tracking-wide">
-              Profile Summary : <span className="text-lime-200">{userInput}</span>
+              Profile Summary :{" "}
+              <span className="text-lime-200">{userInput}</span>
             </h2>
             {profile.isSpam && (
               <span className="text-red-400 text-sm font-medium">
@@ -159,7 +194,6 @@ const TelProfileCard = ({ profile, userInput, modalOpen, setModalOpen, selectedI
                     onClick={() => {
                       setModalOpen(true);
                       setSelectedImage(img.value);
-
                     }}
                     onError={(e) => {
                       e.target.onerror = null;
@@ -194,41 +228,60 @@ const TelProfileCard = ({ profile, userInput, modalOpen, setModalOpen, selectedI
           <DataCard title="Job Profiles" items={profile.jobProfiles} />
           <DataCard
             title="RC Numbers"
-            items={profile.rcNumber.map((rc) => ({ value: rc }))}
+            items={profile.rcNumber.map((rc) => ({
+              value: (
+                <div
+                  key={rc}
+                  className="flex items-center justify-between gap-4"
+                >
+                  <span className="text-gray-300 font-medium">{rc}</span>
+                  <button
+                    onClick={() => handleRCClick(rc)}
+                    className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-sm"
+                  >
+                    <span>View Details</span>
+                  </button>
+                </div>
+              ),
+            }))}
           />
         </div>
 
         {/* Social Media Links */}
         {Object.keys(profile.socialMediaPresence).length > 0 && (
           <div className="bg-gray-900/80 p-6 rounded-2xl shadow-lg mb-4">
-            <h3 className="text-xl font-bold mb-4 text-white">Internet Presence</h3>
+            <h3 className="text-xl font-bold mb-4 text-white">
+              Internet Presence
+            </h3>
             <ul className="divide-y divide-gray-800">
-              {Object.entries(profile.socialMediaPresence).map(([platform, isPresent]) => (
-                <li
-                  key={platform}
-                  className="flex items-center justify-between py-3 group transition-all cursor-pointer"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center shadow group-hover:bg-lime-900/20 transition">
-                      <IconWithFallback platform={platform} size={24} />
+              {Object.entries(profile.socialMediaPresence).map(
+                ([platform, isPresent]) => (
+                  <li
+                    key={platform}
+                    className="flex items-center justify-between py-3 group transition-all cursor-pointer"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center shadow group-hover:bg-lime-900/20 transition">
+                        <IconWithFallback platform={platform} size={24} />
+                      </div>
+                      <span className="capitalize text-lg font-medium text-gray-100 group-hover:text-lime-200 transition">
+                        {platform}
+                      </span>
                     </div>
-                    <span className="capitalize text-lg font-medium text-gray-100 group-hover:text-lime-200 transition">
-                      {platform}
-                    </span>
-                  </div>
-                  {isPresent ? (
-                    <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-lime-700/20 text-lime-200 font-semibold text-sm shadow">
-                      <Check size={18} color="#34f000" />
-                      Active
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-700/20 text-red-200 font-semibold text-sm shadow">
-                      <X size={18} color="#ff3333" />
-                      Inactive
-                    </span>
-                  )}
-                </li>
-              ))}
+                    {isPresent ? (
+                      <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-lime-700/20 text-lime-200 font-semibold text-sm shadow">
+                        <Check size={18} color="#34f000" />
+                        Active
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-700/20 text-red-200 font-semibold text-sm shadow">
+                        <X size={18} color="#ff3333" />
+                        Inactive
+                      </span>
+                    )}
+                  </li>
+                )
+              )}
             </ul>
           </div>
         )}
@@ -278,6 +331,13 @@ const TelProfileCard = ({ profile, userInput, modalOpen, setModalOpen, selectedI
           )}
         </div>
       </div>
+
+      <RcPopup
+        rc={selectedRC}
+        data={rcData}
+        loading={loading}
+        onClose={() => setSelectedRC(null)}
+      />
     </>
   );
 };
