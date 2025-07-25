@@ -101,6 +101,10 @@ const EmailProfileCard = ({
     };
   }, [modalOpen]);
 
+  const handlePhoneClick = (phone) => {
+    console.log(phone);
+  };
+
   return (
     <>
       {modalOpen && selectedImage && (
@@ -125,8 +129,8 @@ const EmailProfileCard = ({
       <div className="space-y-4 bg-[#0b323d] rounded-xl shadow-md p-6 text-white border border-gray-700">
         {/* Header */}
         <div className="mb-8 flex items-center gap-3">
-          <span className="inline-block w-2 h-8 bg-lime-400 rounded-full"></span>
-          <h2 className="text-3xl font-extrabold text-white tracking-wide">
+          <span className="inline-block w-2 h-12 md:h-8 bg-lime-400 rounded-full"></span>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-wide">
             Profile Summary : <span className="text-lime-200">{userInput}</span>
           </h2>
         </div>
@@ -163,7 +167,29 @@ const EmailProfileCard = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <DataCard title="Full Names and Alias" items={profile.fullNames} />
           <DataCard title="Usernames" items={profile.userNames} />
-          <DataCard title="Phone Numbers" items={profile.phones} />
+          <DataCard title="Phone Numbers" items={
+            profile.phones.map((phone) => ({
+              value: (
+                <div
+                  key={phone}
+                  className="flex items-center justify-between gap-8"
+                >
+                  <div>
+                    <span className="text-gray-300 font-medium">{phone}</span>
+                    {phone.source && (
+                      <span className="ml-2 text-xs text-gray-400">({phone.source})</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => handlePhoneClick(phone)}
+                    className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-sm"
+                  >
+                    <span>Search Phone</span>
+                  </button>
+                </div>
+              ),
+            }))
+          } />
           <DataCard title="Emails" items={profile.emails} />
           <DataCard title="Basic Info" items={profile.basicInfo} />
           <DataCard title="Locations" items={profile.locations} />
@@ -221,27 +247,27 @@ const EmailProfileCard = ({
                       className="flex items-center justify-between py-3 group transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center shadow group-hover:scale-110 group-hover:ring-2 group-hover:ring-lime-400 transition-all duration-200">
+                        <div className="w-6 h-6 md:w-10 md:h-10 rounded-full bg-gray-800 flex items-center justify-center shadow group-hover:scale-110 group-hover:ring-2 group-hover:ring-lime-400 transition-all duration-200">
                           <IconWithFallback platform={platform} size={28} />
                         </div>
-                        <span className="capitalize text-lg font-semibold text-gray-100 group-hover:text-lime-200 transition">
+                        <span className="capitalize text-sm md:text-lg font-semibold text-gray-100 group-hover:text-lime-200 transition">
                           {platform}
                         </span>
                       </div>
                       {isPresent ? (
                         <span
-                          className="flex items-center gap-2 px-4 py-1 rounded-full bg-gradient-to-r from-lime-100/30 to-lime-500/30 text-lime-200 font-bold text-base shadow-lg group-hover:scale-105 transition"
+                          className="flex items-center gap-2 px-4 py-1 rounded-full bg-gradient-to-r from-lime-100/30 to-lime-500/30 text-lime-200 font-bold text-xs md:text-sm shadow-lg group-hover:scale-105 transition"
                           title="Account found and active"
                         >
-                          <Check size={20} color="#34f000" />
+                          <Check size={16} color="#34f000" />
                           Active
                         </span>
                       ) : (
                         <span
-                          className="flex items-center gap-2 px-4 py-1 rounded-full bg-gradient-to-r from-red-400/30 to-red-700/30 text-red-200 font-bold text-base shadow-lg group-hover:scale-105 transition"
+                          className="flex items-center gap-2 px-4 py-1 rounded-full bg-gradient-to-r from-red-400/30 to-red-700/30 text-red-200 font-bold text-xs md:text-sm shadow-lg group-hover:scale-105 transition"
                           title="No account found"
                         >
-                          <X size={20} color="#ff3333" />
+                          <X size={16} color="#ff3333" />
                           Inactive
                         </span>
                       )}
