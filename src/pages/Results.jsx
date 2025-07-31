@@ -12,7 +12,7 @@ import no_results_image from "../assets/noresults.png";
 import { useState, Suspense, lazy } from "react";
 import InlineLoader from "../components/InlineLoader";
 
-const Map = lazy(() => import('../components/Map'));
+const Map = lazy(() => import("../components/Map"));
 
 const Results = () => {
   const location = useLocation();
@@ -28,11 +28,8 @@ const Results = () => {
   const zehefResults = results?.zehefData?.data || [];
   const osResults = results?.osintData?.data || null;
 
-
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  console.log(emailData);
-  console.log(mapData);
 
   const isResultEmpty = () => {
     if (!results) return true;
@@ -115,8 +112,8 @@ const Results = () => {
         (item) => item.source === "Gravatar" && item.status === "found"
       )
         ? zehefResults?.filter(
-          (item) => item.source === "Gravatar" && item.status === "found"
-        )
+            (item) => item.source === "Gravatar" && item.status === "found"
+          )
         : null,
       osintData: osResults || null,
     };
@@ -166,15 +163,15 @@ const Results = () => {
               {zehefResults?.some(
                 (item) => item.source === "Gravatar" && item.status === "found"
               ) && (
-                  <div className="h-full">
-                    <GravatarCard
-                      data={zehefResults.filter(
-                        (item) =>
-                          item.source === "Gravatar" && item.status === "found"
-                      )}
-                    />
-                  </div>
-                )}
+                <div className="h-full">
+                  <GravatarCard
+                    data={zehefResults.filter(
+                      (item) =>
+                        item.source === "Gravatar" && item.status === "found"
+                    )}
+                  />
+                </div>
+              )}
             </div>
             {/* hibp Data Card */}
             {Array.isArray(hibpResults) && hibpResults.length > 0 && (
@@ -233,8 +230,16 @@ const Results = () => {
           </div>
           <div className="z-10 w-full gap-4 max-w-6xl mx-auto mb-12 bg-green p-4 rounded-lg">
             {mapData !== null && (
-              <Suspense fallback={<div><InlineLoader /></div>}>
-                <h2 className="text-2xl font-bold mb-4 text-gray-200">Locations</h2>
+              <Suspense
+                fallback={
+                  <div>
+                    <InlineLoader />
+                  </div>
+                }
+              >
+                <h2 className="text-2xl font-bold mb-4 text-gray-200">
+                  Locations
+                </h2>
                 <div className="">
                   <Map data={mapData} />
                 </div>
