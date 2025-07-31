@@ -27,7 +27,6 @@ const Home = () => {
   const inputRef = useRef(null);
   const [isChecked, setIsChecked] = useState(false);
 
-
   useEffect(() => {
     setResults({});
     setInputValue("");
@@ -76,7 +75,7 @@ const Home = () => {
       <main className="flex-1 flex flex-col items-center justify-center p-8 -mt-36 sm:-mt-20 z-10">
         <div className="max-w-4xl mx-auto h-full flex flex-col items-center md:-mt-20 justify-center space-y-1.5 md:space-y-4 mb-2 md:mb-8 cursor-default">
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-lime-200 to-teal-800 bg-clip-text text-transparent">
-            OSINTWORK
+            {import.meta.env.VITE_APP_NAME}
           </h1>
           <div className="text-white text-3xl sm:text-5xl font-semibold text-center">
             Find out what's
@@ -111,8 +110,9 @@ const Home = () => {
               maxLength={inputType === "tel" ? 10 : 100}
               onChange={(e) => setInputValue(e.target.value)}
               className="flex-grow px-4 py-3 border border-lime-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 bg-[#1e2939] text-lime-200"
-              placeholder={`Enter ${inputType === "email" ? "email" : "phone"
-                }...`}
+              placeholder={`Enter ${
+                inputType === "email" ? "email" : "phone"
+              }...`}
             />
             <button
               type="submit"

@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import instance from "../api/axios";
-import FullScreenLoader from "./FullScreenLoader"; // Make sure this import path is correct
+import FullScreenLoader from "./FullScreenLoader";
 
-const RcPopup = ({ rc, data, loading, onClose }) => {
+const RcPopup = ({ id, type, data, loading, onClose }) => {
   const contentRef = useRef();
   const [downloading, setDownloading] = useState(false);
   const [loadingData, setLoadingData] = useState(loading);
@@ -13,10 +13,8 @@ const RcPopup = ({ rc, data, loading, onClose }) => {
 
   const isSkippable = (key, value) => {
     if (!key) return true;
-
     const lowerKey = key.toLowerCase();
     if (["client_id", "clientid"].includes(lowerKey)) return true;
-
     if (value === null || value === undefined || value === "") return true;
     const str = value.toString().toLowerCase();
     return ["n/a", "na", "n.a"].includes(str);
@@ -41,39 +39,43 @@ const RcPopup = ({ rc, data, loading, onClose }) => {
     );
   };
 
-  const downloadRCReport = async () => {
+  const handleDownload = async () => {
     setDownloading(true);
     try {
+      const endpoint =
+        type === "upi" ? "/api/generate-upi-report" : "/api/generate-rc-report";
       const response = await instance.post(
-        "/api/generate-rc-report",
+        endpoint,
         { data },
         { responseType: "blob" }
       );
-
       const blob = new Blob([response.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `rc-details-${rc}.pdf`);
+      link.setAttribute("download", `${type}-details-${id}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      // console.error("Failed to generate RC report", err);
+      // Handle error if needed
     } finally {
       setDownloading(false);
     }
   };
 
-  if (!rc) return null;
+  if (!id) return null;
 
   return (
     <>
-      {/* Show FullScreenLoader during RC data loading or PDF download */}
       {(loadingData || downloading) && (
         <FullScreenLoader
-          text={downloading ? "Generating PDF..." : "Loading RC details..."}
+          text={
+            downloading
+              ? "Generating PDF..."
+              : `Loading ${type?.toUpperCase()} details...`
+          }
         />
       )}
 
@@ -82,7 +84,8 @@ const RcPopup = ({ rc, data, loading, onClose }) => {
           {/* Header */}
           <div className="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
             <h2 className="text-xl font-semibold text-white tracking-wide">
-              RC Details: <span className="text-lime-200">{rc}</span>
+              {type === "upi" ? "UPI Details" : "RC Details"}:{" "}
+              <span className="text-lime-200">{id}</span>
             </h2>
             <button
               onClick={onClose}
@@ -92,7 +95,7 @@ const RcPopup = ({ rc, data, loading, onClose }) => {
             </button>
           </div>
 
-          {/* RC Content */}
+          {/* Content */}
           <div ref={contentRef}>
             {data && Object.keys(data).length > 0 ? (
               <div className="space-y-3 pr-1 scroll-smooth">
@@ -112,7 +115,7 @@ const RcPopup = ({ rc, data, loading, onClose }) => {
               </div>
             ) : (
               <p className="text-gray-400 text-center">
-                ⚠ No RC data available.
+                ⚠ No {type?.toUpperCase()} data available.
               </p>
             )}
           </div>
@@ -120,7 +123,7 @@ const RcPopup = ({ rc, data, loading, onClose }) => {
           {/* Footer */}
           <div className="mt-6 flex justify-between items-center">
             <button
-              onClick={downloadRCReport}
+              onClick={handleDownload}
               disabled={downloading}
               className={`${
                 downloading

@@ -33,6 +33,9 @@ const SidebarLarge = () => {
   const handleCorporateDataFinder = () => {
     navigate("/corporate");
   };
+  const handleVerificationId = () => {
+    navigate("/verification-id");
+  };
   useEffect(() => {
     setSidebarVisible(false);
   }, [location.pathname]);
@@ -49,6 +52,7 @@ const SidebarLarge = () => {
 
   const isLeakDataFinderActive = location.pathname === "/leak-data-finder";
   const isCorporateDataFinderActive = location.pathname === "/corporate";
+  const isVerificationIdActive = location.pathname === "/verification-id";
   const dashboardActive = location.pathname === "/dashboard";
   return (
     <>
@@ -90,14 +94,8 @@ const SidebarLarge = () => {
                     d="m20.893 13.393-1.135-1.135a2.252 2.252 0 0 1-.421-.585l-1.08-2.16a.414.414 0 0 0-.663-.107.827.827 0 0 1-.812.21l-1.273-.363a.89.89 0 0 0-.738 1.595l.587.39c.59.395.674 1.23.172 1.732l-.2.2c-.212.212-.33.498-.33.796v.41c0 .409-.11.809-.32 1.158l-1.315 2.191a2.11 2.11 0 0 1-1.81 1.025 1.055 1.055 0 0 1-1.055-1.055v-1.172c0-.92-.56-1.747-1.414-2.089l-.655-.261a2.25 2.25 0 0 1-1.383-2.46l.007-.042a2.25 2.25 0 0 1 .29-.787l.09-.15a2.25 2.25 0 0 1 2.37-1.048l1.178.236a1.125 1.125 0 0 0 1.302-.795l.208-.73a1.125 1.125 0 0 0-.578-1.315l-.665-.332-.091.091a2.25 2.25 0 0 1-1.591.659h-.18c-.249 0-.487.1-.662.274a.931.931 0 0 1-1.458-1.137l1.411-2.353a2.25 2.25 0 0 0 .286-.76m11.928 9.869A9 9 0 0 0 8.965 3.525m11.928 9.868A9 9 0 1 1 8.965 3.525"
                   />
                 </svg>
-
-                {/* <img
-                  src={webName}
-                  alt="Logo"
-                  className="absolute h-24 w-auto object-contain transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4"
-                /> */}
                 <span className="text-3xl text-transparent bg-clip-text bg-gradient-to-r from-lime-200 to-teal-800 font-bold absolute w-auto object-contain transition-all duration-700 ease-in-out opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 cursor-pointer">
-                  OSINTWORK
+                  {import.meta.env.VITE_APP_NAME}
                 </span>
               </div>
             </div>
@@ -119,10 +117,11 @@ const SidebarLarge = () => {
                     }}
                     className={`flex items-center rounded-lg
                     transition-all duration-100 ease-in-out
-                    ${inputType === "email" && dashboardActive
+                    ${
+                      inputType === "email" && dashboardActive
                         ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
                         : "hover:bg-gray-800 text-white hover:text-lime-200"
-                      }
+                    }
                     group relative
                     px-2.5 py-2.5 group-hover:justify-start justify-center
                     w-full`}
@@ -151,7 +150,7 @@ const SidebarLarge = () => {
                     <span
                       className={`group-hover:ml-3 whitespace-nowrap transition-all duration-700 ease-in-out text-base opacity-0 group-hover:opacity-100 w-0 group-hover:w-auto overflow-hidden`}
                     >
-                      Email Analyzer
+                      Email Search
                     </span>
                   </button>
                 </li>
@@ -168,10 +167,11 @@ const SidebarLarge = () => {
                     }}
                     className={`flex items-center rounded-lg
                     transition-all duration-100 ease-in-out
-                    ${inputType === "tel" && dashboardActive
+                    ${
+                      inputType === "tel" && dashboardActive
                         ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
                         : "hover:bg-gray-800 text-white hover:text-lime-200"
-                      }
+                    }
                     group relative
                     px-2.5 py-2.5 group-hover:justify-start justify-center
                     w-full`}
@@ -197,7 +197,7 @@ const SidebarLarge = () => {
                     <span
                       className={`group-hover:ml-3 whitespace-nowrap transition-all duration-700 ease-in-out text-base opacity-0 group-hover:opacity-100 w-0 group-hover:w-auto overflow-hidden`}
                     >
-                      Phone Analyzer
+                      Phone Search
                     </span>
                   </button>
                 </li>
@@ -208,10 +208,11 @@ const SidebarLarge = () => {
                     onClick={handleLeakDataFinder}
                     className={`flex items-center rounded-lg
                     transition-all duration-100 ease-in-out
-                    ${isLeakDataFinderActive
+                    ${
+                      isLeakDataFinderActive
                         ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
                         : "hover:bg-gray-800 text-white hover:text-lime-200"
-                      }
+                    }
                     group relative
                     px-2.5 py-2.5 group-hover:justify-start justify-center
                     w-full`}
@@ -249,10 +250,11 @@ const SidebarLarge = () => {
                     onClick={handleCorporateDataFinder}
                     className={`flex items-center rounded-lg
                     transition-all duration-100 ease-in-out
-                    ${isCorporateDataFinderActive
+                    ${
+                      isCorporateDataFinderActive
                         ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
                         : "hover:bg-gray-800 text-white hover:text-lime-200"
-                      }
+                    }
                     group relative
                     px-2.5 py-2.5 group-hover:justify-start justify-center
                     w-full`}
@@ -284,6 +286,47 @@ const SidebarLarge = () => {
                 </li>
               </div>
               <div>
+                <li>
+                  <button
+                    onClick={handleVerificationId}
+                    className={`flex items-center rounded-lg
+                    transition-all duration-100 ease-in-out
+                    ${
+                      isVerificationIdActive
+                        ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
+                        : "hover:bg-gray-800 text-white hover:text-lime-200"
+                    }
+                    group relative
+                    px-2.5 py-2.5 group-hover:justify-start justify-center
+                    w-full`}
+                  >
+                    <span
+                      className={`min-w-[24px] flex items-center justify-center transition-transform duration-100 group-hover:scale-110`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="size-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"
+                        />
+                      </svg>
+                    </span>
+                    <span
+                      className={`group-hover:ml-3 whitespace-nowrap transition-all duration-700 ease-in-out text-base opacity-0 group-hover:opacity-100 w-0 group-hover:w-auto overflow-hidden`}
+                    >
+                      Verified ID
+                    </span>
+                  </button>
+                </li>
+              </div>
+              {/* <div>
                 <li>
                   <button
                     onClick={handleSubscription}
@@ -324,7 +367,7 @@ const SidebarLarge = () => {
                     </span>
                   </button>
                 </li>
-              </div>
+              </div> */}
               <div>
                 {user && (
                   <li>
@@ -417,7 +460,9 @@ const SidebarLarge = () => {
         {/* Footer */}
         <div className="mt-auto px-4 pb-4 overflow-hidden transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100">
           <div className="text-center transform transition-all duration-300 ease-out">
-            <p className="text-xs text-gray-400 mb-1">OSINTWORK</p>
+            <p className="text-xs text-gray-400 mb-1">
+              {import.meta.env.VITE_APP_NAME}
+            </p>
             <p className="text-xs text-gray-400">
               © {new Date().getFullYear()} All rights reserved
             </p>

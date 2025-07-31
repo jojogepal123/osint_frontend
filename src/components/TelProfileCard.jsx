@@ -112,6 +112,8 @@ const TelProfileCard = ({
   }, [modalOpen]);
   // ✅ Move state here
   const [selectedRC, setSelectedRC] = useState(null);
+  const [selectedUpi, setSelectedUpi] = useState(null);
+  const [upiData, setUpiData] = useState(null);
   const [rcData, setRcData] = useState(null);
   const [loading, setLoading] = useState(false); // <-- NEW
   // Inside the handleRCClick
@@ -133,6 +135,22 @@ const TelProfileCard = ({
     }
   };
 
+  const handleUpiClick = async (upi) => {
+    setLoading(true);
+    setUpiData(null); // Reset UPI data
+    setSelectedUpi(upi); // Set selected UPI for viewing
+    try {
+      const response = await instance.post("/api/upifull-details", {
+        upi_id: upi,
+      });
+      setUpiData(response.data?.data || {});
+      // console.log("UPI Data:", response.data?.data);
+    } catch (err) {
+      setUpiData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <>
       {modalOpen && selectedImage && (
@@ -218,7 +236,54 @@ const TelProfileCard = ({
           <DataCard title="Emails" items={profile.emails} />
           <DataCard title="Basic Info" items={profile.basicInfo} />
           <DataCard title="Bank Details" items={profile.bankDetails} />
-          <DataCard title="Upi Ids" items={profile.upiDetails} />
+          {/* <DataCard title="Upi Ids" items={profile.upiDetails} /> */}
+          <DataCard
+            title="Upi Ids"
+            items={
+              Array.isArray(profile.upiDetails)
+                ? profile.upiDetails.map((upi, idx) => ({
+                    value: (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between gap-4"
+                      >
+                        <span className="text-gray-300 font-medium">
+                          {upi.value}
+                        </span>
+                        <button
+                          onClick={() => handleUpiClick(upi.value)}
+                          className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-sm"
+                        >
+                          <span>View Details</span>
+                        </button>
+                      </div>
+                    ),
+                    source: upi.source,
+                  }))
+                : profile.upiDetails
+                ? [
+                    {
+                      value: (
+                        <div className="flex items-center justify-between gap-4">
+                          <span className="text-gray-300 font-medium">
+                            {profile.upiDetails.value}
+                          </span>
+                          <button
+                            onClick={() =>
+                              handleUpiClick(profile.upiDetails.value)
+                            }
+                            className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-sm"
+                          >
+                            <span>View Details</span>
+                          </button>
+                        </div>
+                      ),
+                      source: profile.upiDetails.source,
+                    },
+                  ]
+                : []
+            }
+          />
           <DataCard title="Identity Proofs" items={profile.idProofs} />
           <DataCard title="Verified Address" items={profile.verifiedAddress} />
           <DataCard title="Locations" items={profile.locations} />
@@ -333,10 +398,14 @@ const TelProfileCard = ({
       </div>
 
       <RcPopup
-        rc={selectedRC}
-        data={rcData}
+        id={selectedRC || selectedUpi}
+        type={selectedUpi ? "upi" : "rc"}
+        data={selectedUpi ? upiData : rcData}
         loading={loading}
-        onClose={() => setSelectedRC(null)}
+        onClose={() => {
+          setSelectedRC(null);
+          setSelectedUpi(null);
+        }}
       />
     </>
   );

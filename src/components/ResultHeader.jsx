@@ -152,51 +152,52 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
                 className="relative w-full sm:w-auto"
                 data-headlessui-state=""
               >
-                {location.pathname !== "/corporate-results" && (
-                  <button
-                    className="flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm bg-white/10 backdrop-blur-lg w-full sm:w-auto"
-                    id="headlessui-menu-button-:r2:"
-                    type="button"
-                    aria-haspopup="menu"
-                    aria-expanded="false"
-                    data-headlessui-state=""
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    title="Copy to clipboard"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="lucide lucide-file-down w-4 h-4 text-white"
+                {location.pathname !== "/corporate-results" &&
+                  location.pathname !== "/verification-results" && (
+                    <button
+                      className="flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm bg-white/10 backdrop-blur-lg w-full sm:w-auto"
+                      id="headlessui-menu-button-:r2:"
+                      type="button"
+                      aria-haspopup="menu"
+                      aria-expanded="false"
+                      data-headlessui-state=""
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      title="Copy to clipboard"
                     >
-                      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
-                      <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
-                      <path d="M12 18v-6"></path>
-                      <path d="m9 15 3 3 3-3"></path>
-                    </svg>
-                    <span>Save Results</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="lucide lucide-chevron-down w-3 h-3 text-white"
-                    >
-                      <path d="m6 9 6 6 6-6"></path>
-                    </svg>
-                  </button>
-                )}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-file-down w-4 h-4 text-white"
+                      >
+                        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+                        <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+                        <path d="M12 18v-6"></path>
+                        <path d="m9 15 3 3 3-3"></path>
+                      </svg>
+                      <span>Save Results</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-chevron-down w-3 h-3 text-white"
+                      >
+                        <path d="m6 9 6 6 6-6"></path>
+                      </svg>
+                    </button>
+                  )}
                 {/* Add dropdown menu */}
 
                 {isDropdownOpen && (

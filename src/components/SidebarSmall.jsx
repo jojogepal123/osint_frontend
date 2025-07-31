@@ -34,9 +34,11 @@ const SidebarSmall = () => {
     navigate("/corporate");
   };
 
-
+  const isVerificationIdActive = location.pathname === "/verification-id";
   const isCorporateDataFinderActive = location.pathname === "/corporate";
-
+  const handleVerificationId = () => {
+    navigate("/verification-id");
+  };
   const Logout = async () => {
     setIsLogoutLoading(true);
     try {
@@ -77,7 +79,7 @@ const SidebarSmall = () => {
                   "
             /> */}
             <div className="text-3xl text-transparent bg-clip-text bg-gradient-to-r from-lime-200 to-teal-800 font-bold ml-4">
-              OSINTWORK
+              {import.meta.env.VITE_APP_NAME}
             </div>
             {sidebarVisible && (
               <button
@@ -121,10 +123,11 @@ const SidebarSmall = () => {
                     className={`
                           flex items-center rounded-lg
                           transition-all duration-100 ease-in-out
-                         ${inputType === "email" && dashboardActive
-                        ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
-                        : "hover:bg-gray-800 text-white hover:text-lime-200"
-                      }
+                         ${
+                           inputType === "email" && dashboardActive
+                             ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
+                             : "hover:bg-gray-800 text-white hover:text-lime-200"
+                         }
                           group relative
                           px-3 py-2.5 w-full
                       `}
@@ -158,7 +161,7 @@ const SidebarSmall = () => {
                               opacity-100 ml-2.5 translate-x-0
                           "
                     >
-                      Email Analyzer
+                      Email Search
                     </span>
                   </button>
                 </li>
@@ -176,10 +179,11 @@ const SidebarSmall = () => {
                     className={`
                           flex items-center rounded-lg
                           transition-all duration-100 ease-in-out
-                          ${inputType === "tel" && dashboardActive
-                        ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
-                        : "hover:bg-gray-800 text-white hover:text-lime-200"
-                      }
+                          ${
+                            inputType === "tel" && dashboardActive
+                              ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
+                              : "hover:bg-gray-800 text-white hover:text-lime-200"
+                          }
                           group relative
                           px-3 py-2.5 w-full
                       `}
@@ -212,7 +216,7 @@ const SidebarSmall = () => {
                               opacity-100 ml-2.5 translate-x-0
                           "
                     >
-                      Phone Analyzer
+                      Phone Search
                     </span>
                   </button>
                 </li>
@@ -224,10 +228,11 @@ const SidebarSmall = () => {
                     className={`
                           flex items-center rounded-lg
                           transition-all duration-100 ease-in-out
-                          ${isLeakDataFinderActive
-                        ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
-                        : "hover:bg-gray-800 text-white hover:text-lime-200"
-                      }
+                          ${
+                            isLeakDataFinderActive
+                              ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
+                              : "hover:bg-gray-800 text-white hover:text-lime-200"
+                          }
                           group relative
                           px-3 py-2.5 w-full
                       `}
@@ -273,10 +278,11 @@ const SidebarSmall = () => {
                     className={`
                           flex items-center rounded-lg
                           transition-all duration-100 ease-in-out
-                          ${isCorporateDataFinderActive
-                        ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
-                        : "hover:bg-gray-800 text-white hover:text-lime-200"
-                      }
+                          ${
+                            isCorporateDataFinderActive
+                              ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
+                              : "hover:bg-gray-800 text-white hover:text-lime-200"
+                          }
                           group relative
                           px-3 py-2.5 w-full
                       `}
@@ -288,8 +294,19 @@ const SidebarSmall = () => {
                           
                       "
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="size-5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"
+                        />
                       </svg>
                     </span>
                     <span
@@ -304,6 +321,49 @@ const SidebarSmall = () => {
                 </li>
               </div>
               <div>
+                <li>
+                  <button
+                    onClick={handleVerificationId}
+                    className={`flex items-center rounded-lg
+                    transition-all duration-100 ease-in-out
+                    ${
+                      isVerificationIdActive
+                        ? "bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900"
+                        : "hover:bg-gray-800 text-white hover:text-lime-200"
+                    }
+                    group relative
+                    px-2.5 py-2.5 w-full`}
+                  >
+                    <span
+                      className={`min-w-[24px] flex items-center justify-center transition-transform duration-100 `}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="size-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"
+                        />
+                      </svg>
+                    </span>
+                    <span
+                      className="
+                              whitespace-nowrap transition-all  text-sm
+                              opacity-100 ml-2.5 translate-x-0
+                          "
+                    >
+                      Verified ID
+                    </span>
+                  </button>
+                </li>
+              </div>
+              {/* <div>
                 <li>
                   <button
                     onClick={handleSubscription}
@@ -350,7 +410,7 @@ const SidebarSmall = () => {
                     </span>
                   </button>
                 </li>
-              </div>
+              </div> */}
               <div>
                 {user && (
                   <li>
@@ -453,8 +513,12 @@ const SidebarSmall = () => {
         </div>
         <div className="mt-auto px-4 pb-4 overflow-hidden transition-all duration-300 ease-in-out opacity-100">
           <div className="text-center transform transition-all duration-300 ease-out">
-            <p className="text-xs text-gray-400 mb-1">OSINTWORK</p>
-            <p className="text-xs text-gray-400">© {new Date().getFullYear()} All rights reserved</p>
+            <p className="text-xs text-gray-400 mb-1">
+              {import.meta.env.VITE_APP_NAME}
+            </p>
+            <p className="text-xs text-gray-400">
+              © {new Date().getFullYear()} All rights reserved
+            </p>
           </div>
         </div>
       </aside>

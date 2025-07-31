@@ -77,7 +77,7 @@ const Subscription = () => {
     <>
       {user && (
         <div className="z-10 text-white min-h-screen flex flex-col items-center justify-center p-6">
-          <PlanTable plans={plans} onSelect={handlePayment} />
+          {/* <PlanTable plans={plans} onSelect={handlePayment} /> */}
 
           <div className="mt-6">
             <button type="button" onClick={() => navigate("/dashboard")}>

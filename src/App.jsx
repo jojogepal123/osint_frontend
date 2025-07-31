@@ -25,11 +25,18 @@ import NotFound from "./pages/NotFound";
 import LeakDataFinder from "./pages/LeakDataFinder";
 import CorporateFinder from "./pages/CorporateFinder";
 import CorporateResults from "./pages/CorporateResults";
+import VerificationFinder from "./pages/VerificationFinder";
+import VerificationResults from "./pages/VerificationResults";
 
 function App() {
   const { sidebarVisible, setSidebarVisible, user, isLoading } =
     useAuthContext();
-  const showSidebarPaths = ["/dashboard", "/leak-data-finder", "/corporate"];
+  const showSidebarPaths = [
+    "/dashboard",
+    "/leak-data-finder",
+    "/corporate",
+    "/verification-id",
+  ];
   const location = useLocation();
   const showSidebar = showSidebarPaths.includes(location.pathname);
   const openMenu = () => {
@@ -73,11 +80,16 @@ function App() {
             {/* Protected routes */}
             <Route element={<AuthLayout />}>
               <Route path="/dashboard" element={<Home />} />
-              <Route path="/subscription" element={<Subscription />} />
+              {/* <Route path="/subscription" element={<Subscription />} /> */}
               <Route path="/results" element={<Results />} />
               <Route path="/leak-data-finder" element={<LeakDataFinder />} />
               <Route path="/corporate" element={<CorporateFinder />} />
+              <Route path="/verification-id" element={<VerificationFinder />} />
               <Route path="/corporate-results" element={<CorporateResults />} />
+              <Route
+                path="/verification-results"
+                element={<VerificationResults />}
+              />
             </Route>
 
             {/* Guest routes */}
@@ -128,7 +140,7 @@ function App() {
                   </PageTransition>
                 }
               />
-              <Route path="/pricing" element={<Pricing />} />
+              {/* <Route path="/pricing" element={<Pricing />} /> */}
               <Route path="/refund-policy" element={<RefundPolicy />} />
               <Route path="/terms-conditions" element={<TermsConditions />} />
             </Route>

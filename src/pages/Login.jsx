@@ -78,7 +78,12 @@ const Login = () => {
             <div className="col-start-2 col-span-2 lg:col-span-3 rounded-[20px] text-white lg:rounded-l-[0px] bg-gray-800 bg-opacity-30 backdrop-blur-lg mx-2 md:mx-0">
               <div className="w-full mx-auto flex flex-col gap-6 p-8 sm:p-12 md:p-16">
                 <div className="p-3 pt-0 bg-gradient-to-r from-lime-200 to-teal-900 bg-clip-text text-transparent text-center font-semibold cursor-pointer">
-                  <h1 className="text-4xl md:text-5xl" onClick={() => navigate("/")}>OSINTWORK</h1>
+                  <h1
+                    className="text-4xl md:text-5xl"
+                    onClick={() => navigate("/")}
+                  >
+                    {import.meta.env.VITE_APP_NAME}
+                  </h1>
                 </div>
                 <form onSubmit={handleSubmit}>
                   <div className="relative mb-4">
@@ -110,11 +115,7 @@ const Login = () => {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-3 text-gray-400"
                     >
-                      {showPassword ? (
-                        <EyeOff size={20} />
-                      ) : (
-                        <Eye size={20} />
-                      )}
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                     {errors.password && errors.password[0] && (
                       <div className="text-red-500 py-1 text-md text-start">

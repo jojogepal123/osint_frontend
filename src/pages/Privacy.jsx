@@ -18,19 +18,20 @@ const Privacy = () => {
           <h1 className="text-2xl md:text-3xl px-2 py-2 text-[#9acc14]">
             Privacy Policy –
             <span className="text-2xl md:text-3xl text-[#9acc14]  font-bold">
-              &nbsp;OSINT WORK
+              &nbsp;{import.meta.env.VITE_APP_NAME}
             </span>
           </h1>
           <p className="text-md md:text-lg xl:text-xl text-white px-2 py-2 custom-scrollbar text-justify overflow-auto">
-            At Osintwork, we value your privacy and are committed to protecting
-            any information collected through our platform. This Privacy Policy
-            explains how we collect, use, and safeguard data when you use our
-            services.
+            At {import.meta.env.VITE_APP_NAME} , we value your privacy and are
+            committed to protecting any information collected through our
+            platform. This Privacy Policy explains how we collect, use, and
+            safeguard data when you use our services.
             <br />
             <br />
             1. Information We Collect
             <br />
-            Osintwork collects information in the following ways:
+            {import.meta.env.VITE_APP_NAME} collects information in the
+            following ways:
             <br />
             Publicly Available Data: We gather data from open sources and
             collection APIs for investigative and research purposes.
@@ -91,9 +92,10 @@ const Privacy = () => {
             <br />
             6. Compliance & Legal Considerations
             <br />
-            Osintwork operates within the framework of legal and ethical
-            intelligence gathering. We do not engage in unauthorized data
-            collection or violate privacy laws. If contact us immediately.
+            {import.meta.env.VITE_APP_NAME} operates within the framework of
+            legal and ethical intelligence gathering. We do not engage in
+            unauthorized data collection or violate privacy laws. If contact us
+            immediately.
             <br />
             <br />
             7. Changes to This Privacy Policy

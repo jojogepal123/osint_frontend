@@ -16,10 +16,12 @@ const Footer = () => {
               className="flex text-2xl font-bold text-lime-300 items-center gap-2"
             >
               <img src={smile} alt="Logo" className="w-6 h-6" />
-              OsintWork
+              <span className="capitalize">
+                {import.meta.env.VITE_APP_NAME}
+              </span>
             </Link>
             <p className="text-sm leading-6 text-gray-400">
-              Osintwork that makes you smile
+              {import.meta.env.VITE_APP_NAME} that makes you smile
             </p>
           </div>
 
@@ -30,14 +32,14 @@ const Footer = () => {
                 Support
               </h3>
               <ul className="mt-6 space-y-4">
-                <li>
+                {/* <li>
                   <Link
                     to="/pricing"
                     className="text-sm leading-6 text-gray-400 hover:text-lime-300"
                   >
                     Pricing
                   </Link>
-                </li>
+                </li> */}
                 {/* <li>
                   <a
                     href="/"
@@ -151,7 +153,8 @@ const Footer = () => {
 
         <div className="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
           <p className="text-xs leading-5 text-gray-400">
-            © {new Date().getFullYear()} Osintwork, Inc. All rights reserved.
+            © {new Date().getFullYear()} {import.meta.env.VITE_APP_NAME}, Inc.
+            All rights reserved.
           </p>
         </div>
       </div>

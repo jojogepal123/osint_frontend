@@ -26,7 +26,8 @@ const AuthLayout = () => {
   const hideSidebar =
     location.pathname.startsWith("/subscription") ||
     location.pathname.startsWith("/results") ||
-    location.pathname.startsWith("/corporate-results");
+    location.pathname.startsWith("/corporate-results") ||
+    location.pathname.startsWith("/verification-results");
 
   return user ? (
     <>

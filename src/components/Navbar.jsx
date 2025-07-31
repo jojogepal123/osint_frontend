@@ -16,10 +16,11 @@ const Navbar = () => {
       >
         <Link to="/">
           <div
-            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer  ${location.pathname === "/"
-              ? "text-lime-300 font-bold"
-              : "font-medium"
-              }`}
+            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer  ${
+              location.pathname === "/"
+                ? "text-lime-300 font-bold"
+                : "font-medium"
+            }`}
           >
             <div className="p-2">
               <svg
@@ -38,10 +39,11 @@ const Navbar = () => {
 
         <Link to="/login">
           <div
-            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${location.pathname === "/login"
-              ? "text-lime-300 font-bold"
-              : "font-medium"
-              }`}
+            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${
+              location.pathname === "/login"
+                ? "text-lime-300 font-bold"
+                : "font-medium"
+            }`}
           >
             <div className="p-2">
               <svg
@@ -63,10 +65,11 @@ const Navbar = () => {
 
         <Link to="/about">
           <div
-            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${location.pathname === "/about"
-              ? "text-lime-300 font-bold"
-              : "font-medium"
-              }`}
+            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${
+              location.pathname === "/about"
+                ? "text-lime-300 font-bold"
+                : "font-medium"
+            }`}
           >
             <div className="p-2">
               <svg
@@ -87,10 +90,11 @@ const Navbar = () => {
         </Link>
         <Link to="/privacy">
           <div
-            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${location.pathname === "/privacy"
-              ? "text-lime-300 font-bold"
-              : "font-medium"
-              }`}
+            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${
+              location.pathname === "/privacy"
+                ? "text-lime-300 font-bold"
+                : "font-medium"
+            }`}
           >
             <div className="p-2">
               <svg
@@ -107,10 +111,11 @@ const Navbar = () => {
         </Link>
         <Link to="/contact-us">
           <div
-            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${location.pathname === "/contact-us"
-              ? "text-lime-300 font-bold"
-              : "font-medium"
-              }`}
+            className={`flex flex-col justify-center items-center py-3 px-1 cursor-pointer ${
+              location.pathname === "/contact-us"
+                ? "text-lime-300 font-bold"
+                : "font-medium"
+            }`}
           >
             <div className="p-2">
               <svg
@@ -152,7 +157,7 @@ const Navbar = () => {
         </div>
         <div className="h-48 md:min-h-[50%] bg-gray-700 bg-opacity-30 backdrop-blur-lg flex-col flex justify-center items-center w-full p-8 rounded-b-md space-y-2 text-center absolute bottom-0">
           <h1 className="text-2xl sm:text-3xl lg:text-5xl mt-4 font-bold drop-shadow-2xl text-transparent bg-clip-text bg-gradient-to-r from-lime-200 to-teal-800">
-            OSINTWORK
+            {import.meta.env.VITE_APP_NAME}
           </h1>
           <p className="text-sm md:text-md text-lime-300 ">
             FIND YOUR DIGITAL FOOTPRINT

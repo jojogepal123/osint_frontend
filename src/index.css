@@ -3,7 +3,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1); /* Invert colors to turn black icon to white */
+  cursor: pointer;
+}
 .bg-custom {
   @apply bg-[#081629];
 }
