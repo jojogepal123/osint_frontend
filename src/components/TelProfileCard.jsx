@@ -3,8 +3,7 @@ import { useIsEmpty } from "../hook/useIsEmpty";
 import React, { useState, useEffect } from "react";
 import instance from "../api/axios";
 import IconWithFallback from "./IconWithFallback";
-import RcPopup from "./RcPopup"; // ✅ OK now
-import ViewDetailsIcon from "../assets/view-details.svg";
+import RcPopup from "./RcPopup"; 
 
 const InfoList = ({ title, items }) => {
   if (!items || items.length === 0) return null;
@@ -132,11 +131,6 @@ const TelProfileCard = ({
     }
   };
 
-  const handleEmailClick = (email) => {
-    // Your logic here (e.g., navigate, search, etc.)
-    console.log("Search for:", email);
-  };
-
   return (
     <>
       {modalOpen && selectedImage && (
@@ -221,24 +215,7 @@ const TelProfileCard = ({
           <DataCard title="Phone Numbers" items={profile.phones} />
           <DataCard
             title="Emails"
-            items={profile.emails.map((emailObj) => ({
-              value: (
-                <div className="flex items-center justify-between gap-8" key={emailObj.value + emailObj.source}>
-                  <div>
-                    <span className="text-gray-300 font-medium">{emailObj.value}</span>
-                    {emailObj.source && (
-                      <span className="ml-2 text-xs text-gray-400">({emailObj.source})</span>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => handleEmailClick(emailObj.value)}
-                    className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-xs"
-                  >
-                    <span>Search Email</span>
-                  </button>
-                </div>
-              ),
-            }))}
+            items={profile.emails}
           />
           <DataCard title="Basic Info" items={profile.basicInfo} />
           <DataCard title="Bank Details" items={profile.bankDetails} />

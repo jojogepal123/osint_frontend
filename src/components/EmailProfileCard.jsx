@@ -101,9 +101,6 @@ const EmailProfileCard = ({
     };
   }, [modalOpen]);
 
-  const handlePhoneClick = (phone) => {
-    console.log(phone);
-  };
 
   return (
     <>
@@ -167,29 +164,7 @@ const EmailProfileCard = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <DataCard title="Full Names and Alias" items={profile.fullNames} />
           <DataCard title="Usernames" items={profile.userNames} />
-          <DataCard title="Phone Numbers" items={
-            profile.phones.map((phone) => ({
-              value: (
-                <div
-                  key={phone}
-                  className="flex items-center justify-between gap-8"
-                >
-                  <div>
-                    <span className="text-gray-300 font-medium">{phone}</span>
-                    {phone.source && (
-                      <span className="ml-2 text-xs text-gray-400">({phone.source})</span>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => handlePhoneClick(phone)}
-                    className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-sm"
-                  >
-                    <span>Search Phone</span>
-                  </button>
-                </div>
-              ),
-            }))
-          } />
+          <DataCard title="Phone Numbers" items={profile.phoneNumbers} />
           <DataCard title="Emails" items={profile.emails} />
           <DataCard title="Basic Info" items={profile.basicInfo} />
           <DataCard title="Locations" items={profile.locations} />
