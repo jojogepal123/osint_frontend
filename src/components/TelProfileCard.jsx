@@ -3,8 +3,7 @@ import { useIsEmpty } from "../hook/useIsEmpty";
 import React, { useState, useEffect } from "react";
 import instance from "../api/axios";
 import IconWithFallback from "./IconWithFallback";
-import RcPopup from "./RcPopup"; // ✅ OK now
-import ViewDetailsIcon from "../assets/view-details.svg";
+import RcPopup from "./RcPopup"; 
 
 const InfoList = ({ title, items }) => {
   if (!items || items.length === 0) return null;
@@ -110,7 +109,6 @@ const TelProfileCard = ({
       document.body.style.overflow = "";
     };
   }, [modalOpen]);
-  // ✅ Move state here
   const [selectedRC, setSelectedRC] = useState(null);
   const [selectedUpi, setSelectedUpi] = useState(null);
   const [upiData, setUpiData] = useState(null);
@@ -176,8 +174,8 @@ const TelProfileCard = ({
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-center text-white">
           <div className="mb-8 flex items-center gap-3">
-            <span className="inline-block w-2 h-8 bg-lime-400 rounded-full"></span>
-            <h2 className="text-3xl font-extrabold text-white tracking-wide">
+            <span className="inline-block w-2 h-12 md:h-8 bg-lime-400 rounded-full"></span>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-wide">
               Profile Summary :{" "}
               <span className="text-lime-200">{userInput}</span>
             </h2>
@@ -233,7 +231,10 @@ const TelProfileCard = ({
           <DataCard title="Full Names and Alias" items={profile.fullNames} />
           <DataCard title="Usernames" items={profile.userNames} />
           <DataCard title="Phone Numbers" items={profile.phones} />
-          <DataCard title="Emails" items={profile.emails} />
+          <DataCard
+            title="Emails"
+            items={profile.emails}
+          />
           <DataCard title="Basic Info" items={profile.basicInfo} />
           <DataCard title="Bank Details" items={profile.bankDetails} />
           {/* <DataCard title="Upi Ids" items={profile.upiDetails} /> */}
@@ -326,21 +327,21 @@ const TelProfileCard = ({
                     className="flex items-center justify-between py-3 group transition-all cursor-pointer"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center shadow group-hover:bg-lime-900/20 transition">
+                      <div className="w-6 h-6 md:w-10 md:h-10 rounded-full bg-gray-800 flex items-center justify-center shadow group-hover:bg-lime-900/20 transition">
                         <IconWithFallback platform={platform} size={24} />
                       </div>
-                      <span className="capitalize text-lg font-medium text-gray-100 group-hover:text-lime-200 transition">
+                      <span className="capitalize text-sm md:text-lg font-medium text-gray-100 group-hover:text-lime-200 transition">
                         {platform}
                       </span>
                     </div>
                     {isPresent ? (
-                      <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-lime-700/20 text-lime-200 font-semibold text-sm shadow">
-                        <Check size={18} color="#34f000" />
+                      <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-lime-700/20 text-lime-200 font-semibold text-xs md:text-sm shadow">
+                        <Check size={16} color="#34f000" />
                         Active
                       </span>
                     ) : (
-                      <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-700/20 text-red-200 font-semibold text-sm shadow">
-                        <X size={18} color="#ff3333" />
+                      <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-700/20 text-red-200 font-semibold text-xs md:text-sm shadow">
+                        <X size={16} color="#ff3333" />
                         Inactive
                       </span>
                     )}

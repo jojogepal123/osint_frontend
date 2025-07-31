@@ -5,9 +5,9 @@ const iconMap = {
   "X (Twitter)": "twitter",
   "Google+": "google-plus",
   "Chess.com": "chesscom",
-  Picsart: "picsart",
-  X: "x",
-  x: "twitter",
+  "Picsart": "picsart",
+  "X": "x",
+  "x": "twitter",
 };
 
 const fallbackSources = {

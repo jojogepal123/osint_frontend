@@ -24,9 +24,8 @@ export const ProfileFromTelApis = (results) => {
     getIfExists(results?.spbData?.data?.name, "Gov"),
     getIfExists(results?.spuData?.data?.name, "Gov"),
     getIfExists(
-      `${results?.tlgData?.first_name || ""} ${
-        results?.tlgData?.last_name || ""
-      }`.trim(),
+      `${results?.tlgData?.first_name || ""} ${results?.tlgData?.last_name || ""
+        }`.trim(),
       "Social Media"
     ),
   ].filter(Boolean);
@@ -258,8 +257,10 @@ export const ProfileFromTelApis = (results) => {
   ].filter(Boolean);
 
   const lastUpdated = [
-    results?.hData?.timestamp ? "Acitve" : "Inactive",
+    results?.hData?.timestamp ? "Active" : "Inactive",
   ].filter(Boolean);
+
+  // { console.log(results?.hData?.timestamp) }
 
   const isSpam = results?.smData?.response?.is_spam || false;
   const isBusiness = results?.wpData?.isBusiness || false;

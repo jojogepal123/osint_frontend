@@ -8,10 +8,11 @@ import { ProfileFromTelApis } from "../utils/ProfileFromTelApis";
 import { ProfileFromEmailApis } from "../utils/ProfileFromEmailApis";
 import TelProfileCard from "../components/TelProfileCard";
 import EmailProfileCard from "../components/EmailProfileCard";
-// import Map from "../components/Map";
-
 import no_results_image from "../assets/noresults.png";
-import { useState } from "react";
+import { useState, Suspense, lazy } from "react";
+import InlineLoader from "../components/InlineLoader";
+
+const Map = lazy(() => import('../components/Map'));
 
 const Results = () => {
   const location = useLocation();
@@ -22,14 +23,16 @@ const Results = () => {
   const EmailProfile = ProfileFromEmailApis(results);
 
   const emailData = results?.emailData || null;
+  const mapData = emailData?.maps_result?.reviews || null;
   const hibpResults = results?.hibpData || [];
   const zehefResults = results?.zehefData?.data || [];
   const osResults = results?.osintData?.data || null;
 
+
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-
-  // console.log(results);
+  console.log(emailData);
+  console.log(mapData);
 
   const isResultEmpty = () => {
     if (!results) return true;
@@ -112,8 +115,8 @@ const Results = () => {
         (item) => item.source === "Gravatar" && item.status === "found"
       )
         ? zehefResults?.filter(
-            (item) => item.source === "Gravatar" && item.status === "found"
-          )
+          (item) => item.source === "Gravatar" && item.status === "found"
+        )
         : null,
       osintData: osResults || null,
     };
@@ -163,28 +166,16 @@ const Results = () => {
               {zehefResults?.some(
                 (item) => item.source === "Gravatar" && item.status === "found"
               ) && (
-                <div className="h-full">
-                  <GravatarCard
-                    data={zehefResults.filter(
-                      (item) =>
-                        item.source === "Gravatar" && item.status === "found"
-                    )}
-                  />
-                </div>
-              )}
+                  <div className="h-full">
+                    <GravatarCard
+                      data={zehefResults.filter(
+                        (item) =>
+                          item.source === "Gravatar" && item.status === "found"
+                      )}
+                    />
+                  </div>
+                )}
             </div>
-            {/* <div className="grid grid-cols-1 gap-4"></div> */}
-
-            {/* {emailData &&
-              (emailData?.PROFILE_CONTAINER?.maps?.failed === undefined ||
-                emailData?.PROFILE_CONTAINER?.maps?.failed !== "failed") &&
-              (emailData?.success === undefined ||
-                emailData?.success !== null) && (
-                <>
-                  <h1>Leaked Locations</h1>
-                  <Map data={emailData} />
-                </>
-              )} */}
             {/* hibp Data Card */}
             {Array.isArray(hibpResults) && hibpResults.length > 0 && (
               <div className="h-full mt-4">
@@ -239,6 +230,16 @@ const Results = () => {
               </div>
             )}
             {osResults !== null && <OsintCard data={osResults} />}
+          </div>
+          <div className="z-10 w-full gap-4 max-w-6xl mx-auto mb-12 bg-green p-4 rounded-lg">
+            {mapData !== null && (
+              <Suspense fallback={<div><InlineLoader /></div>}>
+                <h2 className="text-2xl font-bold mb-4 text-gray-200">Locations</h2>
+                <div className="">
+                  <Map data={mapData} />
+                </div>
+              </Suspense>
+            )}
           </div>
         </>
       )}
