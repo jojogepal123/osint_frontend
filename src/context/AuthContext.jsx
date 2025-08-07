@@ -55,8 +55,6 @@ export const AuthProvider = ({ children }) => {
         if (!isPublicRoute && !isAuthRoute) {
           navigate("/login");
         }
-      } else {
-        // console.error("Error fetching user:", error);
       }
     } finally {
       setIsLoading(false);
@@ -84,19 +82,19 @@ export const AuthProvider = ({ children }) => {
     }, 60000); // every 60 seconds
 
     return () => clearInterval(interval);
-    // const currentPath = window.location.pathname;
-    // const isPublicRoute = PUBLIC_ROUTES.includes(currentPath);
-
-    // if (!isPublicRoute && user === null) {
-    //   getUser();
-    // }
   }, []);
 
+  const updateUser = (updatedUser) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      ...updatedUser,
+    }));
+  };
   const login = async ({ ...data }) => {
     try {
       setErrors([]);
 
-      const response = await instance.post("/api/login", data); // note: use /api/login
+      const response = await instance.post("/api/login", data);
 
       // Save token in localStorage
       localStorage.setItem("auth_token", response.data.token);
@@ -108,9 +106,20 @@ export const AuthProvider = ({ children }) => {
 
       // Fetch user using the token
       await getUser();
-
       navigate("/dashboard");
     } catch (error) {
+      if (
+        error.response?.status === 403 &&
+        error.response?.data?.otp_required === true
+      ) {
+        navigate("/otp-verification", {
+          state: {
+            email: error.response?.data?.email,
+            otpExpiresAt: error.response?.data?.otp_expires_at,
+          },
+        });
+        toast.warning(error.response?.data?.message);
+      }
       // console.error("Login error:", error);
       if (error.response?.status === 422) {
         setErrors(error.response.data.errors);
@@ -121,19 +130,13 @@ export const AuthProvider = ({ children }) => {
   const register = async ({ ...data }) => {
     try {
       setErrors([]);
-
       const response = await instance.post("/api/register", data);
-
-      localStorage.setItem("auth_token", response.data.token);
-      localStorage.setItem("token_expiry", response.data.expires_at); // save expiry
-      instance.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${response.data.token}`;
-
-      await getUser(); // get user info after registering
-      navigate("/dashboard");
+      if (response.status === 201) {
+        toast.success("Registration successful! Please log in.");
+        // await getUser();
+        navigate("/login");
+      }
     } catch (error) {
-      // console.error("Register error:", error);
       if (error.response?.status === 422) {
         setErrors(error.response.data.errors);
       }
@@ -200,13 +203,28 @@ export const AuthProvider = ({ children }) => {
         tlgData: data.telData || null,
         // srfullData: data.srfullData || null, // ✅ Make sure you access this
         errors: data.errors || {},
+        credits: data.credits ?? null,
       };
-      // console.log("Parsed srfullData:", newResults.srfullData); // ✅ Extra log
+
+      if (data.credits !== undefined) {
+        updateUser({ credits: data.credits });
+      }
+      // console.log("Parsed tel results:", newResults); // ✅ Extra log
       setResults(JSON.parse(JSON.stringify(newResults)));
       return newResults;
     } catch (error) {
-      // console.error("Error in fetchTelData:", error);
-      toast.error("Internal server error, please try again.");
+      if (error.response) {
+        const { status, data } = error.response;
+
+        if (status === 402) {
+          toast.warning(data.message || "Insufficient credits.");
+          // updateUser({ credits: data.credits }); // Optional: update UI
+        } else {
+          toast.error(data.message || "Something went wrong.");
+        }
+      } else {
+        toast.error("Something went wrong.");
+      }
       setResults({});
     } finally {
       setLoading(false);
@@ -220,16 +238,33 @@ export const AuthProvider = ({ children }) => {
         params: { email: inputValue },
       });
 
-      // Save to one context state
-      setResults(data);
-
+      if (data.credits !== undefined) {
+        updateUser({ credits: data.credits });
+        // console.log("User credits updated:", data.credits);
+      }
+      setResults(data.data); // Or whatever structure you use
       return data;
     } catch (error) {
-      toast.error("Something went wrong");
+      if (error.response) {
+        const { status, data } = error.response;
+
+        if (status === 402) {
+          toast.warning(data.message || "Insufficient credits.");
+          // updateUser({ credits: data.credits }); // Optional: update UI
+        } else {
+          toast.error(data.message || "Something went wrong.");
+        }
+      } else {
+        toast.error("Something went wrong.");
+      }
       setResults({});
     } finally {
       setLoading(false);
     }
+  };
+
+  const hasSufficientCredits = () => {
+    return parseFloat(user.credits) > 0;
   };
 
   const value = {
@@ -263,6 +298,8 @@ export const AuthProvider = ({ children }) => {
     setZehefResults,
     osintDataResults,
     setOsintDataResults,
+    updateUser,
+    hasSufficientCredits,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -39,7 +39,7 @@ const CorporateResults = () => {
   };
 
   const flattenedData = data ? flattenObject(data) : {};
-
+  console.log(flattenedData);
   return (
     <>
       {data && <ResultHeader searchInput={searchInput} />}

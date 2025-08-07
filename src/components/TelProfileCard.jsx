@@ -3,9 +3,12 @@ import { useIsEmpty } from "../hook/useIsEmpty";
 import React, { useState, useEffect } from "react";
 import instance from "../api/axios";
 import IconWithFallback from "./IconWithFallback";
-import RcPopup from "./RcPopup"; 
+import RcPopup from "./RcPopup";
+import CreditReportModal from "./CreditReportModal";
+import { toast } from "react-toastify";
+import useAuthContext from "../context/AuthContext";
 
-const InfoList = ({ title, items }) => {
+const InfoList = ({ title, items, onCreditReport }) => {
   if (!items || items.length === 0) return null;
 
   return (
@@ -28,6 +31,17 @@ const InfoList = ({ title, items }) => {
                 ({item.source})
               </span>
             )}
+            {/* Show Credit Report button only for PAN */}
+            {onCreditReport &&
+              (item.key === "pan_number" || item.key === "PAN Number") &&
+              item.value && (
+                <button
+                  className="ml-2 px-3 py-1 rounded bg-lime-400 text-black font-semibold text-xs shadow hover:bg-lime-500 transition"
+                  onClick={() => onCreditReport(item.value)}
+                >
+                  Credit Report
+                </button>
+              )}
           </li>
         ))}
       </ul>
@@ -35,12 +49,12 @@ const InfoList = ({ title, items }) => {
   );
 };
 
-const DataCard = ({ title, items }) => {
+const DataCard = ({ title, items, onCreditReport }) => {
   if (!items || items.length === 0) return null;
 
   return (
     <div className="bg-gray-900/80 rounded-xl shadow-lg p-6 min-h-[150px] flex flex-col justify-between border border-gray-800 hover:border-lime-400 transition">
-      <InfoList title={title} items={items} />
+      <InfoList title={title} items={items} onCreditReport={onCreditReport} />
     </div>
   );
 };
@@ -49,7 +63,7 @@ const DataCard = ({ title, items }) => {
 //   const panProof = profile.idProofs?.find(
 //     (proof) => proof.key === "PAN Number" && proof.value
 //   );
-//   const name = profile.fullNames?.[0]?.value || "";
+//   const name = profile.fullNames?.[1]?.value || "";
 //   const id_number = panProof?.value || "";
 //   const mobile = profile.phones?.find((ph) => ph.source === "Gov")?.value || "";
 //   console.log(name, id_number, mobile);
@@ -111,22 +125,45 @@ const TelProfileCard = ({
   }, [modalOpen]);
   const [selectedRC, setSelectedRC] = useState(null);
   const [selectedUpi, setSelectedUpi] = useState(null);
+  const [selectedChallan, setSelectedChallan] = useState(null);
   const [upiData, setUpiData] = useState(null);
   const [rcData, setRcData] = useState(null);
-  const [loading, setLoading] = useState(false); // <-- NEW
-  // Inside the handleRCClick
+  const [challanData, setChallanData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const { updateUser, hasSufficientCredits } = useAuthContext();
+  const [creditModalOpen, setCreditModalOpen] = useState(false);
+  const [creditModalData, setCreditModalData] = useState({
+    pan: "",
+    name: "",
+    mobile: "",
+  });
+
   const handleRCClick = async (rc) => {
     setSelectedRC(rc);
     setRcData(null);
     setLoading(true); // Start loading
+    if (!hasSufficientCredits()) {
+      toast.warning("Insufficient credits. Please upgrade your plan.");
+      return;
+    }
     try {
       const response = await instance.post("/api/rcfull-details", {
         id_number: rc,
       });
-      setRcData(response.data?.data || {});
-      // console.log("RC Data:", response.data?.data);
+      const credits = response.data?.credits;
+      const data = response.data?.data || {};
+      if (credits !== undefined) {
+        updateUser({ credits });
+      }
+      setRcData(data.data || {});
+      // console.log("RC Data:", data);
     } catch (err) {
-      // console.error("Failed to load RC data", err);
+      if (err.response?.status === 402) {
+        const message = err.response?.data?.message || "Insufficient credits.";
+        toast.warning(message);
+      } else {
+        toast.error("something went Wrong");
+      }
       setRcData(null);
     } finally {
       setLoading(false); // Stop loading
@@ -137,18 +174,86 @@ const TelProfileCard = ({
     setLoading(true);
     setUpiData(null); // Reset UPI data
     setSelectedUpi(upi); // Set selected UPI for viewing
+    if (!hasSufficientCredits()) {
+      toast.warning("Insufficient credits. Please upgrade your plan.");
+      return;
+    }
     try {
       const response = await instance.post("/api/upifull-details", {
         upi_id: upi,
       });
-      setUpiData(response.data?.data || {});
-      // console.log("UPI Data:", response.data?.data);
+      const credits = response.data?.credits;
+      const data = response.data?.data || {};
+      if (credits !== undefined) {
+        updateUser({ credits });
+      }
+      setUpiData(data.data || {});
+
+      console.log("UPI Data:", data);
     } catch (err) {
+      if (err.response?.status === 402) {
+        const message = err.response?.data?.message || "Insufficient credits.";
+        toast.warning(message);
+      } else {
+        toast.error("something went Wrong");
+      }
       setUpiData(null);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleCreditReport = (panNumber) => {
+    const name =
+      profile.fullNames?.find((n) => n.source === "Gov")?.value || "";
+    const mobile =
+      profile.phones?.find((ph) => ph.source === "Gov")?.value || "";
+    setCreditModalData({ pan: panNumber, name, mobile });
+    setCreditModalOpen(true);
+  };
+
+  const handleChallanClick = async (rc) => {
+    if (!hasSufficientCredits()) {
+      toast.warning("Insufficient credits. Please upgrade your plan.");
+      return;
+    }
+    setLoading(true);
+    setSelectedChallan(rc);
+    setChallanData(null);
+
+    try {
+      const response = await instance.post("/api/rc-challan-details", {
+        rc_number: rc,
+      });
+
+      const credits = response.data?.credits;
+      if (credits !== undefined) {
+        updateUser({ credits });
+        console.log("User credits updated (RC Challan):", credits);
+      }
+      const details = response.data?.data?.data || {};
+      const isEmpty =
+        !details.challan_details || details.challan_details.length === 0;
+
+      if (isEmpty) {
+        toast.warning("No data found on this RC number");
+      }
+
+      console.log("res", details);
+      setChallanData(details || {});
+    } catch (err) {
+      if (err.response?.status === 402) {
+        const message = err.response?.data?.message || "Insufficient credits.";
+        toast.warning(message);
+      } else {
+        toast.error("Failed to fetch RC details");
+      }
+      setChallanData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       {modalOpen && selectedImage && (
@@ -187,14 +292,14 @@ const TelProfileCard = ({
           </div>
 
           {/* {profile.isCreditExists && profile.isCreditExists[0] && (
-          <button
-            type="button"
-            className="text-[#060714] flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium bg-[#ABDE64] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ABDE64] transition-colors w-full sm:w-auto mt-3 md:mt-0"
-            onClick={() => generateCreditReport(profile)}
-          >
-            Credit Report
-          </button>
-        )} */}
+            <button
+              type="button"
+              className="text-[#060714] flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium bg-[#ABDE64] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ABDE64] transition-colors w-full sm:w-auto mt-3 md:mt-0"
+              onClick={() => generateCreditReport(profile)}
+            >
+              Credit Report
+            </button>
+          )} */}
         </div>
 
         <div className="flex flex-col md:flex-row items-center gap-4">
@@ -231,10 +336,7 @@ const TelProfileCard = ({
           <DataCard title="Full Names and Alias" items={profile.fullNames} />
           <DataCard title="Usernames" items={profile.userNames} />
           <DataCard title="Phone Numbers" items={profile.phones} />
-          <DataCard
-            title="Emails"
-            items={profile.emails}
-          />
+          <DataCard title="Emails" items={profile.emails} />
           <DataCard title="Basic Info" items={profile.basicInfo} />
           <DataCard title="Bank Details" items={profile.bankDetails} />
           {/* <DataCard title="Upi Ids" items={profile.upiDetails} /> */}
@@ -285,7 +387,11 @@ const TelProfileCard = ({
                 : []
             }
           />
-          <DataCard title="Identity Proofs" items={profile.idProofs} />
+          <DataCard
+            title="Identity Proofs"
+            items={profile.idProofs}
+            onCreditReport={handleCreditReport}
+          />
           <DataCard title="Verified Address" items={profile.verifiedAddress} />
           <DataCard title="Locations" items={profile.locations} />
           {/* <DataCard title="Last Updated" items={profile.lastUpdated} /> */}
@@ -306,6 +412,12 @@ const TelProfileCard = ({
                     className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-sm"
                   >
                     <span>View Details</span>
+                  </button>
+                  <button
+                    onClick={() => handleChallanClick(rc)}
+                    className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-sm"
+                  >
+                    <span>Challans Details</span>
                   </button>
                 </div>
               ),
@@ -399,14 +511,23 @@ const TelProfileCard = ({
       </div>
 
       <RcPopup
-        id={selectedRC || selectedUpi}
-        type={selectedUpi ? "upi" : "rc"}
-        data={selectedUpi ? upiData : rcData}
+        id={selectedChallan || selectedUpi || selectedRC}
+        type={selectedChallan ? "challan" : selectedUpi ? "upi" : "rc"}
+        data={selectedChallan ? challanData : selectedUpi ? upiData : rcData}
         loading={loading}
         onClose={() => {
           setSelectedRC(null);
           setSelectedUpi(null);
+          setSelectedChallan(null);
         }}
+      />
+
+      <CreditReportModal
+        open={creditModalOpen}
+        onClose={() => setCreditModalOpen(false)}
+        pan={creditModalData.pan}
+        name={creditModalData.name}
+        mobile={creditModalData.mobile}
       />
     </>
   );

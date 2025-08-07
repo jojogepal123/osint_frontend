@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Listbox } from "@headlessui/react";
 import { ChevronDown } from "lucide-react";
 import UserCard from "../components/UserCard";
@@ -7,13 +7,19 @@ import { toast } from "react-toastify";
 import MainHeader from "../components/MainHeader";
 import { useNavigate } from "react-router-dom";
 import FullScreenLoader from "../components/FullScreenLoader";
+import useAuthContext from "../context/AuthContext";
 
 const SEARCH_OPTIONS = [
   {
     key: "corporate_gstin",
     label: "Corporate GSTIN",
     fields: [
-      { name: "id_number", label: "ID Number", type: "text" },
+      {
+        name: "id_number",
+        label: "ID Number",
+        type: "text",
+        placeholder: "Ex. 08AKWPJ1234H1ZN",
+      },
       {
         name: "year",
         label: "Financial year",
@@ -34,19 +40,19 @@ const SEARCH_OPTIONS = [
         name: "mobile",
         label: "Mobile Number",
         type: "text",
-        placeholder: "Enter your mobile no.",
+        placeholder: "Ex. 9966887744",
       },
       {
         name: "pan",
         label: "PAN Number",
         type: "text",
-        placeholder: "Enter your pan number",
+        placeholder: "Ex. EKRPR1234F",
       },
       {
         name: "name",
         label: "Name",
         type: "text",
-        placeholder: "Enter your name",
+        placeholder: "Ex. Vishal Rathore",
       },
       {
         name: "gender",
@@ -65,13 +71,25 @@ const SEARCH_OPTIONS = [
   {
     key: "corporate_cin",
     label: "Corporate CIN",
-    fields: [{ name: "id_number", label: "ID Number", type: "text" }],
+    fields: [
+      {
+        name: "id_number",
+        label: "ID Number",
+        type: "text",
+        placeholder: "Ex. U65999MH1995PLC123456",
+      },
+    ],
   },
   {
     key: "gst_intel",
     label: "GST INTEL",
     fields: [
-      { name: "id_number", label: "ID Number", type: "text" },
+      {
+        name: "id_number",
+        label: "ID Number",
+        type: "text",
+        placeholder: "Ex. 08AKWPJ1234H1ZN",
+      },
       { name: "filing_status", label: "Filing Status", type: "checkbox" },
       { name: "hsn_info", label: "HSN Info", type: "checkbox" },
       { name: "filing_frequency", label: "Filing Frequency", type: "checkbox" },
@@ -80,17 +98,38 @@ const SEARCH_OPTIONS = [
   {
     key: "employment_history",
     label: "Employment History UAN",
-    fields: [{ name: "id_number", label: "ID Number", type: "text" }],
+    fields: [
+      {
+        name: "id_number",
+        label: "ID Number",
+        type: "text",
+        placeholder: "Ex. 111779821234",
+      },
+    ],
   },
   {
     key: "find_uan",
     label: "Find UAN",
-    fields: [{ name: "mobile_number", label: "Mobile Number", type: "text" }],
+    fields: [
+      {
+        name: "mobile_number",
+        label: "Mobile Number",
+        type: "text",
+        placeholder: "Ex. 8076027829",
+      },
+    ],
   },
   {
     key: "pan_to_uan",
     label: "PAN to UAN",
-    fields: [{ name: "pan_number", label: "PAN Number", type: "text" }],
+    fields: [
+      {
+        name: "pan_number",
+        label: "PAN Number",
+        type: "text",
+        placeholder: "Ex. xxxx1234xxxx",
+      },
+    ],
   },
 ];
 
@@ -100,6 +139,7 @@ const CorporateFinder = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { hasSufficientCredits, updateUser } = useAuthContext();
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
@@ -168,7 +208,10 @@ const CorporateFinder = () => {
       type: selectedOption.key,
       data: inputValues,
     };
-
+    if (!hasSufficientCredits()) {
+      toast.warning("Insufficient credits. Please upgrade your plan.");
+      return;
+    }
     setLoading(true);
     try {
       const response = await instance.post(
@@ -185,6 +228,10 @@ const CorporateFinder = () => {
         inputValues.pan ||
         inputValues.mobile_number ||
         "";
+      const credits = response?.data?.credits;
+      if (credits !== undefined) {
+        updateUser({ credits });
+      }
       if (
         selectedOption.key === "credit_report" &&
         response.headers["content-type"] === "application/pdf"
@@ -206,27 +253,50 @@ const CorporateFinder = () => {
         navigate("/corporate-results", {
           state: { data: response.data.data, searchInput },
         });
+        console.log("response from backend", response.data.credits);
         toast.success("Found data based on your search");
       }
     } catch (error) {
+      const status = error?.response?.status;
+      const message =
+        error?.response?.data?.message ||
+        "Something went wrong. Please try again.";
+      const credits = error?.response?.data?.credits;
+
+      // Show error toast with credits if available
+      if (credits !== undefined) {
+        toast.error(`${message} You have ${credits} credits remaining.`);
+      } else {
+        toast.error(message);
+      }
+
       if (selectedOption.key === "credit_report") {
         toast.error("Error occurred. Please check your data and try again.");
-        setLoading(false);
         return;
-      } else {
-        if (error.response && error.response.status === 422) {
-          navigate("/corporate-results", {
-            state: { data: null },
-          });
-          toast.warn("No data found");
-        } else {
-          toast.error("Something went wrong");
-        }
+      }
+
+      if (error.response && status === 422) {
+        navigate("/corporate-results", {
+          state: { data: null },
+        });
+        toast.warn("No data found");
+      } else if (status !== 402) {
+        toast.error("Something went wrong");
       }
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const initialValues = {};
+    selectedOption.fields.forEach((field) => {
+      if (field.type === "select") {
+        initialValues[field.name] = field.options[0];
+      }
+    });
+    setInputValues((prev) => ({ ...initialValues, ...prev }));
+  }, [selectedOption.fields]);
 
   return (
     <>
@@ -248,11 +318,11 @@ const CorporateFinder = () => {
             <label className="mb-1 font-semibold">Select Search Type</label>
             <Listbox value={selectedOption} onChange={handleOptionSelect}>
               <div className="relative">
-                <Listbox.Button className="w-full py-2 px-4 rounded bg-gray-800 border border-lime-300 text-white font-semibold focus:outline-none flex justify-between items-center">
+                <Listbox.Button className="w-full py-2 px-4 rounded bg-custom-input-bg border border-lime-300 text-white font-semibold focus:outline-none flex justify-between items-center">
                   {selectedOption.label}
                   <ChevronDown className="w-5 h-5 text-lime-300" />
                 </Listbox.Button>
-                <Listbox.Options className="absolute mt-2 w-full bg-gray-800 border border-lime-300 rounded-md z-10">
+                <Listbox.Options className="absolute mt-2 w-full bg-custom-input-bg border border-lime-300 rounded-md z-10">
                   {SEARCH_OPTIONS.map((option) => (
                     <Listbox.Option
                       key={option.key}
@@ -285,7 +355,10 @@ const CorporateFinder = () => {
                         onChange={(e) =>
                           handleInputChange(field.name, e.target.value)
                         }
-                        className={`p-2 rounded bg-gray-800 border ${
+                        placeholder={
+                          field.placeholder || `Enter ${field.label}`
+                        }
+                        className={`p-2 rounded bg-custom-input-bg border ${
                           errors[field.name]
                             ? "border-red-500"
                             : "border-lime-300"
@@ -306,7 +379,7 @@ const CorporateFinder = () => {
                       >
                         <div className="relative">
                           <Listbox.Button
-                            className={`w-full py-2 px-4 rounded bg-gray-800 border ${
+                            className={`w-full py-2 px-4 rounded bg-custom-input-bg border ${
                               errors[field.name]
                                 ? "border-red-500"
                                 : "border-lime-300"
@@ -315,7 +388,7 @@ const CorporateFinder = () => {
                             {inputValues[field.name] || field.options[0]}
                             <ChevronDown className="w-5 h-5 text-lime-200" />
                           </Listbox.Button>
-                          <Listbox.Options className="absolute mt-1 w-full bg-gray-800 border border-lime-300 rounded z-10">
+                          <Listbox.Options className="absolute mt-1 w-full bg-custom-input-bg border border-lime-300 rounded z-10">
                             {field.options.map((opt) => (
                               <Listbox.Option
                                 key={opt}
@@ -323,7 +396,7 @@ const CorporateFinder = () => {
                                 className={({ active, selected }) =>
                                   `cursor-pointer select-none px-4 py-2 rounded ${
                                     active
-                                      ? "bg-lime-200 text-black"
+                                      ? "bg-lime-300 text-black"
                                       : "text-white"
                                   } ${selected ? "font-bold" : ""}`
                                 }

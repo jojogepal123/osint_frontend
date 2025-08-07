@@ -20,6 +20,39 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
     return ["n/a", "na", "n.a"].includes(str);
   };
 
+  const flattenObject = (obj, parentKey = "") => {
+    let items = [];
+    for (const [key, value] of Object.entries(obj)) {
+      const fullKey = parentKey ? `${parentKey} → ${key}` : key;
+
+      if (
+        value === null ||
+        value === undefined ||
+        typeof value === "function"
+      ) {
+        continue;
+      }
+
+      if (Array.isArray(value)) {
+        if (value.length === 0) continue;
+        value.forEach((item, index) => {
+          if (typeof item === "object") {
+            items = items.concat(
+              flattenObject(item, `${fullKey} [${index + 1}]`)
+            );
+          } else {
+            items.push({ label: `${fullKey} [${index + 1}]`, value: item });
+          }
+        });
+      } else if (typeof value === "object") {
+        items = items.concat(flattenObject(value, fullKey));
+      } else {
+        items.push({ label: fullKey, value });
+      }
+    }
+    return items;
+  };
+
   const formatValue = (value) => {
     if (typeof value === "boolean") {
       return (
@@ -32,9 +65,15 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
         </span>
       );
     }
+
+    if (typeof value === "object" && value !== null) {
+      // Don't render this value — it should have been flattened already
+      return null;
+    }
+
     return (
       <span className="text-gray-300 max-w-[60%] text-right break-words">
-        {value}
+        {String(value)}
       </span>
     );
   };
@@ -42,13 +81,18 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
   const handleDownload = async () => {
     setDownloading(true);
     try {
-      const endpoint =
-        type === "upi" ? "/api/generate-upi-report" : "/api/generate-rc-report";
+      let endpoint = "/api/generate-rc-report";
+      if (type === "upi") endpoint = "/api/generate-upi-report";
+      else if (type === "challan") endpoint = "/api/generate-challan-report";
       const response = await instance.post(
         endpoint,
         { data },
         { responseType: "blob" }
       );
+
+      console.log("Download data:", data); // ✅ Log data being sent
+      // console.log("Download response:", response); // ✅ Log full response
+      // console.log("response data", response.data); // ✅ Log response data
       const blob = new Blob([response.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -84,8 +128,12 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
           {/* Header */}
           <div className="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
             <h2 className="text-xl font-semibold text-white tracking-wide">
-              {type === "upi" ? "UPI Details" : "RC Details"}:{" "}
-              <span className="text-lime-200">{id}</span>
+              {type === "upi"
+                ? "UPI Details"
+                : type === "challan"
+                ? "Challan Details"
+                : "RC Details"}
+              : <span className="text-lime-200">{id}</span>
             </h2>
             <button
               onClick={onClose}
@@ -99,8 +147,13 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
           <div ref={contentRef}>
             {data && Object.keys(data).length > 0 ? (
               <div className="space-y-3 pr-1 scroll-smooth">
+                {/* Render top-level fields except 'challans' */}
                 {Object.entries(data)
-                  .filter(([key, value]) => !isSkippable(key, value))
+                  .filter(
+                    ([key, value]) =>
+                      !isSkippable(key, value) &&
+                      key.toLowerCase() !== "challans"
+                  )
                   .map(([key, value]) => (
                     <div
                       key={key}
@@ -112,6 +165,32 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
                       {formatValue(value)}
                     </div>
                   ))}
+
+                {/* Render Challans */}
+                {/* Render Challans */}
+                {type === "challan" &&
+                  Array.isArray(data.challan_details) &&
+                  data.challan_details.map((challan, index) => {
+                    const flattened = flattenObject(challan);
+                    return (
+                      <div key={index} className=" p-3 rounded-md space-y-2">
+                        <h3 className="text-lime-300 font-semibold">
+                          Challan {index + 1}
+                        </h3>
+                        {flattened.map(({ label, value }, i) => (
+                          <div
+                            key={i}
+                            className="flex justify-between text-sm border-b border-gray-700 py-1"
+                          >
+                            <span className="text-gray-400 font-medium capitalize">
+                              {label.replace(/_/g, " ")}:
+                            </span>
+                            {formatValue(value)}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
               </div>
             ) : (
               <p className="text-gray-400 text-center">
@@ -122,17 +201,22 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
 
           {/* Footer */}
           <div className="mt-6 flex justify-between items-center">
-            <button
-              onClick={handleDownload}
-              disabled={downloading}
-              className={`${
-                downloading
-                  ? "bg-lime-200 cursor-not-allowed"
-                  : "bg-lime-200 hover:bg-lime-300"
-              } px-4 py-2 rounded-md text-black font-medium transition duration-200`}
-            >
-              Download pdf
-            </button>
+            {!(
+              type === "challan" &&
+              (!data?.challan_details || data.challan_details.length === 0)
+            ) && (
+              <button
+                onClick={handleDownload}
+                disabled={downloading}
+                className={`${
+                  downloading
+                    ? "bg-lime-200 cursor-not-allowed"
+                    : "bg-lime-200 hover:bg-lime-300"
+                } px-4 py-2 rounded-md text-black font-medium transition duration-200`}
+              >
+                Download pdf
+              </button>
+            )}
             <button
               onClick={onClose}
               className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md text-white font-medium transition duration-200"

@@ -7,6 +7,7 @@ import instance from "../api/axios";
 import FullScreenLoader from "../components/FullScreenLoader";
 import UserCard from "../components/UserCard";
 import MainHeader from "../components/MainHeader";
+import useAuthContext from "../context/AuthContext";
 
 const FIELD_TYPES = {
   name: { label: "Name", type: "text", placeholder: "Enter Name" },
@@ -21,7 +22,7 @@ const LeakDataFinder = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [emptyResults, setEmptyResults] = useState(false);
-
+  const { updateUser, hasSufficientCredits } = useAuthContext();
   const [fields, setFields] = useState([
     { id: Date.now(), type: "name", value: "", isValid: true, error: "" },
   ]);
@@ -89,7 +90,10 @@ const LeakDataFinder = () => {
       return { ...field, isValid, error };
     });
     setFields(validatedFields);
-
+    if (!hasSufficientCredits()) {
+      toast.warning("Insufficient credits. Please upgrade your plan.");
+      return;
+    }
     if (!allValid) {
       toast.error(firstInvalidError || "Please enter a valid input.");
       return;
@@ -104,6 +108,11 @@ const LeakDataFinder = () => {
       );
       if (res.status === 200) {
         const results = res.data;
+        const credits = results.credits ?? "";
+        if (credits !== undefined) {
+          updateUser({ credits: credits });
+          console.log("User credits updated:", credits);
+        }
         setResults(results.data || []);
         setTotalResults(results.total || 0);
         setCurrentPage(results.page || 1);
@@ -113,12 +122,16 @@ const LeakDataFinder = () => {
         toast.error("Something went wrong. Please try again.");
       }
     } catch (err) {
-      // console.log(err);
-      const message =
-        err.response?.data?.error ||
-        err.response?.data?.details ||
-        "Something went wrong. Please try again.";
-      toast.error(message);
+      if (err.response?.status === 402) {
+        const message = err.response?.data?.message || "Insufficient credits.";
+        toast.warning(message);
+      } else {
+        const message =
+          err.response?.data?.error ||
+          err.response?.data?.details ||
+          "Something went wrong. Please try again.";
+        toast.error(message);
+      }
     } finally {
       setLoading(false);
     }
@@ -136,14 +149,14 @@ const LeakDataFinder = () => {
               {index === 0 ? (
                 <button
                   onClick={handleAddField}
-                  className="p-1.5 md:p-3 border rounded-md font-bold text-gray-200 hover:bg-lime-300 hover:text-black border-lime-300"
+                  className="p-1.5 md:p-3 border rounded-md font-bold text-gray-200 bg-custom-input-bg hover:bg-lime-300 hover:text-black border-lime-300"
                 >
                   <Plus size={24} />
                 </button>
               ) : (
                 <button
                   onClick={() => handleRemoveField(field.id)}
-                  className="p-1.5 md:p-3 border rounded-md font-bold text-gray-200 border-red-400 hover:bg-red-400 hover:text-black"
+                  className="p-1.5 md:p-3 border rounded-md font-bold text-gray-200 bg-custom-input-bg border-red-400 hover:bg-red-400 hover:text-black"
                 >
                   <Minus size={24} />
                 </button>
@@ -163,7 +176,7 @@ const LeakDataFinder = () => {
                 }
                 className={`relative w-full flex-1 py-2 md:py-2.5 px-4 border rounded-md ${
                   field.isValid === false ? "border-red-500" : "border-lime-300"
-                } bg-transparent text-gray-200 placeholder:text-gray-200 focus:outline-none transition-all text-sm md:text-lg`}
+                } bg-custom-input-bg text-lime-200 placeholder:text-gray-200 focus:outline-none transition-all text-sm md:text-lg`}
                 maxLength={50}
               />
             </div>

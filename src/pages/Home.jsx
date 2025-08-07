@@ -21,6 +21,7 @@ const Home = () => {
     setCountryCode,
     fetchEmailData,
     setHibpResults,
+    hasSufficientCredits,
   } = useAuthContext();
 
   const navigate = useNavigate();
@@ -38,6 +39,10 @@ const Home = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!hasSufficientCredits()) {
+      toast.warning("Insufficient credits. Please upgrade your plan.");
+      return;
+    }
     if (!isChecked) {
       toast.error("Please accept the terms before submitting");
       return;
@@ -74,14 +79,14 @@ const Home = () => {
       <UserCard />
       <main className="flex-1 flex flex-col items-center justify-center p-8 -mt-36 sm:-mt-20 z-10">
         <div className="max-w-4xl mx-auto h-full flex flex-col items-center md:-mt-20 justify-center space-y-1.5 md:space-y-4 mb-2 md:mb-8 cursor-default">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-lime-200 to-teal-800 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-lime-200 to-teal-800 bg-clip-text text-transparent">
             {import.meta.env.VITE_APP_NAME}
           </h1>
-          <div className="text-white text-3xl sm:text-5xl font-semibold text-center">
+          {/* <div className="text-white text-3xl sm:text-5xl font-semibold text-center">
             Find out what's
-          </div>
+          </div> */}
           <div className="text-white text-3xl sm:text-5xl font-semibold text-center pb-4">
-            behind any
+            Search
             <br className="block md:hidden" />
             <span
               className="ml-1 text-[#AADE63] px-2 underline underline-offset-8"
@@ -109,7 +114,7 @@ const Home = () => {
               autoFocus={true}
               maxLength={inputType === "tel" ? 10 : 100}
               onChange={(e) => setInputValue(e.target.value)}
-              className="flex-grow px-4 py-3 border border-lime-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 bg-[#1e2939] text-lime-200"
+              className="flex-grow px-4 py-3 border border-lime-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 bg-custom-input-bg text-lime-200"
               placeholder={`Enter ${
                 inputType === "email" ? "email" : "phone"
               }...`}

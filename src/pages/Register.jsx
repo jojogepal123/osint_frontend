@@ -4,6 +4,7 @@ import useAuthContext from "../context/AuthContext";
 import Loader from "../components/Loader";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
+import instance from "../api/axios";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -11,24 +12,47 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [password_confirmation, setPassswordConfirmation] = useState("");
   const { register, errors } = useAuthContext();
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [registrationEnabled, setRegistrationEnabled] = useState(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Set loading to true when the register process starts
+    setLoading(true);
     try {
       await register({ name, email, password, password_confirmation });
     } catch (error) {
       toast.error("Register failed. Please check your credentials.");
     } finally {
-      setLoading(false); // Set loading to false when login process ends
+      setLoading(false);
     }
   };
+  useEffect(() => {
+    setLoading(true);
+    instance
+      .get("/api/registration-status")
+      .then((res) => {
+        setRegistrationEnabled(res.data.registration_enabled);
+      })
+      .catch((err) => {
+        console.error("Error fetching registration status", err);
+        setRegistrationEnabled(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
-  if (import.meta.env.VITE_REGISTER_ENABLED === "false") {
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]">
+        <Loader />
+      </div>
+    );
+  }
+  if (!registrationEnabled) {
     return (
       <div className="relative min-h-screen flex flex-col items-center justify-center bg-transparent text-gray-200">
         <h1 className="text-5xl md:text-9xl font-extrabold tracking-widest text-[#AADE63]">
@@ -188,7 +212,7 @@ const Register = () => {
                   <p className="text-xs sm:text-sm md:text-lg text-lime-200/80">
                     Already have an account?&nbsp;
                     <Link to="/login" className="cursor-pointer">
-                      <span className="hover:underline decoration-lime-200 underline-offset-2 text-xs sm:text-sm md:text-lg">
+                      <span className="underline decoration-lime-200 underline-offset-2 text-xs sm:text-sm md:text-lg">
                         Sign In
                       </span>
                     </Link>

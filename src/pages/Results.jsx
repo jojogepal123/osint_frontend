@@ -17,20 +17,21 @@ const Map = lazy(() => import("../components/Map"));
 const Results = () => {
   const location = useLocation();
   const { results, type, userInput } = location.state || {};
+  const actualResults = results?.data ?? results ?? {};
   const navigate = useNavigate();
   const handleNewSearch = () => navigate("/dashboard");
-  const TelProfile = ProfileFromTelApis(results);
-  const EmailProfile = ProfileFromEmailApis(results);
+  const TelProfile = ProfileFromTelApis(actualResults);
+  const EmailProfile = ProfileFromEmailApis(actualResults);
 
-  const emailData = results?.emailData || null;
+  const emailData = actualResults?.emailData || null;
   const mapData = emailData?.maps_result?.reviews || null;
-  const hibpResults = results?.hibpData || [];
-  const zehefResults = results?.zehefData?.data || [];
-  const osResults = results?.osintData?.data || null;
-
+  const hibpResults = actualResults?.hibpData || [];
+  const zehefResults = actualResults?.zehefData?.data || [];
+  const osResults = actualResults?.osintData?.data || null;
+  // console.log("osResults:", osResults);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-
+  // console.log("Results:", results);
   const isResultEmpty = () => {
     if (!results) return true;
 
@@ -228,8 +229,8 @@ const Results = () => {
             )}
             {osResults !== null && <OsintCard data={osResults} />}
           </div>
-          <div className="z-10 w-full gap-4 max-w-6xl mx-auto mb-12 bg-green p-4 rounded-lg">
-            {mapData !== null && (
+          {Array.isArray(mapData) && mapData.length !== 0 && (
+            <div className="z-10 w-full gap-4 max-w-6xl mx-auto mb-12 bg-green p-4 rounded-lg">
               <Suspense
                 fallback={
                   <div>
@@ -244,8 +245,8 @@ const Results = () => {
                   <Map data={mapData} />
                 </div>
               </Suspense>
-            )}
-          </div>
+            </div>
+          )}
         </>
       )}
     </>

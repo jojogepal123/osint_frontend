@@ -17,43 +17,43 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Set loading to true when login process starts
+    setLoading(true);
     try {
       await login({ email, password });
     } catch (error) {
       toast.error("Login failed. Please check your credentials.");
     } finally {
-      setLoading(false); // Set loading to false when login process ends
+      setLoading(false);
     }
   };
 
-  const handleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        setLoading(true);
-        const res = await instance.post("/api/google-login", {
-          token: tokenResponse.access_token,
-        });
+  // const handleLogin = useGoogleLogin({
+  //   onSuccess: async (tokenResponse) => {
+  //     try {
+  //       setLoading(true);
+  //       const res = await instance.post("/api/google-login", {
+  //         token: tokenResponse.access_token,
+  //       });
 
-        localStorage.setItem("auth_token", res.data.token);
+  //       localStorage.setItem("auth_token", res.data.token);
 
-        // You can redirect or update UI here
-        await getUser();
-        navigate("/dashboard");
-      } catch (err) {
-        toast.error("Google login failed. Please try again.");
-        // console.error("Google login failed:", err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    onError: (err) => {
-      // console.error("Google login error:", err);
-      toast.error("Google login failed.");
-    },
-    flow: "implicit",
-    scope: "openid email profile",
-  });
+  //       // You can redirect or update UI here
+  //       await getUser();
+  //       navigate("/dashboard");
+  //     } catch (err) {
+  //       toast.error("Google login failed. Please try again.");
+  //       // console.error("Google login failed:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   onError: (err) => {
+  //     // console.error("Google login error:", err);
+  //     toast.error("Google login failed.");
+  //   },
+  //   flow: "implicit",
+  //   scope: "openid email profile",
+  // });
 
   return (
     <>
@@ -178,7 +178,7 @@ const Login = () => {
                       to="/register"
                       className="cursor-pointer text-xs sm:text-sm md:text-lg"
                     >
-                      <span className="hover:underline decoration-lime-200 underline-offset-2">
+                      <span className="underline decoration-lime-200 underline-offset-2">
                         Sign Up
                       </span>
                     </Link>

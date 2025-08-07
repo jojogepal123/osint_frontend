@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import MainHeader from "../components/MainHeader";
 import { useNavigate } from "react-router-dom";
 import FullScreenLoader from "../components/FullScreenLoader";
+import useAuthContext from "../context/AuthContext";
 
 const SEARCH_OPTIONS = [
   {
@@ -17,13 +18,13 @@ const SEARCH_OPTIONS = [
         name: "pan",
         label: "PAN Number",
         type: "text",
-        placeholder: "Enter your pan number",
+        placeholder: "Ex. EKRPR1234F",
       },
       {
         name: "name",
         label: "Name",
         type: "text",
-        placeholder: "Enter your name",
+        placeholder: "Ex. Vishal Rathore",
         optional: true,
       },
     ],
@@ -35,14 +36,14 @@ const SEARCH_OPTIONS = [
       {
         name: "dl_number",
         label: "License Number",
-        placeholder: "Enter your license number",
+        placeholder: "Ex. JK08XXXXXXXXXX",
         type: "text",
       },
       {
         name: "dob",
         label: "Date of Birth",
         type: "date",
-        placeholder: "Enter your date of birth",
+        placeholder: "Ex. Yunas Khan",
       },
     ],
   },
@@ -54,13 +55,13 @@ const SEARCH_OPTIONS = [
         name: "epic_number",
         label: "Voter ID Number",
         type: "text",
-        placeholder: "Enter your voter ID number",
+        placeholder: "Ex. 124xxxxxxx",
       },
       {
         name: "name",
         label: "Name on Voter ID",
         type: "text",
-        placeholder: "Enter your name",
+        placeholder: "Ex. Yunas Khan",
         optional: true,
       },
     ],
@@ -73,13 +74,13 @@ const SEARCH_OPTIONS = [
         name: "file_number",
         label: "File Number",
         type: "text",
-        placeholder: "Enter your file number",
+        placeholder: "Ex. PA094044",
       },
       {
         name: "name",
         label: "Name",
         type: "text",
-        placeholder: "Enter your name",
+        placeholder: "Ex. Jane",
         optional: true,
       },
       { name: "dob", label: "Date of Birth", type: "date" },
@@ -87,45 +88,45 @@ const SEARCH_OPTIONS = [
   },
   {
     key: "bank_account",
-    label: "Verify Bank Account ",
+    label: "Verify Bank Account",
     fields: [
       {
         name: "account_number",
         label: "Account Number",
-        placeholder: "Enter your account number",
+        placeholder: "Ex. 123456789012",
         type: "text",
       },
       {
         name: "ifsc",
         label: "IFSC",
         type: "text",
-        placeholder: "Enter your IFSC code",
+        placeholder: "Ex. SBIN0001234",
       },
       {
         name: "name",
         label: "Account Holder Name",
         type: "text",
-        placeholder: "Enter your name",
+        placeholder: "Ex. Ramesh Kumar",
         optional: true,
       },
       {
         name: "phone",
         label: "Mobile Number",
         type: "text",
-        placeholder: "Enter your mobile number",
+        placeholder: "Ex. 9876543210",
         optional: true,
       },
     ],
   },
   {
     key: "ifsc",
-    label: "Verify IFSC ",
+    label: "Verify IFSC",
     fields: [
       {
         name: "ifsc",
         label: "IFSC",
         type: "text",
-        placeholder: "Enter your IFSC code",
+        placeholder: "Ex. HDFC0009876",
       },
     ],
   },
@@ -137,7 +138,7 @@ const SEARCH_OPTIONS = [
         name: "vehicle_number",
         label: "Vehicle Number",
         type: "text",
-        placeholder: "Enter your vehicle number",
+        placeholder: "Ex. MH12AB1234",
       },
     ],
   },
@@ -149,37 +150,37 @@ const SEARCH_OPTIONS = [
         name: "phone",
         label: "Mobile Number",
         type: "text",
-        placeholder: "Enter your mobile number",
+        placeholder: "Ex. 9876543210",
       },
       {
         name: "pan",
         label: "PAN",
         type: "text",
-        placeholder: "Enter your PAN number",
+        placeholder: "Ex. ABCDE1234F",
       },
       {
         name: "uan",
         label: "UAN",
         type: "text",
-        placeholder: "Enter your UAN",
+        placeholder: "Ex. 100123456789",
       },
       {
         name: "dob",
         label: "Date of Birth",
         type: "date",
-        placeholder: "Enter your date of birth",
+        placeholder: "Ex. 1990-05-15",
       },
       {
         name: "employee_name",
         label: "Employee Name",
         type: "text",
-        placeholder: "Enter your employee name",
+        placeholder: "Ex. Rajat Sharma",
       },
       {
         name: "employer_name",
         label: "Employer Name",
         type: "text",
-        placeholder: "Enter your employer name",
+        placeholder: "Ex. Infosys Ltd.",
       },
     ],
   },
@@ -191,6 +192,7 @@ const VerificationFinder = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { hasSufficientCredits, updateUser } = useAuthContext();
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
@@ -292,6 +294,10 @@ const VerificationFinder = () => {
       data: { ...inputValues },
     };
     // console.log("Payload:", payload);
+    if (!hasSufficientCredits()) {
+      toast.warning("Insufficient credits. Please upgrade your plan.");
+      return;
+    }
     setLoading(true);
     try {
       const response = await instance.post("/api/verification-id", payload);
@@ -309,21 +315,36 @@ const VerificationFinder = () => {
         inputValues.employee_name ||
         inputValues.employer_name ||
         "";
+      const credits = response?.data?.credits;
+      if (credits !== undefined) {
+        updateUser({ credits });
+      }
       navigate("/verification-results", {
         state: { data: response.data, searchInput },
       });
+
       // console.log("Verification data:", response.data);
 
       toast.success("Found data based on your search");
     } catch (error) {
+      console.error("Verification error:", error);
+
+      if (error.response) {
+        console.error("Status:", error.response.status);
+        console.error("Data:", error.response.data);
+      }
+
       if (error.response && error.response.status === 422) {
-        // console.log("Backend error:", error.response.data);
         navigate("/verification-results", {
           state: { data: null },
         });
         toast.warn("No data found");
+      } else if (error.response && error.response.status === 402) {
+        toast.warning("Insufficient credits.");
+      } else if (error.response && error.response.status === 400) {
+        toast.error(error.response.data?.error || "Bad request.");
       } else {
-        toast.error("Something went wrong");
+        toast.error(error.response?.data?.message || "Something went wrong");
       }
     } finally {
       setLoading(false);

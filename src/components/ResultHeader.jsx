@@ -4,6 +4,7 @@ import InlineLoader from "../components/InlineLoader";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import FullScreenLoader from "./FullScreenLoader";
+import useAuthContext from "../context/AuthContext";
 
 const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -11,6 +12,7 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const { user } = useAuthContext();
   const location = useLocation();
   const handleBack = () => navigate(-1);
 
@@ -263,6 +265,11 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
                   </>
                 )}
               </div>
+              {user && (
+                <div className="text-sm text-[#060714] rounded-lg  px-4 py-2  bg-custom-lime">
+                  Credits: <span className="font-semibold">{user.credits}</span>
+                </div>
+              )}
               <button
                 className="text-[#060714] flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium bg-custom-lime transition-colors w-full sm:w-auto"
                 onClick={handleBack}

@@ -23,9 +23,9 @@ const SidebarLarge = () => {
     setSidebarVisible(false);
   };
 
-  const handleSubscription = () => {
-    navigate("/subscription");
-  };
+  // const handleSubscription = () => {
+  //   navigate("/subscription");
+  // };
   const handleLeakDataFinder = () => {
     navigate("/leak-data-finder");
   };

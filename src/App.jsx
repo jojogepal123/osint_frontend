@@ -27,6 +27,9 @@ import CorporateFinder from "./pages/CorporateFinder";
 import CorporateResults from "./pages/CorporateResults";
 import VerificationFinder from "./pages/VerificationFinder";
 import VerificationResults from "./pages/VerificationResults";
+import LiveOnlyRoute from "./components/LiveOnlyRoute";
+import Upgrade from "./pages/Upgrade";
+import OtpVerification from "./pages/OtpVerification";
 
 function App() {
   const { sidebarVisible, setSidebarVisible, user, isLoading } =
@@ -83,15 +86,41 @@ function App() {
               {/* <Route path="/subscription" element={<Subscription />} /> */}
               <Route path="/results" element={<Results />} />
               <Route path="/leak-data-finder" element={<LeakDataFinder />} />
-              <Route path="/corporate" element={<CorporateFinder />} />
-              <Route path="/verification-id" element={<VerificationFinder />} />
-              <Route path="/corporate-results" element={<CorporateResults />} />
+              <Route
+                path="/corporate"
+                element={
+                  <LiveOnlyRoute>
+                    <CorporateFinder />
+                  </LiveOnlyRoute>
+                }
+              />
+              <Route
+                path="/verification-id"
+                element={
+                  <LiveOnlyRoute>
+                    <VerificationFinder />
+                  </LiveOnlyRoute>
+                }
+              />
+              <Route
+                path="/corporate-results"
+                element={
+                  <LiveOnlyRoute>
+                    <CorporateResults />
+                  </LiveOnlyRoute>
+                }
+              />
               <Route
                 path="/verification-results"
-                element={<VerificationResults />}
+                element={
+                  <LiveOnlyRoute>
+                    <VerificationResults />
+                  </LiveOnlyRoute>
+                }
               />
+              <Route path="/upgrade" element={<Upgrade />} />
             </Route>
-
+            <Route path="/otp-verification" element={<OtpVerification />} />
             {/* Guest routes */}
             <Route element={<GuestLayout />}>
               <Route

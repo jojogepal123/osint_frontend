@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         "custom-lime": "#abde64",
+        "custom-input-bg": "#1e2939",
       },
     },
   },
