@@ -253,7 +253,7 @@ const CorporateFinder = () => {
         navigate("/corporate-results", {
           state: { data: response.data.data, searchInput },
         });
-        console.log("response from backend", response.data.credits);
+        // console.log("response from backend", response.data.credits);
         toast.success("Found data based on your search");
       }
     } catch (error) {

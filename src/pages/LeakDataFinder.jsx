@@ -111,7 +111,7 @@ const LeakDataFinder = () => {
         const credits = results.credits ?? "";
         if (credits !== undefined) {
           updateUser({ credits: credits });
-          console.log("User credits updated:", credits);
+          // console.log("User credits updated:", credits);
         }
         setResults(results.data || []);
         setTotalResults(results.total || 0);

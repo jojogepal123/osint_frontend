@@ -37,7 +37,7 @@ const Register = () => {
         setRegistrationEnabled(res.data.registration_enabled);
       })
       .catch((err) => {
-        console.error("Error fetching registration status", err);
+        // console.error("Error fetching registration status", err);
         setRegistrationEnabled(false);
       })
       .finally(() => {

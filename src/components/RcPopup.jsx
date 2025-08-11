@@ -90,7 +90,7 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
         { responseType: "blob" }
       );
 
-      console.log("Download data:", data); // ✅ Log data being sent
+      // console.log("Download data:", data); // ✅ Log data being sent
       // console.log("Download response:", response); // ✅ Log full response
       // console.log("response data", response.data); // ✅ Log response data
       const blob = new Blob([response.data], { type: "application/pdf" });

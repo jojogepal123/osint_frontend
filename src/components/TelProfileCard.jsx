@@ -189,7 +189,7 @@ const TelProfileCard = ({
       }
       setUpiData(data.data || {});
 
-      console.log("UPI Data:", data);
+      // console.log("UPI Data:", data);
     } catch (err) {
       if (err.response?.status === 402) {
         const message = err.response?.data?.message || "Insufficient credits.";
@@ -229,7 +229,7 @@ const TelProfileCard = ({
       const credits = response.data?.credits;
       if (credits !== undefined) {
         updateUser({ credits });
-        console.log("User credits updated (RC Challan):", credits);
+        // console.log("User credits updated (RC Challan):", credits);
       }
       const details = response.data?.data?.data || {};
       const isEmpty =
@@ -239,7 +239,7 @@ const TelProfileCard = ({
         toast.warning("No data found on this RC number");
       }
 
-      console.log("res", details);
+      // console.log("res", details);
       setChallanData(details || {});
     } catch (err) {
       if (err.response?.status === 402) {

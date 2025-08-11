@@ -327,11 +327,12 @@ const VerificationFinder = () => {
 
       toast.success("Found data based on your search");
     } catch (error) {
-      console.error("Verification error:", error);
+      toast.error("Verification error:", error);
 
       if (error.response) {
-        console.error("Status:", error.response.status);
-        console.error("Data:", error.response.data);
+        // console.error("Status:", error.response.status);
+        // console.error("Data:", error.response.data);
+        toast.error("internal server error");
       }
 
       if (error.response && error.response.status === 422) {
