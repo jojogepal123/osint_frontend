@@ -1,12 +1,23 @@
 import axios from "axios";
 import { toast } from "react-toastify";
+import { v4 as uuidv4 } from "uuid"; // install with: npm install uuid
+
 // Create Axios instance (recommended over modifying default axios)
+const getDeviceId = () => {
+  let deviceId = localStorage.getItem("device_id");
+  if (!deviceId) {
+    deviceId = uuidv4();
+    localStorage.setItem("device_id", deviceId);
+  }
+  return deviceId;
+};
 const instance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
+    "X-Device-ID": getDeviceId(), // Send device ID to backend
   },
 });
 

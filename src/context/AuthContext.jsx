@@ -84,6 +84,15 @@ export const AuthProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, []);
 
+  const getDeviceId = () => {
+    let deviceId = localStorage.getItem("device_id");
+    if (!deviceId) {
+      deviceId = uuidv4();
+      localStorage.setItem("device_id", deviceId);
+    }
+    return deviceId;
+  };
+
   const updateUser = (updatedUser) => {
     setUser((prevUser) => ({
       ...prevUser,
