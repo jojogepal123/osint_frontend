@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import instance from "../api/axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Loader from "../components/Loader";
 import { toast } from "react-toastify";
 import useAuthContext from "../context/AuthContext";
@@ -10,7 +10,8 @@ const OtpVerification = () => {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const email = location.state?.email;
-  const [otp, setOtp] = useState("");
+  // const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState(Array(6).fill(""));
   const [loading, setLoading] = useState(false);
   const { getUser } = useAuthContext();
   const [canResend, setCanResend] = useState(false);
@@ -18,7 +19,7 @@ const OtpVerification = () => {
   const [otpExpireString, setOtpExpireString] = useState(
     location.state?.otpExpiresAt
   );
-
+  const inputRefs = useRef([]);
   useEffect(() => {
     if (!otpExpireString) return;
 
@@ -52,15 +53,37 @@ const OtpVerification = () => {
     const seconds = (totalSeconds % 60).toString().padStart(2, "0");
     return `${minutes}:${seconds}`;
   };
+  // Handle OTP digit change
+  const handleChange = (value, index) => {
+    if (/^[0-9]$/.test(value) || value === "") {
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
 
+      if (value && index < 5) {
+        inputRefs.current[index + 1].focus();
+      }
+    }
+  };
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && otp[index] === "" && index > 0) {
+      inputRefs.current[index - 1].focus();
+    }
+  };
   const verifyOtp = async () => {
-    if (!otp || !/^\d{6}$/.test(otp)) {
-      toast.error("Invalid otp value");
+    const otpValue = otp.join(""); // join array into "123456"
+
+    if (!/^\d{6}$/.test(otpValue)) {
+      toast.error("Invalid OTP value");
       return;
     }
+
     setLoading(true);
     try {
-      const res = await instance.post("/api/verify-email-otp", { email, otp });
+      const res = await instance.post("/api/verify-email-otp", {
+        email,
+        otp: otpValue,
+      });
 
       localStorage.setItem("auth_token", res.data.token);
       localStorage.setItem("token_expiry", res.data.expires_at);
@@ -104,12 +127,22 @@ const OtpVerification = () => {
         <p className="text-sm text-custom-lime">
           Enter the 6-digit OTP sent to: {email}
         </p>
-        <input
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          placeholder="Enter OTP"
-          className="w-48 md:w-96 py-1.5 px-4 border rounded-md border-lime-300 bg-transparent text-gray-200 placeholder:text-gray-200 focus:outline-none transition-all text-sm"
-        />
+
+        {/* OTP boxes */}
+        <div className="flex gap-2">
+          {otp.map((digit, index) => (
+            <input
+              key={index}
+              type="text"
+              maxLength="1"
+              value={digit}
+              onChange={(e) => handleChange(e.target.value, index)}
+              onKeyDown={(e) => handleKeyDown(e, index)}
+              ref={(el) => (inputRefs.current[index] = el)}
+              className="w-10 h-12 text-center border rounded-md border-lime-300 bg-transparent text-gray-200 text-lg focus:outline-none"
+            />
+          ))}
+        </div>
         <button
           className="bg-gradient-to-r text-gray-900 rounded-md font-bold border-none px-4 py-1 hover:bg-gradient-to-l from-lime-200 to-teal-800 text-sm mt-1"
           onClick={verifyOtp}
