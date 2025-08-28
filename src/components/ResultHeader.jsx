@@ -36,7 +36,7 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `search-results-${userInput}.pdf`;
+      a.download = `report-${userInput}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -67,7 +67,7 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `report-${userInput}.pdf`;
+      a.download = `ai-generated-report-${userInput}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -150,6 +150,23 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 md:gap-4 w-full md:w-auto">
+              <div className="text-sm text-gray-100 rounded-lg bg-gradient-to-r from-[#00b09b] to-[#96c93d]">
+                <button
+                  className="flex items-center gap-2 w-full px-4 py-2 text-xs md:text-sm"
+                  onClick={handleGenerateReport}
+                  role="menuitem"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="size-5"
+                  >
+                    <path d="M15.98 1.804a1 1 0 0 0-1.96 0l-.24 1.192a1 1 0 0 1-.784.785l-1.192.238a1 1 0 0 0 0 1.962l1.192.238a1 1 0 0 1 .785.785l.238 1.192a1 1 0 0 0 1.962 0l.238-1.192a1 1 0 0 1 .785-.785l1.192-.238a1 1 0 0 0 0-1.962l-1.192-.238a1 1 0 0 1-.785-.785l-.238-1.192ZM6.949 5.684a1 1 0 0 0-1.898 0l-.683 2.051a1 1 0 0 1-.633.633l-2.051.683a1 1 0 0 0 0 1.898l2.051.684a1 1 0 0 1 .633.632l.683 2.051a1 1 0 0 0 1.898 0l.683-2.051a1 1 0 0 1 .633-.633l2.051-.683a1 1 0 0 0 0-1.898l-2.051-.683a1 1 0 0 1-.633-.633L6.95 5.684ZM13.949 13.684a1 1 0 0 0-1.898 0l-.184.551a1 1 0 0 1-.632.633l-.551.183a1 1 0 0 0 0 1.898l.551.183a1 1 0 0 1 .633.633l.183.551a1 1 0 0 0 1.898 0l.184-.551a1 1 0 0 1 .632-.633l.551-.183a1 1 0 0 0 0-1.898l-.551-.184a1 1 0 0 1-.633-.632l-.183-.551Z" />
+                  </svg>
+                  AI Report
+                </button>
+              </div>
               <div
                 className="relative w-full sm:w-auto"
                 data-headlessui-state=""
@@ -211,29 +228,6 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
                         aria-orientation="vertical"
                       >
                         <button
-                          className="flex items-center gap-2 w-full px-4 py-2 text-xs md:text-sm text-white hover:bg-white/10 backdrop-blur-lg transition-colors"
-                          onClick={handleGenerateReport}
-                          role="menuitem"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="mr-2"
-                          >
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <polyline points="7 10 12 15 17 10" />
-                            <line x1="12" y1="15" x2="12" y2="3" />
-                          </svg>
-                          AI Report
-                        </button>
-                        <button
                           className="flex items-center gap-2 w-full px-4 py-2 text-sm text-white hover:bg-white/10 backdrop-blur-lg transition-colors"
                           onClick={handleSaveResults}
                           role="menuitem"
@@ -270,6 +264,7 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
                   Credits: <span className="font-semibold">{user.credits}</span>
                 </div>
               )}
+
               <button
                 className="text-[#060714] flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium bg-custom-lime transition-colors w-full sm:w-auto"
                 onClick={handleBack}

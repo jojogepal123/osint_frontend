@@ -21,15 +21,22 @@ const Map = ({ data = [] }) => {
     return (data || [])
       .map((d) => ({
         ...d,
-        latitude: Number(d?.latitude),
-        longitude: Number(d?.longitude),
+        latitude: d?.latitude !== null ? Number(d?.latitude) : null,
+        longitude: d?.longitude !== null ? Number(d?.longitude) : null,
       }))
-      .filter((d) => isFiniteNumber(d.latitude) && isFiniteNumber(d.longitude));
+      .filter(
+        (d) =>
+          d.latitude !== null &&
+          d.longitude !== null &&
+          isFiniteNumber(d.latitude) &&
+          isFiniteNumber(d.longitude)
+      );
   }, [data]);
 
   if (points.length === 0) return null;
 
   const center = [points[0].latitude, points[0].longitude];
+  // console.log("Map Data:", data);
 
   return (
     <MapContainer
@@ -38,28 +45,33 @@ const Map = ({ data = [] }) => {
       zoom={10}
       // optional: prevent crashes if center somehow becomes invalid
       whenReady={(map) => {
-        // If you want to fit bounds to all points:
-        const bounds = L.latLngBounds(
-          points.map((p) => [p.latitude, p.longitude])
-        );
-        map.target.fitBounds(bounds, { padding: [20, 20] });
+        if (points.length > 0) {
+          const bounds = L.latLngBounds(
+            points.map((p) => [p.latitude, p.longitude])
+          );
+          if (bounds.isValid()) {
+            map.target.fitBounds(bounds, { padding: [20, 20] });
+          }
+        }
       }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution="&copy; OpenStreetMap contributors"
       />
-      {points.map((loc, index) => (
-        <Marker key={index} position={[loc.latitude, loc.longitude]}>
-          <Popup>
-            <div>
-              <div className="text-md font-bold">{loc.name}</div>
-              <div className="text-xs">{loc.address}</div>
-              <div className="text-xs">{loc.date}</div>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+      {points.map((loc, index) =>
+        loc.latitude !== null && loc.longitude !== null ? (
+          <Marker key={index} position={[loc.latitude, loc.longitude]}>
+            <Popup>
+              <div>
+                <div className="text-md font-bold">{loc.name}</div>
+                <div className="text-xs">{loc.address}</div>
+                <div className="text-xs">{loc.date}</div>
+              </div>
+            </Popup>
+          </Marker>
+        ) : null
+      )}
     </MapContainer>
   );
 };
