@@ -117,6 +117,7 @@ const Results = () => {
           )
         : null,
       osintData: osResults || null,
+      mapData: mapData || null,
     };
   }
 

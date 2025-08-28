@@ -31,7 +31,7 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
         }
       );
       const filename = response?.data?.filename;
-      // console.log(filename);
+      //  (filename);
       const blob = new Blob([response.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
