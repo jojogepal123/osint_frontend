@@ -23,11 +23,6 @@ const TermsConditions = () => {
                 guidelines) Rules, 2011...
               </p>
               <p>
-                The Platform is owned by REDOASISS LLP, a company incorporated
-                under the Companies Act, 1956 with its registered office at
-                B1302 AMOGHA SG Highway...
-              </p>
-              <p>
                 Your use of the Platform and services and tools are governed by
                 the following terms and conditions...
               </p>
