@@ -24,8 +24,13 @@ const InfoList = ({ title, items, onCreditReport }) => {
               {item.key ? (
                 <span className="font-semibold">{item.key}:</span>
               ) : null}{" "}
-              {item.value}
+              {typeof item.value === "string" && item.value.includes("\n") ? (
+                <span className="whitespace-pre-line">{item.value}</span>
+              ) : (
+                item.value
+              )}
             </span>
+
             {item.source && (
               <span className="text-xs text-gray-400 ml-2">
                 ({item.source})
@@ -253,6 +258,7 @@ const TelProfileCard = ({
       setLoading(false);
     }
   };
+  console.log(profile);
 
   return (
     <>

@@ -5,6 +5,16 @@ export const ProfileFromTelApis = (results) => {
   const getIfExists = (val, source, key) =>
     val ? { value: val, source, key } : null;
 
+  const vcPrimary = getIfExists(
+    results?.vcData?.data?.[0]?.name,
+    "Social Media"
+  );
+
+  const vcAlts =
+    (results?.vcData?.data?.[0]?.names || [])
+      .map((n) => getIfExists(n?.name, "Social Media"))
+      .filter(Boolean) || [];
+
   const fullNames = [
     getIfExists(
       results?.tcData?.data?.basicInfo?.name?.fullName,
@@ -16,6 +26,9 @@ export const ProfileFromTelApis = (results) => {
       results?.tcData?.data?.basicInfo?.name?.altName,
       "Social Media"
     ),
+    getIfExists(results?.syncData?.data?.name, "Social Media"),
+    vcPrimary,
+    ...vcAlts,
     getIfExists(results?.allMData?.callapp?.name, "Social Media"),
     getIfExists(results?.allMData?.viewcaller?.[0]?.name, "Social Media"),
     getIfExists(results?.allMData?.eyecon, "Social Media"),
@@ -24,8 +37,9 @@ export const ProfileFromTelApis = (results) => {
     getIfExists(results?.spbData?.data?.name, "Gov"),
     getIfExists(results?.spuData?.data?.name, "Gov"),
     getIfExists(
-      `${results?.tlgData?.first_name || ""} ${results?.tlgData?.last_name || ""
-        }`.trim(),
+      `${results?.tlgData?.first_name || ""} ${
+        results?.tlgData?.last_name || ""
+      }`.trim(),
       "Social Media"
     ),
   ].filter(Boolean);
@@ -40,6 +54,9 @@ export const ProfileFromTelApis = (results) => {
     getIfExists(results?.tcData?.addressInfo?.city, "Social Media"),
     getIfExists(results?.tcData?.addressInfo?.street, "Social Media"),
     getIfExists(results?.tcData?.addressInfo?.address, "Social Media"),
+    getIfExists(results?.syncData?.data?.geospace?.latitude, "Latitude"),
+    getIfExists(results?.syncData?.data?.geospace?.longitude, "Longitude"),
+    getIfExists(results?.syncData?.data?.geospace?.country, "Social Media"),
   ].filter(Boolean);
 
   const phones = [

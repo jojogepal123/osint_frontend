@@ -192,7 +192,7 @@ export const AuthProvider = ({ children }) => {
       const { data } = await instance.get("/api/tel", {
         params: { number: fullPhoneNumber },
       });
-      // console.log("Raw /api/tel response:", data); // ✅ Log full response
+      console.log("Raw /api/tel response:", data); // ✅ Log full response
       const parsedHLR =
         typeof data.hlrData === "string"
           ? JSON.parse(data.hlrData)
@@ -210,6 +210,8 @@ export const AuthProvider = ({ children }) => {
         spbData: data.sbData || null,
         sprcData: data.srData || null,
         tlgData: data.telData || null,
+        syncData: data.syncData || null,
+        vcData: data.vcData || null,
         // srfullData: data.srfullData || null, // ✅ Make sure you access this
         errors: data.errors || {},
         credits: data.credits ?? null,
