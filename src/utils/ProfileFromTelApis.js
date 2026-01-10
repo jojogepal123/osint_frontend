@@ -42,10 +42,11 @@ export const ProfileFromTelApis = (results) => {
       }`.trim(),
       "Social Media"
     ),
+    getIfExists(results?.tlgData?.username, "Social Media"),
   ].filter(Boolean);
 
   const userNames = [
-    getIfExists(results?.tlgData?.username, "Social Media"),
+    getIfExists(results?.tlgData?.display_name, "Social Media"),
   ].filter(Boolean);
 
   const locations = [
@@ -67,6 +68,7 @@ export const ProfileFromTelApis = (results) => {
     getIfExists(results?.allMData?.tcData?.number, "Social Media"),
     getIfExists(results?.spuData?.data?.mobile_number, "Gov"),
     getIfExists(results?.spkData?.data?.mobile, "Gov"),
+    getIfExists(results?.tlgData?.phone_visible, "Social Media"),
   ].filter(Boolean);
 
   if (Array.isArray(spKResults?.phone_info)) {
@@ -96,7 +98,7 @@ export const ProfileFromTelApis = (results) => {
   };
   isSocialPresence("whatsapp", results?.wpData?.isUser);
   isSocialPresence("facebook", results?.smData?.response?.fb);
-  isSocialPresence("telegram", results?.tlgData?.found);
+  isSocialPresence("telegram", results?.tlgData?.status);
 
   // Add sources from osData
   if (Array.isArray(osResults)) {
@@ -234,13 +236,22 @@ export const ProfileFromTelApis = (results) => {
     });
   }
 
-  const telegramImage = results?.tlgData?.profile_photo
-    ? "/photo/" + results.tlgData.profile_photo
-    : null;
+  // Telegram photos (array)
+  const API_BASE = import.meta.env.VITE_FASTAPI_BASE_URL;
+  const telegramImages = Array.isArray(results?.tlgData?.photos)
+    ? results.tlgData.photos.map((photoPath, index) => {
+        const fileName = photoPath.split(/[\\/]/).pop(); // handles \ and /
+        return {
+          value: `${API_BASE}/telegram_photos/${fileName}`,
+          source: "Telegram",
+          key: `telegram-${index}`,
+        };
+      })
+    : [];
 
   const profileImages = [
     getIfExists(results?.wpData?.profilePic, "WhatsApp"),
-    telegramImage ? { value: telegramImage, source: "Social Media" } : null,
+    ...telegramImages,
   ].filter(Boolean);
 
   const carriers = [
@@ -300,6 +311,10 @@ export const ProfileFromTelApis = (results) => {
   } else if (rcData?.rc_number) {
     rcNumber = [rcData.rc_number];
   }
+
+  const telBio = [getIfExists(results?.tlgData?.bio, "Social Media")].filter(
+    Boolean
+  );
   const TelProfile = {
     fullNames,
     userNames,
@@ -323,6 +338,7 @@ export const ProfileFromTelApis = (results) => {
     rcNumber,
     socialMediaPresence,
     isCreditExists,
+    telBio,
   };
 
   return TelProfile;

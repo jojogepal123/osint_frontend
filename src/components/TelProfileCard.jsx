@@ -258,7 +258,7 @@ const TelProfileCard = ({
       setLoading(false);
     }
   };
-  console.log(profile);
+  // console.log(profile);
 
   return (
     <>
@@ -404,6 +404,7 @@ const TelProfileCard = ({
           <DataCard title="Country Codes" items={profile.countryCodes} />
           <DataCard title="Carriers" items={profile.carriers} />
           <DataCard title="Job Profiles" items={profile.jobProfiles} />
+          <DataCard title="Bio" items={profile.telBio} />
           <DataCard
             title="RC Numbers"
             items={profile.rcNumber.map((rc) => ({

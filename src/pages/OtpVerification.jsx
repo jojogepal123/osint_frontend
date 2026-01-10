@@ -115,6 +115,27 @@ const OtpVerification = () => {
     }
   };
 
+  // Handle paste (paste full OTP)
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").trim();
+
+    if (!/^\d{6}$/.test(pastedData)) return;
+
+    const newOtp = pastedData.split("");
+    setOtp(newOtp);
+
+    // focus last input
+    inputRefs.current[5]?.focus();
+  };
+
+  // Handle Enter key
+  const handleEnterVerify = (e) => {
+    if (e.key === "Enter") {
+      verifyOtp();
+    }
+  };
+
   return (
     <>
       {loading && (
@@ -137,9 +158,15 @@ const OtpVerification = () => {
               maxLength="1"
               value={digit}
               onChange={(e) => handleChange(e.target.value, index)}
-              onKeyDown={(e) => handleKeyDown(e, index)}
+              onKeyDown={(e) => {
+                handleKeyDown(e, index);
+                handleEnterVerify(e);
+              }}
+              onPaste={handlePaste}
+              // onKeyDown={(e) => handleKeyDown(e, index)}
               ref={(el) => (inputRefs.current[index] = el)}
               className="w-10 h-12 text-center border rounded-md border-lime-300 bg-transparent text-gray-200 text-lg focus:outline-none"
+              autoComplete="one-time-code"
             />
           ))}
         </div>
