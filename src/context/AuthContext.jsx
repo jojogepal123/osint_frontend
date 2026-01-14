@@ -212,7 +212,7 @@ export const AuthProvider = ({ children }) => {
         tlgData: data.telData || null,
         syncData: data.syncData || null,
         vcData: data.vcData || null,
-        osPhoneData: data.osPhoneData || null,
+        // osPhoneData: data.osPhoneData || null,
         // srfullData: data.srfullData || null, // ✅ Make sure you access this
         errors: data.errors || {},
         credits: data.credits ?? null,

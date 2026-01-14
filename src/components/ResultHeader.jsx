@@ -261,7 +261,10 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
               </div>
               {user && (
                 <div className="text-sm text-[#060714] rounded-lg  px-4 py-2  bg-custom-lime">
-                  Credits: <span className="font-semibold">{user.credits}</span>
+                  Credits:{" "}
+                  <span className="font-semibold">
+                    {Number(user.credits).toFixed(2)}
+                  </span>
                 </div>
               )}
 

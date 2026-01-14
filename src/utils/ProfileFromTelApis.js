@@ -98,7 +98,7 @@ export const ProfileFromTelApis = (results) => {
   };
   isSocialPresence("whatsapp", results?.wpData?.isUser);
   isSocialPresence("facebook", results?.smData?.response?.fb);
-  isSocialPresence("telegram", results?.tlgData?.status);
+  isSocialPresence("telegram", results?.tlgData?.status === "success");
 
   // Add sources from osData
   if (Array.isArray(osResults)) {
@@ -250,10 +250,10 @@ export const ProfileFromTelApis = (results) => {
     : [];
 
   const profileImages = [
-    getIfExists(results?.wpData?.profilePic, "WhatsApp"),
+    getIfExists(results?.wpData?.urlImage, "WhatsApp"),
     ...telegramImages,
   ].filter(Boolean);
-
+  // console.log(profileImages);
   const carriers = [
     getIfExists(results?.tcData?.data?.phoneInfo?.carrier, "Social Media"),
     getIfExists(

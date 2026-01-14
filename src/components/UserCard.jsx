@@ -28,7 +28,11 @@ const UserCard = () => {
     <div className="flex gap-2 items-center justify-end p-4 z-20">
       {user && (
         <div className="text-xs md:text-sm text-gray-900 rounded p-2 bg-custom-lime">
-          Credits: <span className="font-semibold">{user.credits}</span>
+          Credits:{" "}
+          <span className="font-semibold">
+            {" "}
+            {Number(user.credits).toFixed(2)}
+          </span>
         </div>
       )}
       <div className="relative flex items-center">
