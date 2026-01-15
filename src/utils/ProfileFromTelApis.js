@@ -311,10 +311,25 @@ export const ProfileFromTelApis = (results) => {
   } else if (rcData?.rc_number) {
     rcNumber = [rcData.rc_number];
   }
+  const whatsappAboutWithDate = results?.wpData?.aboutHistory
+    ?.filter((item) => item?.about)
+    .map((item) => {
+      const date = new Date(item.date).toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
-  const telBio = [getIfExists(results?.tlgData?.bio, "Social Media")].filter(
-    Boolean
-  );
+      return `${item.about} (${date})`;
+    })
+    .join(" | ");
+
+  const telBio = [
+    getIfExists(results?.tlgData?.bio, "Social Media"),
+    getIfExists(whatsappAboutWithDate, "WhatsApp"),
+  ].filter(Boolean);
   const TelProfile = {
     fullNames,
     userNames,
