@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
         const currentPath = window.location.pathname;
         const isPublicRoute = PUBLIC_ROUTES.includes(currentPath);
         const isAuthRoute = AUTH_ROUTE_PREFIXES.some((prefix) =>
-          currentPath.startsWith(prefix)
+          currentPath.startsWith(prefix),
         );
 
         if (!isPublicRoute && !isAuthRoute) {
@@ -109,9 +109,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("auth_token", response.data.token);
       localStorage.setItem("token_expiry", response.data.expires_at); // Save token expiry
       // Set the token in axios headers globally
-      instance.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${response.data.token}`;
+      instance.defaults.headers.common["Authorization"] =
+        `Bearer ${response.data.token}`;
 
       // Fetch user using the token
       await getUser();
@@ -174,7 +173,7 @@ export const AuthProvider = ({ children }) => {
       toast.error(
         inputType === "email"
           ? "Please enter a valid email address"
-          : "Please enter a valid phone number"
+          : "Please enter a valid phone number",
       );
       return false;
     }
@@ -184,7 +183,7 @@ export const AuthProvider = ({ children }) => {
   const fetchTelData = async () => {
     const fullPhoneNumber = `${countryCode.replace(
       "+",
-      ""
+      "",
     )}${inputValue.trim()}`;
     setLoading(true);
 
@@ -192,7 +191,7 @@ export const AuthProvider = ({ children }) => {
       const { data } = await instance.get("/api/tel", {
         params: { number: fullPhoneNumber },
       });
-      // console.log("Raw /api/tel response:", data); // ✅ Log full response
+      console.log("Raw /api/tel response:", data); // ✅ Log full response
       const parsedHLR =
         typeof data.hlrData === "string"
           ? JSON.parse(data.hlrData)
@@ -221,7 +220,7 @@ export const AuthProvider = ({ children }) => {
       if (data.credits !== undefined) {
         updateUser({ credits: data.credits });
       }
-      // console.log("Parsed tel results:", newResults); // ✅ Extra log
+      console.log("Parsed tel results:", newResults); // ✅ Extra log
       setResults(JSON.parse(JSON.stringify(newResults)));
       return newResults;
     } catch (error) {

@@ -227,8 +227,8 @@ const VerificationFinder = () => {
     if (selectedOption.key === "employment") {
       const isAnyComboValid = employmentRequiredCombos.some((combo) =>
         combo.every(
-          (field) => inputValues[field] && inputValues[field].trim() !== ""
-        )
+          (field) => inputValues[field] && inputValues[field].trim() !== "",
+        ),
       );
       if (!isAnyComboValid) {
         errors._employment =
@@ -325,33 +325,55 @@ const VerificationFinder = () => {
 
       // console.log("Verification data:", response.data);
 
-      toast.success("Found data based on your search");
+      // toast.success("Found data based on your search");
     } catch (error) {
-      toast.error("Verification error:", error);
-
       if (error.response) {
-        // console.error("Status:", error.response.status);
-        // console.error("Data:", error.response.data);
-        toast.error("internal server error");
-      }
+        const { status, data } = error.response;
 
-      if (error.response && error.response.status === 422) {
-        navigate("/verification-results", {
-          state: { data: null },
-        });
-        toast.warn("No data found");
-      } else if (error.response && error.response.status === 402) {
-        toast.warning("Insufficient credits.");
-      } else if (error.response && error.response.status === 400) {
-        toast.error(error.response.data?.error || "Bad request.");
+        switch (status) {
+          case 400:
+            toast.error(data?.error || "Bad request");
+            break;
+
+          case 401:
+            toast.error("Session expired. Please login again.");
+            break;
+
+          case 403:
+            toast.error("You are not authorized to perform this action.");
+            break;
+
+          case 404:
+            toast.error("Service not found.");
+            break;
+
+          case 422:
+            toast.warning(data?.error || "No data found");
+            navigate("/verification-results", { state: { data: null } });
+            break;
+
+          case 402:
+            toast.warning("Insufficient credits.");
+            break;
+
+          case 500:
+            toast.error("Server error. Please try again later.");
+            break;
+
+          default:
+            toast.error(data?.message || "Something went wrong.");
+        }
+      } else if (error.request) {
+        // Request sent but no response (network issue)
+        toast.error("Network error. Please check your connection.");
       } else {
-        toast.error(error.response?.data?.message || "Something went wrong");
+        // Axios setup error
+        toast.error("Unexpected error occurred.");
       }
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <>
       {loading && (
