@@ -1,0 +1,16 @@
+# Development — Vite dev server with hot module replacement
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install deps into image layer; node_modules/ named volume in compose
+# preserves them even when the bind-mount overrides /app
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 5173
+
+# --host exposes Vite to all interfaces so Docker can reach it
+CMD ["npm", "run", "dev", "--", "--host"]

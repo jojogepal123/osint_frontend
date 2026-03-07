@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la c:/Users/NICk/Desktop/code/latest/osint_frontend/.env*)"
+    ]
+  }
+}
