@@ -10,7 +10,7 @@ import Results from "./pages/Results";
 import useAuthContext from "./context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ParticlesComponent from "./layouts/ParticlesComponent";
+import Background from "./layouts/Background";
 import Subscription from "./pages/Subscription";
 import About from "./pages/About";
 import ContactUs from "./pages/ContactUs";
@@ -32,52 +32,14 @@ import Upgrade from "./pages/Upgrade";
 import OtpVerification from "./pages/OtpVerification";
 
 function App() {
-  const { sidebarVisible, setSidebarVisible, user, isLoading } =
-    useAuthContext();
-  const showSidebarPaths = [
-    "/dashboard",
-    "/leak-data-finder",
-    "/corporate",
-    "/verification-id",
-  ];
+  const { user, isLoading } = useAuthContext();
   const location = useLocation();
-  const showSidebar = showSidebarPaths.includes(location.pathname);
-  const openMenu = () => {
-    setSidebarVisible(!sidebarVisible);
-  };
 
   return (
     <>
       <ToastContainer />
       <div className="relative flex flex-col min-h-screen w-full">
-        <ParticlesComponent id="particle-background" />
-        <div
-          className={`absolute top-4 left-4 z-[9999] md:hidden ${
-            !sidebarVisible && showSidebar ? "" : "hidden"
-          }`}
-        >
-          <button
-            onClick={openMenu}
-            className="hover:bg-gray-800 text-white hover:text-lime-200 rounded-md p-1 focus:outline-none text-2xl"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-menu"
-            >
-              <line x1="4" x2="20" y1="12" y2="12"></line>
-              <line x1="4" x2="20" y1="6" y2="6"></line>
-              <line x1="4" x2="20" y1="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
+        <Background />
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             {/* Protected routes */}

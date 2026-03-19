@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Listbox } from "@headlessui/react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import UserCard from "../components/UserCard";
 import instance from "../api/axios";
 import { toast } from "react-toastify";
@@ -386,26 +386,25 @@ const VerificationFinder = () => {
         />
       )}
       <UserCard />
-      <div className="w-full flex flex-col items-center z-10 text-white mt-10 sm:mt-20">
+      <div className="w-full flex flex-col items-center z-10 text-white mt-10 sm:mt-20 md:pl-64">
         <MainHeader header="Identity Intelligence" />
-        <div className="min-h-auto max-w-full sm:max-w-3xl lg:max-w-4xl xl:max-w-7xl md:min-h-[450px] w-auto sm:w-full m-4 sm:mx-auto flex flex-col md:flex-row gap-4 sm:gap-6 lg:gap-8 items-center md:items-start bg-gray-900/70 border border-lime-300/50 rounded-lg p-4 md:p-8">
-          {/* Left: Dropdown */}
+        <div className="min-h-auto max-w-full sm:max-w-3xl lg:max-w-4xl xl:max-w-7xl md:min-h-[450px] w-auto sm:w-full m-4 sm:mx-auto flex flex-col md:flex-row gap-4 sm:gap-6 lg:gap-8 items-center md:items-start bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-xl p-4 md:p-8 shadow-2xl">
           <div className="w-full md:w-1/3 flex flex-col justify-start px-4 md:px-0">
-            <label className="mb-1 font-semibold">Select Search Type</label>
+            <label className="mb-2 text-sm font-medium text-slate-300">Select Search Type</label>
             <Listbox value={selectedOption} onChange={handleOptionSelect}>
               <div className="relative">
-                <Listbox.Button className="w-full py-2 px-4 rounded bg-gray-800 border border-lime-300 text-white font-semibold focus:outline-none flex justify-between items-center">
+                <Listbox.Button className="w-full py-3 px-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white font-medium focus:outline-none focus:border-cyan-500/50 flex justify-between items-center hover:border-cyan-500/50 transition-all">
                   {selectedOption.label}
-                  <ChevronDown className="w-5 h-5 text-lime-300" />
+                  <ChevronDown className="w-5 h-5 text-cyan-400" />
                 </Listbox.Button>
-                <Listbox.Options className="absolute mt-2 w-full bg-gray-800 border border-lime-300 rounded-md z-10">
+                <Listbox.Options className="absolute mt-2 w-full bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-xl shadow-2xl z-10 overflow-hidden">
                   {SEARCH_OPTIONS.map((option) => (
                     <Listbox.Option
                       key={option.key}
                       value={option}
                       className={({ active }) =>
-                        `cursor-pointer select-none px-4 py-2 rounded ${
-                          active ? "bg-lime-300 text-black" : "text-white"
+                        `cursor-pointer select-none px-4 py-3 transition-all ${
+                          active ? "bg-cyan-500/20 text-cyan-400" : "text-slate-300 hover:bg-slate-800/50"
                         }`
                       }
                     >
@@ -416,18 +415,17 @@ const VerificationFinder = () => {
               </div>
             </Listbox>
           </div>
-          <div className="w-px bg-lime-200/50 self-stretch"></div>
-          {/* Right: Input Fields */}
+          <div className="w-px bg-slate-700/50 self-stretch hidden md:block"></div>
           <div className="w-full md:w-2/3 px-4 md:px-0">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               {selectedOption.fields.map((field) => {
                 if (field.type === "text" || field.type === "date") {
                   return (
                     <div key={field.name} className="flex flex-col">
-                      <label className="mb-1 flex items-center gap-2">
-                        {field.label}
+                      <label className="mb-2 flex items-center gap-2">
+                        <span className="text-sm font-medium text-slate-300">{field.label}</span>
                         {field.optional && (
-                          <span className="text-xs px-1 py-0.5 rounded bg-gray-200 text-gray-800 font-medium">
+                          <span className="text-xs px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400 font-medium">
                             Optional
                           </span>
                         )}
@@ -439,11 +437,11 @@ const VerificationFinder = () => {
                         onChange={(e) =>
                           handleInputChange(field.name, e.target.value)
                         }
-                        className={`p-2 rounded bg-gray-800 border ${
+                        className={`p-3 rounded-xl bg-slate-800/50 border ${
                           errors[field.name] || errors._employment
-                            ? "border-red-500"
-                            : "border-lime-300"
-                        } text-white outline-none`}
+                            ? "border-red-500/50 bg-red-500/10"
+                            : "border-slate-700/50 focus:border-cyan-500/50"
+                        } text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all`}
                       />
                     </div>
                   );
@@ -452,12 +450,13 @@ const VerificationFinder = () => {
 
               <button
                 type="submit"
-                className="self-center w-48 mt-4 px-4 py-1.5 bg-gradient-to-r from-lime-200 to-teal-800 text-black rounded font-bold hover:bg-gradient-to-r hover:from-teal-800 hover:to-lime-200 shadow-lg text-lg"
+                className="self-center w-48 mt-6 px-6 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black rounded-xl font-bold shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                disabled={loading}
               >
+                <Search size={20} />
                 Verify
               </button>
             </form>
-            {/* {resultData && <CorporateResults data={resultData} />} */}
           </div>
         </div>
       </div>

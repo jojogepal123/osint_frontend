@@ -15,28 +15,28 @@ export default function StyledDropdown({ value, onChange }) {
   return (
     <div className="relative w-28 md:w-40">
       <Listbox value={value} onChange={onChange}>
-        <Listbox.Button className="relative w-full rounded-md py-1.5 md:py-3 px-4 border text-gray-300 font-bold border-lime-300 hover:border-lime-300/80 transition-all text-left cursor-pointer bg-custom-input-bg hover:bg-lime-300/80 hover:text-black">
-          <span>{selectedOption?.label}</span>
-          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-6 w-6 font-bold" />
+        <Listbox.Button className="relative w-full rounded-xl py-2 md:py-2.5 px-4 border text-slate-300 font-medium border-slate-700/50 hover:border-cyan-500/50 transition-all text-left cursor-pointer bg-slate-800/50 hover:bg-slate-700/50">
+          <span className="pr-6">{selectedOption?.label}</span>
+          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-cyan-400" />
         </Listbox.Button>
 
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-[#0b0d1a] border border-lime-300 rounded-lg shadow-lg text-white">
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-xl shadow-2xl overflow-hidden">
           {options.map((option) => (
             <Listbox.Option
               key={option.key}
               value={option.key}
               className={({ active }) =>
-                `px-4 py-2 cursor-pointer transition-all ${
+                `px-4 py-3 cursor-pointer transition-all ${
                   active
-                    ? "bg-lime-300 text-black"
-                    : "hover:bg-lime-300 hover:text-black"
+                    ? "bg-cyan-500/20 text-cyan-400"
+                    : "hover:bg-slate-800/50 text-slate-300 hover:text-white"
                 }`
               }
             >
               {({ selected }) => (
                 <div className="flex items-center justify-between">
-                  <span>{option.label}</span>
-                  {selected && <Check className="w-4 h-4" />}
+                  <span className="font-medium">{option.label}</span>
+                  {selected && <Check className="w-4 h-4 text-cyan-400" />}
                 </div>
               )}
             </Listbox.Option>

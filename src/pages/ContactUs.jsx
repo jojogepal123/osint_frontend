@@ -1,46 +1,53 @@
 import React from "react";
 import Navbar from "../components/Navbar";
+import { Mail, Globe, Shield } from "lucide-react";
 
 const ContactUs = () => {
   return (
     <>
-      <div className="lg:h-screen flex flex-col lg:flex-row justify-center items-center space-y-4 md:px-24 2xl:px-32 relative z-10">
+      <div className="lg:h-screen flex flex-col lg:flex-row justify-center items-center space-y-4 md:px-24 2xl:px-32 relative shadow-sm z-10">
         <Navbar />
-        <div className="w-full md:max-w-[80%] lg:max-w-[60%] md:h-[75%] bg-gray-700 bg-opacity-30 backdrop-blur-lg p-8 rounded-md md:rounded-r-md overflow-hidden shadow-2xl">
-          {/* <!-- Tab Contents --> */}
-
+        <div className="w-full md:max-w-[80%] lg:max-w-[60%] md:h-[75%] bg-gradient-to-br from-slate-900/80 via-slate-900/90 to-slate-800/80 backdrop-blur-xl border border-slate-700/50 p-8 rounded-2xl shadow-2xl overflow-hidden">
           <div
             id="contact"
-            className="w-full min-h-[400px] md:h-full  flex flex-col justify-center items-start tab-content divide-y"
+            className="w-full h-full flex flex-col justify-center items-start tab-content"
           >
-            <h1 className="text-2xl md:text-3xl px-2 py-2 text-[#9acc14]">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-4">
+              <Shield className="w-3 h-3" />
+              Get In Touch
+            </span>
+            <h1 className="text-2xl md:text-3xl px-2 py-2 bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent font-bold mb-6">
               CONTACT US
             </h1>
-            <div className="text-lg md:text-2xl xl:text-3xl text-white px-2 py-4 flex flex-col justify-center items-center self-center h-full relative">
-              <p>
+            <div className="px-4 py-8 flex flex-col justify-center items-start h-full">
+              <p className="text-lg md:text-2xl text-slate-300 mb-6">
                 For more information about our solutions or services, please
                 contact us at:
               </p>
-              <div className="mt-4 text-xl md:text-2xl flex flex-col justify-center items-start">
-                <p>
-                  <span className="text-3xl">📧</span> :{" "}
-                  <span className="text-[#9acc14]">Info@osintwork.com</span>
-                  <br />
-                  <span className="text-3xl">🌐</span> :{" "}
-                  <span className="text-[#9acc14]">osintwork.com</span>
-                </p>
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 bg-slate-800/30 p-4 rounded-xl border border-slate-700/30">
+                  <div className="w-12 h-12 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                    <Mail className="w-6 h-6 text-cyan-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-400">Email</p>
+                    <p className="text-lg bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent font-medium">
+                      Info@osintwork.com
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 bg-slate-800/30 p-4 rounded-xl border border-slate-700/30">
+                  <div className="w-12 h-12 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                    <Globe className="w-6 h-6 text-emerald-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-400">Website</p>
+                    <p className="text-lg bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent font-medium">
+                      osintwork.com
+                    </p>
+                  </div>
+                </div>
               </div>
-              {/* <div className="md:absolute right-0 bottom-0 md:mt-16 flex gap-2 flex-row">
-                <a
-                  href="https://www.linkedin.com/company/redoasiss/"
-                  className="text-[#9acc14]"
-                >
-                  <img className="w-12 h-12" src={x} alt="x.com" />
-                </a>
-                <a href="https://x.com/redoasiss" className="text-[#9acc14]">
-                  <img className="w-12 h-12" src={linkedin} alt="linkedin" />
-                </a>
-              </div> */}
             </div>
           </div>
         </div>

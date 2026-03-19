@@ -5,8 +5,7 @@ import SidebarLarge from "../components/SidebarLarge";
 import SidebarSmall from "../components/SidebarSmall";
 
 const AuthLayout = () => {
-  const { user, setSidebarVisible, sidebarVisible, isLoading } =
-    useAuthContext();
+  const { user, isLoading } = useAuthContext();
 
   const location = useLocation();
 
@@ -18,7 +17,6 @@ const AuthLayout = () => {
     );
   }
 
-  // Allow access to the password reset page even if the user is not authenticated
   if (!user && location.pathname.startsWith("/password-reset")) {
     return <Outlet />;
   }
@@ -34,17 +32,8 @@ const AuthLayout = () => {
     <>
       {!hideSidebar && (
         <>
-          {/* Mobile Sidebar - Only visible when sidebarVisible is true */}
-          {sidebarVisible && (
-            <div className="block md:hidden fixed inset-0 bg-black/50 z-50">
-              <SidebarSmall />
-            </div>
-          )}
-
-          {/* Desktop Sidebar - Always visible on md+ screens */}
-          <div className="hidden md:block">
-            <SidebarLarge />
-          </div>
+          <SidebarSmall />
+          <SidebarLarge />
         </>
       )}
       <Outlet />

@@ -7,46 +7,49 @@ import RcPopup from "./RcPopup";
 import CreditReportModal from "./CreditReportModal";
 import { toast } from "react-toastify";
 import useAuthContext from "../context/AuthContext";
+import { Phone, User, Mail, MapPin, CreditCard, Shield, Car, Building2, AlertTriangle, Globe, FileText } from "lucide-react";
 
-const InfoList = ({ title, items, onCreditReport }) => {
+const InfoList = ({ title, items, onCreditReport, icon: IconComponent }) => {
   if (!items || items.length === 0) return null;
 
   return (
     <div>
-      <h3 className="text-lg font-bold text-lime-200 mb-2 flex items-center gap-2">
-        {/* Optional: Add an icon here if you want */}
+      <h3 className="text-base font-semibold text-cyan-400 mb-3 flex items-center gap-2">
+        {IconComponent && <IconComponent className="w-4 h-4" />}
         {title}
       </h3>
-      <ul className="list-disc ml-5 text-gray-200 space-y-1">
+      <ul className="space-y-2">
         {items.map((item, idx) => (
-          <li key={idx} className="flex items-center gap-2">
-            <span>
-              {item.key ? (
-                <span className="font-semibold">{item.key}:</span>
-              ) : null}{" "}
-              {typeof item.value === "string" && item.value.includes("\n") ? (
-                <span className="whitespace-pre-line">{item.value}</span>
-              ) : (
-                item.value
+          <li key={idx} className="flex flex-col gap-1">
+            <div className="flex items-start gap-2">
+              {item.key && (
+                <span className="text-sm text-emerald-400 font-medium">{item.key}:</span>
               )}
-            </span>
-
-            {item.source && (
-              <span className="text-xs text-gray-400 ml-2">
-                ({item.source})
+              <span className="text-slate-300 text-sm">
+                {typeof item.value === "string" && item.value.includes("\n") ? (
+                  <span className="whitespace-pre-line">{item.value}</span>
+                ) : (
+                  item.value
+                )}
               </span>
-            )}
-            {/* Show Credit Report button only for PAN */}
-            {onCreditReport &&
-              (item.key === "pan_number" || item.key === "PAN Number") &&
-              item.value && (
-                <button
-                  className="ml-2 px-3 py-1 rounded bg-lime-400 text-black font-semibold text-xs shadow hover:bg-lime-500 transition"
-                  onClick={() => onCreditReport(item.value)}
-                >
-                  Credit Report
-                </button>
+            </div>
+            <div className="flex items-center gap-3">
+              {item.source && (
+                <span className="text-xs text-slate-500 px-2 py-0.5 rounded-full bg-slate-800/50">
+                  {item.source}
+                </span>
               )}
+              {onCreditReport &&
+                (item.key === "pan_number" || item.key === "PAN Number") &&
+                item.value && (
+                  <button
+                    className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-semibold border border-cyan-500/30 hover:bg-cyan-500/30 transition"
+                    onClick={() => onCreditReport(item.value)}
+                  >
+                    Credit Report
+                  </button>
+                )}
+            </div>
           </li>
         ))}
       </ul>
@@ -54,57 +57,15 @@ const InfoList = ({ title, items, onCreditReport }) => {
   );
 };
 
-const DataCard = ({ title, items, onCreditReport }) => {
+const DataCard = ({ title, items, onCreditReport, icon: IconComponent }) => {
   if (!items || items.length === 0) return null;
 
   return (
-    <div className="bg-gray-900/80 rounded-xl shadow-lg p-6 min-h-[150px] flex flex-col justify-between border border-gray-800 hover:border-lime-400 transition">
-      <InfoList title={title} items={items} onCreditReport={onCreditReport} />
+    <div className="bg-slate-900/60 backdrop-blur-sm rounded-xl shadow-lg p-5 min-h-[120px] flex flex-col justify-between border border-slate-700/50 hover:border-cyan-500/30 hover:bg-slate-900/80 transition-all duration-300 group">
+      <InfoList title={title} items={items} onCreditReport={onCreditReport} icon={IconComponent} />
     </div>
   );
 };
-// const generateCreditReport = async (profile) => {
-//   // Find PAN number from idProofs
-//   const panProof = profile.idProofs?.find(
-//     (proof) => proof.key === "PAN Number" && proof.value
-//   );
-//   const name = profile.fullNames?.[1]?.value || "";
-//   const id_number = panProof?.value || "";
-//   const mobile = profile.phones?.find((ph) => ph.source === "Gov")?.value || "";
-//   console.log(name, id_number, mobile);
-//   if (!name || !id_number || !mobile) {
-//     alert("Missing required information for credit report.");
-//     return;
-//   }
-
-//   try {
-//     const response = await instance.post(
-//       "/api/generate-credit-report",
-//       { name, id_number, mobile },
-//       { responseType: "blob" } // <--- important here
-//     );
-
-//     const blob = new Blob([response.data], { type: "application/pdf" });
-//     const url = window.URL.createObjectURL(blob);
-
-//     const link = document.createElement("a");
-//     link.href = url;
-//     link.setAttribute("download", "credit-report.pdf");
-
-//     document.body.appendChild(link);
-//     link.click();
-//     link.remove();
-
-//     window.URL.revokeObjectURL(url);
-
-//     console.log("Credit report generated and downloaded");
-//   } catch (error) {
-//     console.error(
-//       "Error generating credit report:",
-//       error.response?.data || error.message
-//     );
-//   }
-// };
 
 const TelProfileCard = ({
   profile,
@@ -123,7 +84,6 @@ const TelProfileCard = ({
     } else {
       document.body.style.overflow = "";
     }
-    // Clean up on unmount
     return () => {
       document.body.style.overflow = "";
     };
@@ -146,7 +106,7 @@ const TelProfileCard = ({
   const handleRCClick = async (rc) => {
     setSelectedRC(rc);
     setRcData(null);
-    setLoading(true); // Start loading
+    setLoading(true);
     if (!hasSufficientCredits()) {
       toast.warning("Insufficient credits. Please upgrade your plan.");
       return;
@@ -161,7 +121,6 @@ const TelProfileCard = ({
         updateUser({ credits });
       }
       setRcData(data.data || {});
-      // console.log("RC Data:", data);
     } catch (err) {
       if (err.response?.status === 402) {
         const message = err.response?.data?.message || "Insufficient credits.";
@@ -171,14 +130,14 @@ const TelProfileCard = ({
       }
       setRcData(null);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
   const handleUpiClick = async (upi) => {
     setLoading(true);
-    setUpiData(null); // Reset UPI data
-    setSelectedUpi(upi); // Set selected UPI for viewing
+    setUpiData(null);
+    setSelectedUpi(upi);
     if (!hasSufficientCredits()) {
       toast.warning("Insufficient credits. Please upgrade your plan.");
       return;
@@ -193,8 +152,6 @@ const TelProfileCard = ({
         updateUser({ credits });
       }
       setUpiData(data.data || {});
-
-      // console.log("UPI Data:", data);
     } catch (err) {
       if (err.response?.status === 402) {
         const message = err.response?.data?.message || "Insufficient credits.";
@@ -234,7 +191,6 @@ const TelProfileCard = ({
       const credits = response.data?.credits;
       if (credits !== undefined) {
         updateUser({ credits });
-        // console.log("User credits updated (RC Challan):", credits);
       }
       const details = response.data?.data?.data || {};
       const isEmpty =
@@ -243,8 +199,6 @@ const TelProfileCard = ({
       if (isEmpty) {
         toast.warning("No data found on this RC number");
       }
-
-      // console.log("res", details);
       setChallanData(details || {});
     } catch (err) {
       if (err.response?.status === 402) {
@@ -258,77 +212,76 @@ const TelProfileCard = ({
       setLoading(false);
     }
   };
-  // console.log(profile);
 
   return (
     <>
       {modalOpen && selectedImage && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-80"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
           onClick={() => setModalOpen(false)}
         >
           <img
             src={selectedImage}
             alt="Full View"
-            className="max-w-[90vw] max-h-[90vh] min-w-[400px] rounded-lg shadow-2xl"
-            onClick={(e) => e.stopPropagation()} // Prevent modal close on image click
+            className="max-w-[90vw] max-h-[90vh] min-w-[400px] rounded-2xl shadow-2xl border border-slate-700/50"
+            onClick={(e) => e.stopPropagation()}
           />
           <button
-            className="absolute top-6 right-8 text-white text-3xl font-bold bg-black bg-opacity-50 rounded-full px-3 py-1 hover:bg-opacity-80 transition"
+            className="absolute top-6 right-8 text-white text-3xl font-bold bg-slate-800/50 backdrop-blur-sm rounded-full px-4 py-2 hover:bg-slate-700/50 transition"
             onClick={() => setModalOpen(false)}
           >
             &times;
           </button>
         </div>
       )}
-      <div className="space-y-4 bg-[#0b323d] rounded-xl shadow-md p-6 text-white border border-gray-700">
+      
+      <div className="space-y-6 bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-2xl p-6 md:p-8 text-white border border-slate-700/50">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-center text-white">
-          <div className="mb-8 flex items-center gap-3">
-            <span className="inline-block w-2 h-12 md:h-8 bg-lime-400 rounded-full"></span>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-wide">
-              Profile Summary :{" "}
-              <span className="text-lime-200">{userInput}</span>
-            </h2>
-            {profile.isSpam && (
-              <span className="text-red-400 text-sm font-medium">
-                ⚠ Marked as Spam
-              </span>
-            )}
+        <div className="flex items-center gap-4 pb-4 border-b border-slate-700/50">
+          <div className="w-1 h-14 bg-gradient-to-b from-cyan-400 to-emerald-400 rounded-full shadow-lg shadow-cyan-500/30"></div>
+          <div className="flex-1">
+            <div className="flex flex-col md:flex-row md:items-center gap-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-white">
+                Profile Summary
+              </h2>
+              <p className="flex items-center gap-2 text-cyan-400 font-medium">
+                <Phone className="w-4 h-4" />
+                {userInput}
+              </p>
+              {profile.isSpam && (
+                <span className="flex items-center gap-1 text-red-400 text-sm font-medium bg-red-500/10 px-3 py-1 rounded-full border border-red-500/30">
+                  <AlertTriangle className="w-4 h-4" />
+                  Marked as Spam
+                </span>
+              )}
+            </div>
           </div>
-
-          {/* {profile.isCreditExists && profile.isCreditExists[0] && (
-            <button
-              type="button"
-              className="text-[#060714] flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium bg-[#ABDE64] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ABDE64] transition-colors w-full sm:w-auto mt-3 md:mt-0"
-              onClick={() => generateCreditReport(profile)}
-            >
-              Credit Report
-            </button>
-          )} */}
         </div>
 
-        <div className="flex flex-col md:flex-row items-center gap-4">
+        {/* Profile Images */}
+        <div className="flex flex-col md:flex-row items-start gap-6">
           {profile.profileImages?.length > 0 && (
             <div className="flex flex-wrap gap-4 items-center">
               {profile.profileImages.map((img, idx) => (
-                <div key={idx} className="relative flex flex-col items-center">
-                  <img
-                    src={img.value}
-                    alt={`Profile ${idx}`}
-                    className="w-32 h-32 rounded-full object-cover border-2 border-gray-200 shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer"
-                    referrerPolicy="no-referrer"
-                    onClick={() => {
-                      setModalOpen(true);
-                      setSelectedImage(img.value);
-                    }}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "/no-image.png";
-                    }}
-                  />
-                  {/* Overlay badge for source */}
-                  <span className="absolute bottom-2 right-2 bg-lime-400 text-gray-900 text-xs px-2 py-0.5 rounded-full shadow group-hover:bg-lime-500 transition">
+                <div key={idx} className="relative flex flex-col items-center group">
+                  <div className="relative overflow-hidden rounded-full">
+                    <img
+                      src={img.value}
+                      alt={`Profile ${idx}`}
+                      className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-2 border-cyan-500/30 shadow-xl shadow-cyan-500/10 hover:shadow-cyan-500/30 transition-all duration-300 cursor-pointer group-hover:scale-105"
+                      referrerPolicy="no-referrer"
+                      onClick={() => {
+                        setModalOpen(true);
+                        setSelectedImage(img.value);
+                      }}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/no-image.png";
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-cyan-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+                  </div>
+                  <span className="mt-2 text-xs px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
                     {img.source}
                   </span>
                 </div>
@@ -337,15 +290,15 @@ const TelProfileCard = ({
           )}
         </div>
 
-        {/* personal info */}
+        {/* Personal Info Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <DataCard title="Full Names and Alias" items={profile.fullNames} />
-          <DataCard title="Usernames" items={profile.userNames} />
-          <DataCard title="Phone Numbers" items={profile.phones} />
-          <DataCard title="Emails" items={profile.emails} />
-          <DataCard title="Basic Info" items={profile.basicInfo} />
-          <DataCard title="Bank Details" items={profile.bankDetails} />
-          {/* <DataCard title="Upi Ids" items={profile.upiDetails} /> */}
+          <DataCard title="Full Names and Alias" items={profile.fullNames} icon={User} />
+          <DataCard title="Usernames" items={profile.userNames} icon={User} />
+          <DataCard title="Phone Numbers" items={profile.phones} icon={Phone} />
+          <DataCard title="Emails" items={profile.emails} icon={Mail} />
+          <DataCard title="Basic Info" items={profile.basicInfo} icon={User} />
+          <DataCard title="Bank Details" items={profile.bankDetails} icon={CreditCard} />
+          
           <DataCard
             title="Upi Ids"
             items={
@@ -356,14 +309,14 @@ const TelProfileCard = ({
                         key={idx}
                         className="flex items-center justify-between gap-4"
                       >
-                        <span className="text-gray-300 font-medium">
+                        <span className="text-slate-300 font-medium">
                           {upi.value}
                         </span>
                         <button
                           onClick={() => handleUpiClick(upi.value)}
-                          className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-sm"
+                          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/20 text-cyan-400 font-medium shadow-md hover:bg-cyan-500/30 border border-cyan-500/30 transition-all text-sm"
                         >
-                          <span>View Details</span>
+                          View Details
                         </button>
                       </div>
                     ),
@@ -374,16 +327,16 @@ const TelProfileCard = ({
                     {
                       value: (
                         <div className="flex items-center justify-between gap-4">
-                          <span className="text-gray-300 font-medium">
+                          <span className="text-slate-300 font-medium">
                             {profile.upiDetails.value}
                           </span>
                           <button
                             onClick={() =>
                               handleUpiClick(profile.upiDetails.value)
                             }
-                            className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-sm"
+                            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/20 text-cyan-400 font-medium shadow-md hover:bg-cyan-500/30 border border-cyan-500/30 transition-all text-sm"
                           >
-                            <span>View Details</span>
+                            View Details
                           </button>
                         </div>
                       ),
@@ -392,129 +345,150 @@ const TelProfileCard = ({
                   ]
                 : []
             }
+            icon={CreditCard}
           />
+          
           <DataCard
             title="Identity Proofs"
             items={profile.idProofs}
             onCreditReport={handleCreditReport}
+            icon={Shield}
           />
-          <DataCard title="Verified Address" items={profile.verifiedAddress} />
-          <DataCard title="Locations" items={profile.locations} />
-          {/* <DataCard title="Last Updated" items={profile.lastUpdated} /> */}
-          <DataCard title="Country Codes" items={profile.countryCodes} />
-          <DataCard title="Carriers" items={profile.carriers} />
-          <DataCard title="Job Profiles" items={profile.jobProfiles} />
-          <DataCard title="Bio" items={profile.telBio} />
+          <DataCard title="Verified Address" items={profile.verifiedAddress} icon={MapPin} />
+          <DataCard title="Locations" items={profile.locations} icon={MapPin} />
+          <DataCard title="Country Codes" items={profile.countryCodes} icon={Globe} />
+          <DataCard title="Carriers" items={profile.carriers} icon={Building2} />
+          <DataCard title="Job Profiles" items={profile.jobProfiles} icon={Building2} />
+          <DataCard title="Bio" items={profile.telBio} icon={User} />
+          
           <DataCard
             title="RC Numbers"
             items={profile.rcNumber.map((rc) => ({
               value: (
                 <div
-                  key={rc}
-                  className="flex items-center justify-between gap-4"
+                  className="flex flex-col sm:flex-row items-start sm:items-center gap-2"
                 >
-                  <span className="text-gray-300 font-medium">{rc}</span>
-                  <button
-                    onClick={() => handleRCClick(rc)}
-                    className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-sm"
-                  >
-                    <span>View Details</span>
-                  </button>
-                  <button
-                    onClick={() => handleChallanClick(rc)}
-                    className="inline-flex items-center gap-3 px-4 py-1 rounded-full bg-custom-lime text-black font-semibold shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-300 text-sm"
-                  >
-                    <span>Challans Details</span>
-                  </button>
+                  <span className="text-slate-300 font-medium">{rc}</span>
+                  <div className="flex gap-2 flex-wrap">
+                    <button
+                      onClick={() => handleRCClick(rc)}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/20 text-cyan-400 font-medium shadow-md hover:bg-cyan-500/30 border border-cyan-500/30 transition-all text-xs"
+                    >
+                      View Details
+                    </button>
+                    <button
+                      onClick={() => handleChallanClick(rc)}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium shadow-md hover:bg-emerald-500/30 border border-emerald-500/30 transition-all text-xs"
+                    >
+                      Challan Details
+                    </button>
+                  </div>
                 </div>
               ),
             }))}
+            icon={Car}
           />
         </div>
 
         {/* Social Media Links */}
         {Object.keys(profile.socialMediaPresence).length > 0 && (
-          <div className="bg-gray-900/80 p-6 rounded-2xl shadow-lg mb-4">
-            <h3 className="text-xl font-bold mb-4 text-white">
-              Internet Presence
-            </h3>
-            <ul className="divide-y divide-gray-800">
+          <div className="bg-slate-900/40 backdrop-blur-sm border border-slate-700/50 rounded-xl p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <Globe className="w-5 h-5 text-cyan-400" />
+              <h3 className="text-lg font-semibold text-white">Internet Presence</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {Object.entries(profile.socialMediaPresence).map(
                 ([platform, isPresent]) => (
-                  <li
+                  <div
                     key={platform}
-                    className="flex items-center justify-between py-3 group transition-all cursor-pointer"
+                    className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${
+                      isPresent 
+                        ? "bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20" 
+                        : "bg-slate-800/50 border-slate-700/50 hover:bg-slate-800/70"
+                    }`}
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-6 h-6 md:w-10 md:h-10 rounded-full bg-gray-800 flex items-center justify-center shadow group-hover:bg-lime-900/20 transition">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        isPresent ? "bg-emerald-500/20" : "bg-slate-700/50"
+                      }`}>
                         <IconWithFallback platform={platform} size={24} />
                       </div>
-                      <span className="capitalize text-sm md:text-lg font-medium text-gray-100 group-hover:text-lime-200 transition">
+                      <span className="capitalize font-medium text-slate-200">
                         {platform}
                       </span>
                     </div>
                     {isPresent ? (
-                      <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-lime-700/20 text-lime-200 font-semibold text-xs md:text-sm shadow">
-                        <Check size={16} color="#34f000" />
+                      <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold border border-emerald-500/30">
+                        <Check className="w-3 h-3" />
                         Active
                       </span>
                     ) : (
-                      <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-700/20 text-red-200 font-semibold text-xs md:text-sm shadow">
-                        <X size={16} color="#ff3333" />
+                      <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-700/50 text-slate-400 text-xs font-medium border border-slate-600/30">
+                        <X className="w-3 h-3" />
                         Inactive
                       </span>
                     )}
-                  </li>
+                  </div>
                 )
               )}
-            </ul>
+            </div>
           </div>
         )}
 
-        {/* Other single-value fields */}
-        <div className="grid md:grid-cols-2 gap-6 text-white text-md ">
+        {/* Other Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {profile?.isBusiness && (
-            <div className="bg-gray-900 p-4 rounded-lg text-gray-200">
-              <h3 className="font-semibold">Whatsapp Business Account</h3>
-              <p className="text-gray-700">
+            <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 p-4 rounded-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <Building2 className="w-4 h-4 text-cyan-400" />
+                <h3 className="font-semibold text-white text-sm">Whatsapp Business</h3>
+              </div>
+              <p className="text-emerald-400 font-medium">
                 {profile?.isBusiness ? "Yes" : "No"}
               </p>
             </div>
           )}
           {profile?.imsi && (
-            <div className="bg-gray-900 p-4 rounded-lg text-gray-200">
-              <h3 className="font-semibold">Phone IMSI</h3>
-              <p className="text-lime-200">{profile?.imsi || "N/A"}</p>
+            <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 p-4 rounded-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <FileText className="w-4 h-4 text-cyan-400" />
+                <h3 className="font-semibold text-white text-sm">Phone IMSI</h3>
+              </div>
+              <p className="text-cyan-400 font-medium">
+                {profile?.imsi || "N/A"}
+              </p>
             </div>
           )}
           {profile?.lastUpdated && (
-            <div className="bg-gray-900 p-4 rounded-lg text-gray-200">
-              <h3 className="font-semibold">Phone Status</h3>
-              <p
-                className={
-                  profile?.lastUpdated ? "text-lime-200" : "text-red-500"
-                }
-              >
+            <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 p-4 rounded-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <Shield className="w-4 h-4 text-emerald-400" />
+                <h3 className="font-semibold text-white text-sm">Phone Status</h3>
+              </div>
+              <p className="text-emerald-400 font-medium">
                 {profile?.lastUpdated}
               </p>
             </div>
           )}
-
-          {profile.facebook?.profile_url && (
-            <div className="md:col-span-2">
-              <h3 className="font-semibold">Facebook Profile</h3>
-
-              <a
-                href={profile.facebook.profile_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:underline break-all"
-              >
-                {profile.facebook.profile_url}
-              </a>
-            </div>
-          )}
         </div>
+
+        {profile.facebook?.profile_url && (
+          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 p-4 rounded-xl">
+            <h3 className="font-semibold text-white text-sm mb-2 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-cyan-400" />
+              Facebook Profile
+            </h3>
+            <a
+              href={profile.facebook.profile_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:text-cyan-300 hover:underline break-all text-sm"
+            >
+              {profile.facebook.profile_url}
+            </a>
+          </div>
+        )}
       </div>
 
       <RcPopup

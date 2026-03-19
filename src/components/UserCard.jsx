@@ -4,6 +4,7 @@ import UserIcon from "../assets/userIcon.png";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import InlineLoader from "./InlineLoader";
+import { LogOut, User, CreditCard } from "lucide-react";
 
 const UserCard = () => {
   const { user, logout } = useAuthContext();
@@ -13,6 +14,7 @@ const UserCard = () => {
 
   const handleLogout = () => {
     setLoading(true);
+    setDropdownOpen(false);
     setTimeout(() => {
       logout()
         .then(() => {
@@ -21,16 +23,15 @@ const UserCard = () => {
         .finally(() => {
           setLoading(false);
         });
-    }, 2000);
+    }, 1000);
   };
 
   return (
     <div className="flex gap-2 items-center justify-end p-4 z-20">
       {user && (
-        <div className="text-xs md:text-sm text-gray-900 rounded p-2 bg-custom-lime">
+        <div className="text-xs md:text-sm text-slate-900 rounded px-3 py-1.5 bg-gradient-to-r from-cyan-400 to-emerald-400">
           Credits:{" "}
           <span className="font-semibold">
-            {" "}
             {Number(user.credits).toFixed(2)}
           </span>
         </div>
@@ -41,27 +42,17 @@ const UserCard = () => {
           title={user?.name || "User"}
           onClick={() => setDropdownOpen(!dropdownOpen)}
         >
-          <img
-            className="h-8 w-8 md:h-10 md:w-10 rounded-full border-2 border-custom-lime"
-            src={UserIcon}
-            alt={`${user?.name}'s profile`}
-            title={user?.name || "User"}
-          />
+          <User className="h-8 w-8 md:h-10 md:w-10 rounded-full border-2 border-cyan-400 p-1.5 text-cyan-400" />
         </button>
         {dropdownOpen && (
-          <div className="absolute top-8 md:top-10 right-2 md:right-0 mt-2 w-80 border border-lime-300 bg-gray-900 bg-opacity-30 backdrop-blur-lg shadow-md rounded-lg px-4 divide-y divide-lime-300">
-            <div className="flex items-center justify-start space-x-4 mb-4 py-2">
-              <div className="text-white">
-                <img
-                  className="h-8 md:h-10 w-8 md:w-10 rounded-full border-2 border-lime-300"
-                  src={UserIcon}
-                  alt={`${user?.name}'s profile`}
-                  title={user?.name || "User"} // Show name on hover
-                />
+          <div className="absolute top-10 md:top-12 right-0 mt-2 w-80 border border-cyan-500/30 bg-slate-900/95 backdrop-blur-xl shadow-2xl rounded-xl overflow-hidden">
+            <div className="flex items-center justify-start space-x-4 mb-4 py-4 px-4 border-b border-slate-800">
+              <div className="w-10 h-10 rounded-full border-2 border-cyan-400 p-1.5">
+                <User className="w-full h-full text-cyan-400" />
               </div>
-              <div className=" text-white hover:text-lime-300 flex flex-col">
-                <span className="">{user?.name || "User"}</span>
-                <span className="">{user?.email || ""}</span>
+              <div className="text-white hover:text-cyan-400 flex flex-col">
+                <span className="text-sm font-medium">{user?.name || "User"}</span>
+                <span className="text-xs text-slate-400">{user?.email || ""}</span>
               </div>
             </div>
             {loading ? (
@@ -71,21 +62,10 @@ const UserCard = () => {
               </div>
             ) : (
               <button
-                className="flex items-center px-4 py-3 space-x-3 w-full hover:bg-gray-800 text-white hover:text-lime-300"
+                className="flex items-center px-4 py-3 space-x-3 w-full hover:bg-slate-800/50 text-slate-300 hover:text-red-400 border-t border-slate-800 transition-colors"
                 onClick={handleLogout}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="size-4"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm5.03 4.72a.75.75 0 0 1 0 1.06l-1.72 1.72h10.94a.75.75 0 0 1 0 1.5H10.81l1.72 1.72a.75.75 0 1 1-1.06 1.06l-3-3a.75.75 0 0 1 0-1.06l3-3a.75.75 0 0 1 1.06 0Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <LogOut className="w-5 h-5" />
                 <span className="text-sm">Logout</span>
               </button>
             )}

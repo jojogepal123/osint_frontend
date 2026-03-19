@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import ResultHeader from "../components/ResultHeader";
+import { ArrowLeft } from "lucide-react";
 
 const CorporateResults = () => {
   const location = useLocation();
@@ -9,7 +10,6 @@ const CorporateResults = () => {
 
   const handleBack = () => navigate(-1);
 
-  // Flatten function inside component
   const flattenObject = (obj, parentKey = "", result = {}) => {
     for (let key in obj) {
       if (!obj.hasOwnProperty(key)) continue;
@@ -39,14 +39,13 @@ const CorporateResults = () => {
   };
 
   const flattenedData = data ? flattenObject(data) : {};
-  // console.log(flattenedData);
   return (
     <>
       {data && <ResultHeader searchInput={searchInput} />}
-      <div className="w-full px-4 mt-8 text-white flex flex-col items-center z-10">
-        <div className="max-w-6xl w-full bg-gray-900/70 p-6 rounded shadow">
-          <h2 className="text-xl font-bold mb-4 border-b border-lime-300 pb-2 flex items-center gap-2 group">
-            <span className="min-w-[24px] flex items-center justify-center transition-transform duration-100 group-hover:scale-110">
+      <div className="w-full px-4 mt-8 text-white flex flex-col items-center z-10 md:pl-64">
+        <div className="max-w-6xl w-full bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 p-6 rounded-xl shadow-2xl">
+          <h2 className="text-xl font-bold mb-4 border-b border-slate-700/50 pb-4 flex items-center gap-3 group">
+            <span className="min-w-[32px] h-8 flex items-center justify-center rounded-lg bg-cyan-500/20 text-cyan-400 transition-transform duration-100 group-hover:scale-110">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -62,14 +61,14 @@ const CorporateResults = () => {
                 />
               </svg>
             </span>
-            <span className="text-base transition-all duration-700 ease-in-out group-hover:ml-1">
+            <span className="text-base text-slate-300 transition-all duration-700 ease-in-out">
               Corporate Result:{" "}
-              <span className="text-lime-300">{searchInput}</span>
+              <span className="text-cyan-400 font-semibold">{searchInput}</span>
             </span>
           </h2>
 
           {data ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {Object.entries(flattenedData)
                 .filter(
                   ([, value]) =>
@@ -80,24 +79,25 @@ const CorporateResults = () => {
                     value !== undefined
                 )
                 .map(([key, value]) => (
-                  <div key={key} className="flex gap-2">
-                    <span className="font-semibold text-lime-300">
+                  <div key={key} className="flex flex-col sm:flex-row gap-2 p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                    <span className="font-semibold text-cyan-400 capitalize whitespace-nowrap">
                       {key.split(".").pop().replace(/_/g, " ")}:
                     </span>
-                    <span className="text-white break-all">
+                    <span className="text-slate-300 break-all">
                       {String(value)}
                     </span>
                   </div>
                 ))}
             </div>
           ) : (
-            <div className="text-center text-yellow-400">
-              <p>No data found for this search.</p>
+            <div className="text-center py-12">
+              <p className="text-slate-400 text-lg mb-4">No data found for this search.</p>
               <button
                 onClick={handleBack}
-                className="inline-block mt-4 px-4 py-2 bg-lime-300 text-black font-bold rounded"
+                className="inline-flex items-center gap-2 mt-4 px-6 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black font-bold rounded-xl shadow-lg transition-all"
               >
-                🔍 Try another search
+                <ArrowLeft size={18} />
+                Try another search
               </button>
             </div>
           )}

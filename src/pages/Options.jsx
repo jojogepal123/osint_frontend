@@ -294,62 +294,53 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
   return (
     <div className="relative">
       <div
-        className="bg-gray-800 border border-lime-200 text-white rounded-md px-4 py-3 flex items-center justify-between cursor-pointer focus:ring-lime-200"
+        className="bg-slate-800/50 border border-slate-700/50 text-white rounded-xl px-3 py-3 flex items-center gap-2 cursor-pointer hover:border-cyan-500/50 transition-all duration-200"
         onClick={toggleDropdown}
       >
-        <span className="text-lime-200">{selectedCountryCode}</span>
         <img
           src={
             countries.find((country) => country.code === selectedCountryCode)
               ?.flag
           }
           alt="Selected Flag"
-          className="w-6 h-6 ml-2 hidden md:block"
+          className="w-6 h-6 rounded-sm"
         />
+        <span className="text-cyan-400 font-medium">{selectedCountryCode}</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
       </div>
       {isDropdownOpen && (
-        <div className="absolute top-full left-0 bg-gray-800 border text-white border-lime-200 rounded-md w-80 mt-2">
-          <div className="p-2 border-b border-gray-700 flex items-center gap-2">
+        <div className="absolute top-full left-0 bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-xl w-80 mt-2 shadow-2xl z-50 overflow-hidden">
+          <div className="p-3 border-b border-slate-800 flex items-center gap-2">
             <input
               type="text"
               placeholder="Search country or code..."
-              className="flex-1 px-3 py-2 text-lime-200 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-lime-100"
+              className="flex-1 px-3 py-2 text-white bg-slate-800/50 border border-slate-700/50 rounded-lg focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onClick={(e) => e.stopPropagation()}
             />
-            <button
-              onClick={() => setIsDropdownOpen(false)}
-              className="p-2 text-lime-200 hover:bg-gray-700 rounded-md"
-              title="Close"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
           </div>
-          <div className="max-h-60 overflow-y-auto custom-scrollbar">
+          <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
             {getFilteredCountries().map((country, index) => (
               <div
                 key={index}
-                className="flex items-center p-2 text-lime-200 hover:bg-gray-700 cursor-pointer"
+                className="flex items-center p-3 hover:bg-slate-800/50 cursor-pointer transition-colors duration-150"
                 onClick={() => handleCountrySelect(country.code)}
               >
                 <img
                   src={country.flag}
                   alt={country.name}
-                  className="w-6 h-6 mr-2"
+                  className="w-6 h-6 mr-3 rounded-sm"
                 />
-                <span>
+                <span className="text-slate-300 text-sm">
                   {country.name} ({country.code})
                 </span>
               </div>

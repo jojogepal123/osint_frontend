@@ -76,15 +76,15 @@ const Results = () => {
 
   if (isResultEmpty()) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen z-10">
+      <div className="flex flex-col items-center justify-center h-screen z-10 md:pl-64">
         <img
           src={no_results_image}
-          className="w-96 sm:w-2/5"
+          className="w-96 sm:w-2/5 mb-8"
           alt="no-results"
         />
         <button
           onClick={handleNewSearch}
-          className="px-4 py-2 bg-lime-400 font-bold uppercase text-gray-950 rounded hover:bg-lime-500"
+          className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 font-bold uppercase text-black rounded-xl shadow-lg transition-all"
         >
           Start a new search
         </button>
@@ -161,7 +161,6 @@ const Results = () => {
                   <GoogleCard emailData={emailData} />
                 </div>
               )}
-              {/* <GoogleCard emailData={emailData} /> */}
               {zehefResults?.some(
                 (item) => item.source === "Gravatar" && item.status === "found"
               ) && (
@@ -175,26 +174,28 @@ const Results = () => {
                 </div>
               )}
             </div>
-            {/* hibp Data Card */}
             {Array.isArray(hibpResults) && hibpResults.length > 0 && (
               <div className="h-full mt-4">
-                <div className="w-full h-full bg-green border border-gray-700/60 rounded-2xl shadow-2xl p-6 backdrop-blur-md">
+                <div className="w-full h-full bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="50"
-                      height="50"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#FFF"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="lucide lucide-blocks w-6 h-6"
-                    >
-                      <rect width="7" height="7" x="14" y="3" rx="1"></rect>
-                      <path d="M10 21V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1H3"></path>
-                    </svg>
+                    <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#22d3ee"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-shield-alert w-5 h-5"
+                      >
+                        <path d="M12 9v4"></path>
+                        <path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.87L13.637 3.59a1.914 1.914 0 0 0-3.274 0z"></path>
+                        <path d="M12 17h.01"></path>
+                      </svg>
+                    </div>
                     <h2 className="text-white text-xl font-bold tracking-wide">
                       Found breaches
                     </h2>
@@ -203,23 +204,21 @@ const Results = () => {
                     {hibpResults.map((result, index) => (
                       <li
                         key={index}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-gray-900 hover:bg-gray-950 transition-all duration-200 shadow group"
+                        className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-all duration-200 shadow group border border-slate-700/50"
                       >
                         <img
                           src={
                             result.LogoPath || "https://via.placeholder.com/50"
                           }
                           alt={result.Name}
-                          className="w-8 h-8 rounded-full border border-gray-700 shadow-sm bg-white object-contain"
+                          className="w-8 h-8 rounded-full border border-slate-600 shadow-sm bg-white object-contain"
                         />
-                        <span className="font-semibold text-gray-100 group-hover:text-lime-200">
+                        <span className="font-semibold text-slate-200 group-hover:text-cyan-400">
                           {result.Name}
                         </span>
-                        {/* Example badge for year or type */}
                         {result.BreachDate && (
-                          <span className="ml-auto px-2 py-0.5 rounded-full bg-lime-700/20 text-xs text-lime-200 font-medium">
+                          <span className="ml-auto px-2 py-0.5 rounded-full bg-cyan-500/20 text-xs text-cyan-400 font-medium">
                             {new Date(result.BreachDate).getFullYear()}
-                            {/* {result.BreachDate} */}
                           </span>
                         )}
                       </li>
@@ -231,15 +230,15 @@ const Results = () => {
             {osResults !== null && <OsintCard data={osResults} />}
           </div>
           {Array.isArray(mapData) && mapData.length !== 0 && (
-            <div className="z-10 w-full gap-4 max-w-6xl mx-auto mb-12 bg-green p-4 rounded-lg">
+            <div className="z-10 w-full gap-4 max-w-6xl mx-auto mb-12 bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 p-4 rounded-xl">
               <Suspense
                 fallback={
-                  <div>
+                  <div className="flex items-center justify-center py-12">
                     <InlineLoader />
                   </div>
                 }
               >
-                <h2 className="text-2xl font-bold mb-4 text-gray-200">
+                <h2 className="text-2xl font-bold mb-4 text-white">
                   Locations
                 </h2>
                 <div className="">

@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import instance from "../api/axios";
 import FullScreenLoader from "./FullScreenLoader";
+import { X, Download, AlertCircle, Car, CreditCard, FileText } from "lucide-react";
 
 const RcPopup = ({ id, type, data, loading, onClose }) => {
   const contentRef = useRef();
@@ -57,8 +58,8 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
     if (typeof value === "boolean") {
       return (
         <span
-          className={`font-semibold ${
-            value ? "text-green-400" : "text-red-400"
+          className={`font-semibold px-3 py-1 rounded-full text-sm ${
+            value ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"
           }`}
         >
           {value ? "Yes" : "No"}
@@ -67,12 +68,11 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
     }
 
     if (typeof value === "object" && value !== null) {
-      // Don't render this value — it should have been flattened already
       return null;
     }
 
     return (
-      <span className="text-gray-300 max-w-[60%] text-right break-words">
+      <span className="text-slate-300 max-w-[60%] text-right break-words font-medium">
         {String(value)}
       </span>
     );
@@ -90,9 +90,6 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
         { responseType: "blob" }
       );
 
-      // console.log("Download data:", data); // ✅ Log data being sent
-      // console.log("Download response:", response); // ✅ Log full response
-      // console.log("response data", response.data); // ✅ Log response data
       const blob = new Blob([response.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -106,6 +103,28 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
       // Handle error if needed
     } finally {
       setDownloading(false);
+    }
+  };
+
+  const getIcon = () => {
+    switch (type) {
+      case "upi":
+        return <CreditCard className="w-5 h-5" />;
+      case "challan":
+        return <FileText className="w-5 h-5" />;
+      default:
+        return <Car className="w-5 h-5" />;
+    }
+  };
+
+  const getTitle = () => {
+    switch (type) {
+      case "upi":
+        return "UPI Details";
+      case "challan":
+        return "Challan Details";
+      default:
+        return "RC Details";
     }
   };
 
@@ -123,31 +142,33 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
         />
       )}
 
-      <div className="fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center px-4 animate-fadeIn custom-scrollbar">
-        <div className="bg-gradient-to-br from-[#1e293b] to-[#111827] border border-gray-700 max-h-[80vh] overflow-y-auto w-full max-w-2xl rounded-xl shadow-2xl p-6 text-white relative">
+      <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center px-4 animate-fadeIn">
+        <div className="bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 max-h-[85vh] overflow-y-auto w-full max-w-2xl rounded-2xl shadow-2xl p-6 md:p-8 text-white relative">
           {/* Header */}
-          <div className="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
-            <h2 className="text-xl font-semibold text-white tracking-wide">
-              {type === "upi"
-                ? "UPI Details"
-                : type === "challan"
-                ? "Challan Details"
-                : "RC Details"}
-              : <span className="text-lime-200">{id}</span>
-            </h2>
+          <div className="flex justify-between items-center pb-4 mb-6 border-b border-slate-700/50">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                {getIcon()}
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">
+                  {getTitle()}
+                </h2>
+                <p className="text-sm text-cyan-400 font-mono">{id}</p>
+              </div>
+            </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-red-500 text-2xl font-bold transition"
+              className="w-10 h-10 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-400 hover:text-red-400 hover:border-red-500/30 transition-all flex items-center justify-center"
             >
-              ×
+              <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Content */}
           <div ref={contentRef}>
             {data && Object.keys(data).length > 0 ? (
-              <div className="space-y-3 pr-1 scroll-smooth">
-                {/* Render top-level fields except 'challans' */}
+              <div className="space-y-3 pr-2">
                 {Object.entries(data)
                   .filter(
                     ([key, value]) =>
@@ -157,33 +178,36 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
                   .map(([key, value]) => (
                     <div
                       key={key}
-                      className="flex justify-between border-b border-gray-700 py-1 text-sm"
+                      className="flex justify-between items-center p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:border-cyan-500/30 transition-all"
                     >
-                      <span className="text-gray-400 font-medium capitalize">
-                        {key.replace(/_/g, " ")}:
+                      <span className="text-slate-400 font-medium capitalize text-sm">
+                        {key.replace(/_/g, " ")}
                       </span>
                       {formatValue(value)}
                     </div>
                   ))}
 
-                {/* Render Challans */}
-                {/* Render Challans */}
                 {type === "challan" &&
                   Array.isArray(data.challan_details) &&
                   data.challan_details.map((challan, index) => {
                     const flattened = flattenObject(challan);
                     return (
-                      <div key={index} className=" p-3 rounded-md space-y-2">
-                        <h3 className="text-lime-300 font-semibold">
-                          Challan {index + 1}
-                        </h3>
+                      <div key={index} className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 space-y-3">
+                        <div className="flex items-center gap-2 pb-2 border-b border-slate-700/50">
+                          <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-sm font-bold">
+                            {index + 1}
+                          </div>
+                          <h3 className="text-emerald-400 font-semibold">
+                            Challan {index + 1}
+                          </h3>
+                        </div>
                         {flattened.map(({ label, value }, i) => (
                           <div
                             key={i}
-                            className="flex justify-between text-sm border-b border-gray-700 py-1"
+                            className="flex justify-between items-center py-2 border-b border-slate-800/50 last:border-0"
                           >
-                            <span className="text-gray-400 font-medium capitalize">
-                              {label.replace(/_/g, " ")}:
+                            <span className="text-slate-500 text-sm capitalize">
+                              {label.replace(/_/g, " ")}
                             </span>
                             {formatValue(value)}
                           </div>
@@ -193,14 +217,19 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
                   })}
               </div>
             ) : (
-              <p className="text-gray-400 text-center">
-                ⚠ No {type?.toUpperCase()} data available.
-              </p>
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4">
+                  <AlertCircle className="w-8 h-8 text-slate-500" />
+                </div>
+                <p className="text-slate-400 text-lg">
+                  No {type?.toUpperCase()} data available
+                </p>
+              </div>
             )}
           </div>
 
           {/* Footer */}
-          <div className="mt-6 flex justify-between items-center">
+          <div className="mt-6 flex justify-end items-center gap-3 pt-4 border-t border-slate-700/50">
             {!(
               type === "challan" &&
               (!data?.challan_details || data.challan_details.length === 0)
@@ -208,18 +237,15 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
               <button
                 onClick={handleDownload}
                 disabled={downloading}
-                className={`${
-                  downloading
-                    ? "bg-lime-200 cursor-not-allowed"
-                    : "bg-lime-200 hover:bg-lime-300"
-                } px-4 py-2 rounded-md text-black font-medium transition duration-200`}
+                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black rounded-xl font-bold shadow-lg shadow-cyan-500/25 transition-all flex items-center gap-2 disabled:opacity-50"
               >
-                Download pdf
+                <Download className="w-4 h-4" />
+                Download PDF
               </button>
             )}
             <button
               onClick={onClose}
-              className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md text-white font-medium transition duration-200"
+              className="px-6 py-3 bg-slate-800/50 border border-slate-700/50 hover:border-red-500/30 hover:text-red-400 rounded-xl text-slate-300 font-medium transition-all"
             >
               Close
             </button>

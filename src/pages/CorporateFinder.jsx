@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Listbox } from "@headlessui/react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import UserCard from "../components/UserCard";
 import instance from "../api/axios";
 import { toast } from "react-toastify";
@@ -159,7 +159,6 @@ const CorporateFinder = () => {
     selectedOption.fields.forEach((field) => {
       const value = inputValues[field.name];
 
-      // Required field validation (for text, select, radio)
       if (
         (field.type === "text" ||
           field.type === "select" ||
@@ -169,7 +168,6 @@ const CorporateFinder = () => {
         errors[field.name] = `${field.label} is required.`;
       }
 
-      // Example: Mobile number validation
       if (field.name === "mobile" && value) {
         if (!/^\d+$/.test(value)) {
           errors[field.name] = "Mobile number must contain only digits.";
@@ -178,7 +176,6 @@ const CorporateFinder = () => {
         }
       }
 
-      // Example: PAN validation
       if (
         field.name === "pan" &&
         value &&
@@ -187,7 +184,6 @@ const CorporateFinder = () => {
         errors[field.name] = "Invalid PAN format.";
       }
 
-      // Example: Consent checkbox must be checked
       if (field.name === "consent" && !value) {
         errors[field.name] = "You must consent to fetch your credit report.";
       }
@@ -253,7 +249,6 @@ const CorporateFinder = () => {
         navigate("/corporate-results", {
           state: { data: response.data.data, searchInput },
         });
-        // console.log("response from backend", response.data.credits);
         toast.success("Found data based on your search");
       }
     } catch (error) {
@@ -263,7 +258,6 @@ const CorporateFinder = () => {
         "Something went wrong. Please try again.";
       const credits = error?.response?.data?.credits;
 
-      // Show error toast with credits if available
       if (credits !== undefined) {
         toast.error(`${message} You have ${credits} credits remaining.`);
       } else {
@@ -310,26 +304,25 @@ const CorporateFinder = () => {
         />
       )}
       <UserCard />
-      <div className="w-full flex flex-col items-center z-10 text-white mt-10 sm:mt-20">
+      <div className="w-full flex flex-col items-center z-10 text-white mt-10 sm:mt-20 md:pl-64">
         <MainHeader header="Corporate Intelligence" />
-        <div className="min-h-auto max-w-full sm:max-w-3xl lg:max-w-4xl xl:max-w-7xl md:min-h-[450px] w-auto sm:w-full m-4 sm:mx-auto flex flex-col md:flex-row gap-4 sm:gap-6 lg:gap-8 items-center md:items-start bg-gray-900/70 border border-lime-300/50 rounded-lg p-4 md:p-8">
-          {/* Left: Dropdown */}
+        <div className="min-h-auto max-w-full sm:max-w-3xl lg:max-w-4xl xl:max-w-7xl md:min-h-[450px] w-auto sm:w-full m-4 sm:mx-auto flex flex-col md:flex-row gap-4 sm:gap-6 lg:gap-8 items-center md:items-start bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-xl p-4 md:p-8 shadow-2xl">
           <div className="w-full md:w-1/3 flex flex-col justify-start px-4 md:px-0">
-            <label className="mb-1 font-semibold">Select Search Type</label>
+            <label className="mb-2 text-sm font-medium text-slate-300">Select Search Type</label>
             <Listbox value={selectedOption} onChange={handleOptionSelect}>
               <div className="relative">
-                <Listbox.Button className="w-full py-2 px-4 rounded bg-custom-input-bg border border-lime-300 text-white font-semibold focus:outline-none flex justify-between items-center">
+                <Listbox.Button className="w-full py-3 px-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white font-medium focus:outline-none focus:border-cyan-500/50 flex justify-between items-center hover:border-cyan-500/50 transition-all">
                   {selectedOption.label}
-                  <ChevronDown className="w-5 h-5 text-lime-300" />
+                  <ChevronDown className="w-5 h-5 text-cyan-400" />
                 </Listbox.Button>
-                <Listbox.Options className="absolute mt-2 w-full bg-custom-input-bg border border-lime-300 rounded-md z-10">
+                <Listbox.Options className="absolute mt-2 w-full bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-xl shadow-2xl z-10 overflow-hidden">
                   {SEARCH_OPTIONS.map((option) => (
                     <Listbox.Option
                       key={option.key}
                       value={option}
                       className={({ active }) =>
-                        `cursor-pointer select-none px-4 py-2 rounded ${
-                          active ? "bg-lime-300 text-black" : "text-white"
+                        `cursor-pointer select-none px-4 py-3 transition-all ${
+                          active ? "bg-cyan-500/20 text-cyan-400" : "text-slate-300 hover:bg-slate-800/50"
                         }`
                       }
                     >
@@ -340,15 +333,14 @@ const CorporateFinder = () => {
               </div>
             </Listbox>
           </div>
-          <div className="w-px bg-lime-200/50 self-stretch"></div>
-          {/* Right: Input Fields */}
+          <div className="w-px bg-slate-700/50 self-stretch hidden md:block"></div>
           <div className="w-full md:w-2/3 px-4 md:px-0">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               {selectedOption.fields.map((field) => {
                 if (field.type === "text") {
                   return (
                     <div key={field.name} className="flex flex-col">
-                      <label className="mb-1">{field.label}</label>
+                      <label className="mb-2 text-sm font-medium text-slate-300">{field.label}</label>
                       <input
                         type="text"
                         value={inputValues[field.name] || ""}
@@ -358,11 +350,11 @@ const CorporateFinder = () => {
                         placeholder={
                           field.placeholder || `Enter ${field.label}`
                         }
-                        className={`p-2 rounded bg-custom-input-bg border ${
+                        className={`p-3 rounded-xl bg-slate-800/50 border ${
                           errors[field.name]
-                            ? "border-red-500"
-                            : "border-lime-300"
-                        } text-white outline-none`}
+                            ? "border-red-500/50 bg-red-500/10"
+                            : "border-slate-700/50 focus:border-cyan-500/50"
+                        } text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all`}
                       />
                     </div>
                   );
@@ -370,7 +362,7 @@ const CorporateFinder = () => {
                 if (field.type === "select") {
                   return (
                     <div key={field.name} className="flex flex-col">
-                      <label className="mb-1">{field.label}</label>
+                      <label className="mb-2 text-sm font-medium text-slate-300">{field.label}</label>
                       <Listbox
                         value={inputValues[field.name] || field.options[0]}
                         onChange={(value) =>
@@ -379,25 +371,25 @@ const CorporateFinder = () => {
                       >
                         <div className="relative">
                           <Listbox.Button
-                            className={`w-full py-2 px-4 rounded bg-custom-input-bg border ${
+                            className={`w-full py-3 px-4 rounded-xl bg-slate-800/50 border ${
                               errors[field.name]
-                                ? "border-red-500"
-                                : "border-lime-300"
-                            } text-white outline-none flex justify-between items-center`}
+                                ? "border-red-500/50"
+                                : "border-slate-700/50 focus:border-cyan-500/50"
+                            } text-white outline-none focus:ring-2 focus:ring-cyan-500/20 flex justify-between items-center hover:border-cyan-500/50 transition-all`}
                           >
                             {inputValues[field.name] || field.options[0]}
-                            <ChevronDown className="w-5 h-5 text-lime-200" />
+                            <ChevronDown className="w-5 h-5 text-cyan-400" />
                           </Listbox.Button>
-                          <Listbox.Options className="absolute mt-1 w-full bg-custom-input-bg border border-lime-300 rounded z-10">
+                          <Listbox.Options className="absolute mt-2 w-full bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-xl shadow-2xl z-10 overflow-hidden">
                             {field.options.map((opt) => (
                               <Listbox.Option
                                 key={opt}
                                 value={opt}
                                 className={({ active, selected }) =>
-                                  `cursor-pointer select-none px-4 py-2 rounded ${
+                                  `cursor-pointer select-none px-4 py-3 transition-all ${
                                     active
-                                      ? "bg-lime-300 text-black"
-                                      : "text-white"
+                                      ? "bg-cyan-500/20 text-cyan-400"
+                                      : "text-slate-300 hover:bg-slate-800/50"
                                   } ${selected ? "font-bold" : ""}`
                                 }
                               >
@@ -413,12 +405,12 @@ const CorporateFinder = () => {
                 if (field.type === "radio") {
                   return (
                     <div key={field.name} className="flex flex-col mt-2">
-                      <label className="mb-1">{field.label}</label>
+                      <label className="mb-2 text-sm font-medium text-slate-300">{field.label}</label>
                       <div className="flex gap-6">
                         {field.options.map((option) => (
                           <label
                             key={option}
-                            className="inline-flex items-center gap-2 cursor-pointer text-black text-sm"
+                            className="inline-flex items-center gap-2 cursor-pointer text-sm"
                           >
                             <input
                               type="radio"
@@ -428,13 +420,13 @@ const CorporateFinder = () => {
                               onChange={(e) =>
                                 handleInputChange(field.name, e.target.value)
                               }
-                              className={`form-radio h-4 w-4 accent-lime-600 ${
+                              className={`h-4 w-4 rounded-full border-2 ${
                                 errors[field.name]
                                   ? "border-red-500"
-                                  : "border-lime-300"
-                              }`}
+                                  : "border-slate-600"
+                              } text-cyan-500 focus:ring-cyan-500/50`}
                             />
-                            <span className="text-white">{option}</span>
+                            <span className="text-slate-300 capitalize">{option}</span>
                           </label>
                         ))}
                       </div>
@@ -442,7 +434,6 @@ const CorporateFinder = () => {
                   );
                 }
               })}
-              {/* Render all checkboxes together in a grid */}
               {selectedOption.fields.filter((f) => f.type === "checkbox")
                 .length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
@@ -451,7 +442,7 @@ const CorporateFinder = () => {
                     .map((field) => (
                       <label
                         key={field.name}
-                        className="inline-flex items-center gap-2 cursor-pointer text-white text-sm"
+                        className="inline-flex items-center gap-3 cursor-pointer text-slate-300 text-sm"
                       >
                         <input
                           type="checkbox"
@@ -466,11 +457,11 @@ const CorporateFinder = () => {
                                 : e.target.checked
                             )
                           }
-                          className={`form-checkbox h-4 w-4 rounded-md border-lime-400 text-lime-600 focus:ring-2 focus:ring-lime-400 accent-lime-200 transition ${
+                          className={`h-4 w-4 rounded border-2 ${
                             errors[field.name]
                               ? "border-red-500"
-                              : "border-lime-300"
-                          }`}
+                              : "border-slate-600"
+                          } text-cyan-500 focus:ring-cyan-500/50`}
                         />
                         <span>{field.label}</span>
                       </label>
@@ -480,14 +471,15 @@ const CorporateFinder = () => {
 
               <button
                 type="submit"
-                className="self-center w-48 mt-4 px-4 py-1.5 bg-gradient-to-r from-lime-200 to-teal-800 text-black rounded font-bold hover:bg-gradient-to-r hover:from-teal-800 hover:to-lime-200 shadow-lg text-lg"
+                className="self-center w-48 mt-6 px-6 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black rounded-xl font-bold shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                disabled={loading}
               >
+                <Search size={20} />
                 {selectedOption.key === "credit_report"
                   ? "Download Report"
                   : "Search"}
               </button>
             </form>
-            {/* {resultData && <CorporateResults data={resultData} />} */}
           </div>
         </div>
       </div>

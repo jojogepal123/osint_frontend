@@ -14,14 +14,14 @@
 }
 
 .outer {
-  stroke: #a2c445de;
+  stroke: #2dd4bf;
   stroke-dasharray: 314;
   stroke-dashoffset: 314;
   animation: dash 2s ease-in-out infinite;
 }
 
 .inner {
-  stroke: #9acc14;
+  stroke: #22d3ee;
   stroke-dasharray: 157;
   stroke-dashoffset: 157;
   animation: dash 2s ease-in-out infinite reverse;
@@ -29,7 +29,7 @@
 }
 
 .dots {
-  fill: #a2c445de;
+  fill: #2dd4bf;
   animation: pulse 2s ease-in-out infinite;
 }
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, Search } from "lucide-react";
 import { toast } from "react-toastify";
 import StyledDropdown from "../components/StyledDropdown";
 import { OsintCard } from "../components/cards/OsintCard";
@@ -111,13 +111,11 @@ const LeakDataFinder = () => {
         const credits = results.credits ?? "";
         if (credits !== undefined) {
           updateUser({ credits: credits });
-          // console.log("User credits updated:", credits);
         }
         setResults(results.data || []);
         setTotalResults(results.total || 0);
         setCurrentPage(results.page || 1);
         setEmptyResults(!results.data || results.data.length === 0);
-        // console.log(res.data);
       } else {
         toast.error("Something went wrong. Please try again.");
       }
@@ -141,7 +139,7 @@ const LeakDataFinder = () => {
     <>
       {loading && <FullScreenLoader text="Searching..." />}
       <UserCard />
-      <div className="w-full max-h-full flex flex-col items-center z-10 mt-32 sm:mt-20">
+      <div className="w-full max-h-full flex flex-col items-center z-10 mt-32 sm:mt-20 md:pl-64">
         <MainHeader header="Leak Data Finder" />
         <div className="space-y-2 w-full max-w-5xl text-white px-4 md:px-0">
           {fields.map((field, index) => (
@@ -149,14 +147,14 @@ const LeakDataFinder = () => {
               {index === 0 ? (
                 <button
                   onClick={handleAddField}
-                  className="p-1.5 md:p-3 border rounded-md font-bold text-gray-200 bg-custom-input-bg hover:bg-lime-300 hover:text-black border-lime-300"
+                  className="p-1.5 md:p-3 border rounded-xl font-bold text-cyan-400 bg-slate-800/50 hover:bg-cyan-500/20 hover:border-cyan-500/50 border-cyan-500/30 transition-all"
                 >
                   <Plus size={24} />
                 </button>
               ) : (
                 <button
                   onClick={() => handleRemoveField(field.id)}
-                  className="p-1.5 md:p-3 border rounded-md font-bold text-gray-200 bg-custom-input-bg border-red-400 hover:bg-red-400 hover:text-black"
+                  className="p-1.5 md:p-3 border rounded-xl font-bold text-red-400/70 bg-slate-800/50 border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 transition-all"
                 >
                   <Minus size={24} />
                 </button>
@@ -174,9 +172,11 @@ const LeakDataFinder = () => {
                 onChange={(e) =>
                   handleChange(field.id, "value", e.target.value)
                 }
-                className={`relative w-full flex-1 py-2 md:py-2.5 px-4 border rounded-md ${
-                  field.isValid === false ? "border-red-500" : "border-lime-300"
-                } bg-custom-input-bg text-lime-200 placeholder:text-gray-200 focus:outline-none transition-all text-sm md:text-lg`}
+                className={`relative w-full flex-1 py-2 md:py-2.5 px-4 border rounded-xl transition-all text-sm md:text-lg ${
+                  field.isValid === false 
+                    ? "border-red-500/50 bg-red-500/10 text-white placeholder:text-red-400/50" 
+                    : "border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
+                } outline-none`}
                 maxLength={50}
               />
             </div>
@@ -186,22 +186,9 @@ const LeakDataFinder = () => {
               type="submit"
               onClick={() => handleSearch(1)}
               disabled={loading}
-              className="bg-gradient-to-r text-gray-900 rounded-md font-bold border-none px-4 md:px-8 py-2 md:py-3 hover:bg-gradient-to-l from-lime-200 to-teal-800 text-sm md:text-lg flex items-center justify-center gap-2 mt-2"
+              className="bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black rounded-xl font-bold border-none px-4 md:px-8 py-2 md:py-3 text-sm md:text-lg flex items-center justify-center gap-2 mt-2 shadow-lg shadow-cyan-500/25 transition-all disabled:opacity-50"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                />
-              </svg>
+              <Search size={24} />
               Search
             </button>
           </div>
@@ -211,13 +198,13 @@ const LeakDataFinder = () => {
             <>
               {totalResults < 10 && (
                 <div className="mt-4">
-                  <h1 className="text-2xl font-bold text-start text-lime-300">
+                  <h1 className="text-2xl font-bold text-start text-cyan-400">
                     {totalResults} Results Found
                   </h1>
                 </div>
               )}
               {totalResults > 10 && (
-                <p className="text-center text-sm text-gray-400 mt-6">
+                <p className="text-center text-sm text-slate-400 mt-6">
                   Page {currentPage} of {Math.ceil(totalResults / perPage)}{" "}
                   pages.
                 </p>
@@ -237,7 +224,7 @@ const LeakDataFinder = () => {
                     const left = Math.max(2, currentPage - delta);
                     const right = Math.min(totalPages - 1, currentPage + delta);
 
-                    range.push(1); // Always show first page
+                    range.push(1);
 
                     if (left > 2) {
                       range.push("left-ellipsis");
@@ -252,27 +239,25 @@ const LeakDataFinder = () => {
                     }
 
                     if (totalPages > 1) {
-                      range.push(totalPages); // Always show last page
+                      range.push(totalPages);
                     }
 
                     return (
                       <>
-                        {/* Previous Button */}
                         <button
                           onClick={() => handleSearch(currentPage - 1)}
                           disabled={currentPage === 1}
-                          className="px-4 py-1 border rounded text-white border-lime-300 hover:bg-lime-400 hover:text-black disabled:opacity-40"
+                          className="px-4 py-2 rounded-xl border border-slate-700/50 text-slate-300 hover:bg-slate-800/50 hover:border-cyan-500/50 hover:text-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                         >
                           Previous
                         </button>
 
-                        {/* Page Buttons */}
                         {range.map((page, index) =>
                           page === "left-ellipsis" ||
                           page === "right-ellipsis" ? (
                             <span
                               key={`ellipsis-${index}`}
-                              className="px-3 py-1 text-gray-400"
+                              className="px-3 py-2 text-slate-500"
                             >
                               ...
                             </span>
@@ -280,10 +265,10 @@ const LeakDataFinder = () => {
                             <button
                               key={`page-${page}`}
                               onClick={() => handleSearch(page)}
-                              className={`px-3 py-1 rounded border ${
+                              className={`px-4 py-2 rounded-xl border transition-all ${
                                 page === currentPage
-                                  ? "bg-lime-400 text-black"
-                                  : "border-lime-300 text-white hover:bg-lime-400 hover:text-black"
+                                  ? "bg-gradient-to-r from-cyan-500 to-emerald-500 text-black border-cyan-500"
+                                  : "border-slate-700/50 text-slate-300 hover:bg-slate-800/50 hover:border-cyan-500/50 hover:text-cyan-400"
                               }`}
                             >
                               {page}
@@ -291,11 +276,10 @@ const LeakDataFinder = () => {
                           )
                         )}
 
-                        {/* Next Button */}
                         <button
                           onClick={() => handleSearch(currentPage + 1)}
                           disabled={currentPage === totalPages}
-                          className="px-4 py-1 border rounded text-white border-lime-300 hover:bg-lime-400 hover:text-black disabled:opacity-40"
+                          className="px-4 py-2 rounded-xl border border-slate-700/50 text-slate-300 hover:bg-slate-800/50 hover:border-cyan-500/50 hover:text-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                         >
                           Next
                         </button>
@@ -307,7 +291,7 @@ const LeakDataFinder = () => {
             </>
           ) : (
             emptyResults && (
-              <div className="mt-6 text-4xl text-center text-lime-400 font-bold">
+              <div className="mt-6 text-4xl text-center text-cyan-400 font-bold">
                 No results found.
               </div>
             )

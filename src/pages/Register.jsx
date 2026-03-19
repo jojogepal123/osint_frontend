@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuthContext from "../context/AuthContext";
 import Loader from "../components/Loader";
 import { toast } from "react-toastify";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Search, Shield, ChevronRight } from "lucide-react";
 import instance from "../api/axios";
 
 const Register = () => {
@@ -29,6 +29,7 @@ const Register = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     setLoading(true);
     instance
@@ -36,8 +37,7 @@ const Register = () => {
       .then((res) => {
         setRegistrationEnabled(res.data.registration_enabled);
       })
-      .catch((err) => {
-        // console.error("Error fetching registration status", err);
+      .catch(() => {
         setRegistrationEnabled(false);
       })
       .finally(() => {
@@ -52,27 +52,32 @@ const Register = () => {
       </div>
     );
   }
+
   if (!registrationEnabled) {
     return (
-      <div className="relative min-h-screen flex flex-col items-center justify-center bg-transparent text-gray-200">
-        <h1 className="text-5xl md:text-9xl font-extrabold tracking-widest text-[#AADE63]">
-          403
-        </h1>
-        <div className="bg-[#AADE63] py-1 px-2 text-sm rounded mt-2 text-black">
-          Forbidden
+      <div className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-gray-200 p-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-emerald-500/5" />
+        <div className="relative z-10 text-center">
+          <h1 className="text-8xl md:text-9xl font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400 mb-4">
+            403
+          </h1>
+          <div className="inline-block bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 px-4 py-1 rounded-lg mb-4">
+            <span className="text-cyan-400 font-semibold">Forbidden</span>
+          </div>
+          <p className="text-xl md:text-2xl text-slate-400 mb-8">
+            Registration is currently disabled.
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 text-black font-semibold hover:from-cyan-400 hover:to-emerald-400 transition-all duration-300 shadow-lg shadow-cyan-500/25"
+          >
+            Go Back Home
+          </button>
         </div>
-        <p className="mt-2 text-xl md:text-2xl text-[#AADE63]">
-          Registration is currently disabled.
-        </p>
-        <button
-          onClick={() => navigate("/")}
-          className="mt-8 px-4 py-1.5 cursor-pointer rounded bg-gradient-to-r from-lime-200 to-teal-800 shadow text-gray-900 font-bold hover:bg-gradient-to-tl transition duration-300 ease-in-out"
-        >
-          Go Back Home
-        </button>
       </div>
     );
   }
+
   return (
     <>
       {loading && (
@@ -82,153 +87,183 @@ const Register = () => {
       )}
       <div className="flex flex-col min-h-screen">
         <section className="my-auto relative">
-          <div className="flex justify-center lg:grid grid-cols-1 lg:grid-cols-5 max-w-6xl mx-auto z-90">
-            <div className="relative col-span-2 hidden lg:block overflow-hidden rounded-l-[20px] bg-gray-700 bg-opacity-30 backdrop-blur-lg pl-10 pr-6 pt-16 text-black">
-              <img
-                src="data:image/svg+xml,%3csvg%20width='463'%20height='341'%20viewBox='0%200%20463%20341'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20opacity='0.3'%3e%3crect%20x='264'%20y='324'%20width='199.669'%20height='34'%20fill='%233DB8FA'/%3e%3crect%20y='216'%20width='36.5336'%20height='34'%20fill='%234B5563'/%3e%3crect%20y='54'%20width='115.388'%20height='34'%20fill='%234B5563'/%3e%3crect%20x='205.456'%20width='101.281'%20height='34'%20fill='%23374151'/%3e%3crect%20x='121.176'%20y='54'%20width='185.562'%20height='34'%20fill='%233DB8FA'/%3e%3crect%20x='205.456'%20y='108'%20width='171.816'%20height='34'%20fill='%2354E9E2'/%3e%3crect%20x='167.476'%20y='162'%20width='161.688'%20height='34'%20fill='%2354E9E2'/%3e%3crect%20x='126.963'%20y='270'%20width='101.281'%20height='34'%20fill='%234B5563'/%3e%3crect%20x='312.525'%20width='150.475'%20height='34'%20fill='%233DB8FA'/%3e%3crect%20x='383.06'%20y='108'%20width='79.9398'%20height='34'%20fill='%234B5563'/%3e%3crect%20x='334.952'%20y='162'%20width='128.048'%20height='34'%20fill='%233DB8FA'/%3e%3crect%20x='356.655'%20y='216'%20width='106.345'%20height='34'%20fill='%2354E9E2'/%3e%3crect%20x='234.032'%20y='270'%20width='228.968'%20height='34'%20fill='%2354E9E2'/%3e%3c/g%3e%3c/svg%3e"
-                className="absolute right-0 bottom-0"
-              ></img>
-              <div className="mt-2 font-display text-4xl font-bold leading-tight bg-gradient-to-r from-lime-200 to-teal-800 bg-clip-text text-transparent">
-                Proactive Intelligence: Uncover Threats, Secure the Future.
+          <div className="flex justify-center lg:grid grid-cols-1 lg:grid-cols-5 max-w-6xl mx-auto">
+            <div className="relative col-span-2 hidden lg:flex flex-col justify-center overflow-hidden rounded-l-2xl bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 border border-slate-700/50 p-10">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-emerald-500/5" />
+              
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 flex items-center justify-center">
+                    <Search className="w-6 h-6 text-cyan-400" />
+                  </div>
+                  <Link to="/">
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                      {import.meta.env.VITE_APP_NAME}
+                    </h2>
+                  </Link>
+                </div>
+                
+                <h3 className="text-4xl font-bold leading-tight text-white mb-4">
+                  Join Us Today
+                </h3>
+                <p className="text-slate-400 text-lg mb-8">
+                  Create your account and start exploring powerful OSINT tools.
+                </p>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-slate-300">
+                    <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                      <Shield className="w-4 h-4 text-cyan-400" />
+                    </div>
+                    <span className="text-sm">Secure data protection</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-slate-300">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                      <Search className="w-4 h-4 text-emerald-400" />
+                    </div>
+                    <span className="text-sm">Advanced search capabilities</span>
+                  </div>
+                </div>
               </div>
+              
+              <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-cyan-500/10 to-transparent" />
             </div>
-            <div className="col-start-2 col-span-2 lg:col-span-3 rounded-[20px] text-white lg:rounded-l-[0px] bg-gray-800 bg-opacity-30 backdrop-blur-lg mx-2 md:mx-0">
+
+            <div className="col-start-2 col-span-2 lg:col-span-3 rounded-2xl lg:rounded-l-none bg-gradient-to-b from-slate-900/80 via-slate-900/90 to-slate-800/80 backdrop-blur-xl border border-slate-700/50 shadow-2xl mx-2 md:mx-0">
               <div className="w-full mx-auto flex flex-col gap-6 p-8 sm:p-12 md:p-16">
-                <div className="p-3 pt-0 bg-gradient-to-r from-lime-200 to-teal-800 bg-clip-text text-transparent text-center font-semibold cursor-pointer">
+                <div className="lg:hidden flex items-center justify-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-slate-600/50 flex items-center justify-center">
+                    <Search className="w-5 h-5 text-cyan-400" />
+                  </div>
                   <h1
-                    className="text-4xl md:text-5xl"
+                    className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent cursor-pointer"
                     onClick={() => navigate("/")}
                   >
                     {import.meta.env.VITE_APP_NAME}
                   </h1>
                 </div>
-                <form onSubmit={handleSubmit}>
-                  <div className="relative mb-4">
+                
+                <div className="text-center lg:text-left">
+                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                    Create Account
+                  </h2>
+                  <p className="text-slate-400">
+                    Fill in your details to get started
+                  </p>
+                </div>
+                
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Full Name
+                    </label>
                     <input
                       type="text"
-                      className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300 text-lg outline-none transition"
-                      placeholder="Name"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 outline-none transition-all duration-300 focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
+                      placeholder="Enter your name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
                     />
                     {errors.name && errors.name[0] && (
-                      <div className="text-red-500 text-md py-1 text-start">
+                      <div className="text-red-400 text-sm py-1 mt-1">
                         {errors.name[0]}
                       </div>
                     )}
                   </div>
-                  <div className="relative mb-4">
+
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Email Address
+                    </label>
                     <input
                       type="email"
-                      className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300 text-lg outline-none transition"
-                      placeholder="Email"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 outline-none transition-all duration-300 focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
+                      placeholder="Enter your email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
                     {errors.email && errors.email[0] && (
-                      <div className="text-red-500 text-md py-1 text-start">
+                      <div className="text-red-400 text-sm py-1 mt-1">
                         {errors.email[0]}
                       </div>
                     )}
                   </div>
-                  <div className="relative mb-4">
+
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Password
+                    </label>
                     <input
-                      type={showPassword ? "text" : "password"} // Toggle type
+                      type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300 text-lg outline-none transition"
-                      placeholder="Password"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 outline-none transition-all duration-300 focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 pr-12"
+                      placeholder="Create a password"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-gray-400"
+                      className="absolute right-4 top-[42px] text-slate-400 hover:text-slate-200 transition-colors"
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                     {errors.password && errors.password[0] && (
-                      <div className="text-red-500 py-1 text-md text-start">
+                      <div className="text-red-400 text-sm py-1 mt-1">
                         {errors.password[0]}
                       </div>
                     )}
                   </div>
-                  <div className="relative mb-4">
+
+                  <div className="relative">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Confirm Password
+                    </label>
                     <input
-                      type={showConfirmPassword ? "text" : "password"} // Toggle type
+                      type={showConfirmPassword ? "text" : "password"}
                       value={password_confirmation}
                       onChange={(e) => setPassswordConfirmation(e.target.value)}
-                      className="w-full px-4 py-2 rounded-md bg-gray-700 text-gray-300 text-lg outline-none transition"
-                      placeholder="Confirm password"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 outline-none transition-all duration-300 focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 pr-12"
+                      placeholder="Confirm your password"
                       required
                     />
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className="absolute right-3 top-3 text-gray-400"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-4 top-[42px] text-slate-400 hover:text-slate-200 transition-colors"
                     >
-                      {showConfirmPassword ? (
-                        <EyeOff size={20} />
-                      ) : (
-                        <Eye size={20} />
-                      )}
+                      {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
-                    {errors.password_confirmation &&
-                      errors.password_confirmation[0] && (
-                        <div className="text-red-500 py-1 text-md text-start">
-                          {errors.password_confirmation[0]}
-                        </div>
-                      )}
+                    {errors.password_confirmation && errors.password_confirmation[0] && (
+                      <div className="text-red-400 text-sm py-1 mt-1">
+                        {errors.password_confirmation[0]}
+                      </div>
+                    )}
                   </div>
-                  <div className="flex flex-col gap-6">
-                    <button
-                      type="submit"
-                      className="items-center whitespace-nowrap text-lg transition-colors disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-r from-lime-200 to-teal-800 hover:bg-gradient-to-tl px-4 py-2 flex justify-center gap-2 rounded-md font-semibold text-black "
-                    >
-                      <span> Sign Up </span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-chevron-right-circle self-center"
-                      >
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="m10 8 4 4-4 4"></path>
-                      </svg>
-                    </button>
-                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span>Create Account</span>
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
                 </form>
-                <div className="flex items-center justify-between mx-auto">
-                  <p className="text-xs sm:text-sm md:text-lg text-lime-200/80">
-                    Already have an account?&nbsp;
-                    <Link to="/login" className="cursor-pointer">
-                      <span className="underline decoration-lime-200 underline-offset-2 text-xs sm:text-sm md:text-lg">
-                        Sign In
-                      </span>
+
+                <div className="text-center pt-4 border-t border-slate-800">
+                  <p className="text-slate-400 text-sm">
+                    Already have an account?{" "}
+                    <Link
+                      to="/login"
+                      className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+                    >
+                      Sign In
                     </Link>
                   </p>
                 </div>
               </div>
-              {/* <div
-                    role="region"
-                    aria-label="Notifications (F8)"
-                    tabIndex="-1"
-                  >
-                    <ol
-                      tabIndex="-1"
-                      className="fixed top-0 z-[100] flex h-[25%] w-full flex-col-reverse py-4 pl-4 pr-0 sm:bottom-0 sm:right-0 sm:flex-col md:max-w-[420px]"
-                    ></ol>
-                  </div> */}
             </div>
           </div>
         </section>
