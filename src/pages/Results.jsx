@@ -76,7 +76,7 @@ const Results = () => {
 
   if (isResultEmpty()) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen z-10 md:pl-64">
+      <div className="flex flex-col items-center justify-center h-screen z-10">
         <img
           src={no_results_image}
           className="w-96 sm:w-2/5 mb-8"
