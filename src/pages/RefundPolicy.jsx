@@ -59,10 +59,10 @@ const RefundPolicy = () => {
               concerns regarding your access, please contact us immediately at:
             </p>
             <a
-              href="mailto:info@osintwork.com"
+              href="mailto:info@intelltrace.com"
               className="text-cyan-400 hover:text-emerald-400 transition-colors font-medium"
             >
-              info@osintwork.com
+              info@intelltrace.com
             </a>
           </div>
         </div>

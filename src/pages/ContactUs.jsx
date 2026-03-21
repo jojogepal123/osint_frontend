@@ -32,7 +32,7 @@ const ContactUs = () => {
                   <div>
                     <p className="text-sm text-slate-400">Email</p>
                     <p className="text-lg bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent font-medium">
-                      Info@osintwork.com
+                      Info@intelltrace.com
                     </p>
                   </div>
                 </div>
@@ -43,7 +43,7 @@ const ContactUs = () => {
                   <div>
                     <p className="text-sm text-slate-400">Website</p>
                     <p className="text-lg bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent font-medium">
-                      osintwork.com
+                      Intelltrace.com
                     </p>
                   </div>
                 </div>

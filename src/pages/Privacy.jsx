@@ -70,13 +70,13 @@ const Privacy = () => {
                 <div className="flex items-center gap-2 text-slate-300">
                   <Mail className="w-4 h-4 text-cyan-400" />
                   <span className="text-sm bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-                    info@osintwork.com
+                    info@intelltrace.com
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-slate-300">
                   <Globe className="w-4 h-4 text-emerald-400" />
                   <span className="text-sm bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-                    osintwork.com
+                    Intelltrace.com
                   </span>
                 </div>
               </div>
