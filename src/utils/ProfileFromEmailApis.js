@@ -5,12 +5,20 @@ export const ProfileFromEmailApis = (results) => {
 
   const getIfExists = (val, source) => (val ? { value: val, source } : null);
 
+  // SignalHire — pick first successful candidate
+  const shCandidate = (() => {
+    const arr = results?.signalHireData?.results;
+    if (!Array.isArray(arr)) return null;
+    return arr.find((r) => r.status === "success")?.candidate || null;
+  })();
+
   const fullNames = [
     getIfExists(
       results?.emailData?.PROFILE_CONTAINER?.profile?.names?.PROFILE?.fullname,
       "Google"
     ),
     getIfExists(getUserResults?.person?.displayName, "GetUser"),
+    getIfExists(shCandidate?.fullName, "Social Media"),
   ].filter(Boolean);
 
   const userNames = [].filter(Boolean);
@@ -25,9 +33,14 @@ export const ProfileFromEmailApis = (results) => {
 
   const locations = [
     getIfExists(getUserResults?.person?.location, "GetUser"),
+    ...(shCandidate?.addresses?.map((a) => ({ value: a.display, source: "Social Media" })) || []),
   ].filter(Boolean);
 
-  const phones = [].filter(Boolean);
+  const phones = [
+    ...(shCandidate?.contacts
+      ?.filter((c) => c.type === "phone")
+      .map((c) => ({ value: c.value, source: "Social Media", key: c.subType?.replace(/_/g, " ") })) || []),
+  ].filter(Boolean);
   if (Array.isArray(getUserResults?.person?.phoneNumbers)) {
     getUserResults.person.phoneNumbers.forEach((phone) => {
       if (phone) {
@@ -44,6 +57,9 @@ export const ProfileFromEmailApis = (results) => {
       results?.emailData?.PROFILE_CONTAINER?.profile?.emails?.PROFILE?.value,
       "Google"
     ),
+    ...(shCandidate?.contacts
+      ?.filter((c) => c.type === "email")
+      .map((c) => ({ value: c.value, source: "Social Media", key: c.subType?.replace(/_/g, " ") })) || []),
   ].filter(Boolean);
 
   const socialMediaPresence = {};
@@ -102,6 +118,12 @@ export const ProfileFromEmailApis = (results) => {
   ) {
     socialMediaPresence.linkedin = true;
   }
+
+  const shSocialMap = { li: "linkedin", fb: "facebook", tw: "twitter", gh: "github", ins: "instagram" };
+  (shCandidate?.social || []).forEach((s) => {
+    const key = shSocialMap[s.type] || s.type;
+    if (!socialMediaPresence[key]) socialMediaPresence[key] = s.link || true;
+  });
   // 3. Add from socialScanData if not already present
   const socialScanEntries = Object.entries(results?.socialScanData?.data || {});
   const scanResults =
@@ -126,6 +148,7 @@ export const ProfileFromEmailApis = (results) => {
         ?.url,
       "Google"
     ),
+    getIfExists(shCandidate?.photo?.url, "Social Media"),
   ].filter(Boolean);
 
   if (Array.isArray(results?.zehefData?.data)) {
@@ -217,6 +240,53 @@ export const ProfileFromEmailApis = (results) => {
       }))
     : [];
 
+  const shExperience = (shCandidate?.experience || []).map((exp) => ({
+    value: `${exp.position}${exp.company ? ` @ ${exp.company}` : ""}${exp.location ? `, ${exp.location}` : ""} (${exp.started ? new Date(exp.started).getFullYear() : "?"} — ${exp.ended ? new Date(exp.ended).getFullYear() : "Present"})`,
+    source: "Social Media",
+    key: exp.current ? "Current" : null,
+  }));
+
+  const shEducation = (shCandidate?.education || []).map((ed) => ({
+    value: `${ed.university}${ed.faculty ? ` · ${ed.faculty}` : ""}${ed.startedYear ? ` (${ed.startedYear}–${ed.endedYear || ""})` : ""}`,
+    source: "Social Media",
+  }));
+
+  const shSkills = shCandidate?.skills?.length
+    ? [{ value: shCandidate.skills.join(", "), source: "Social Media" }]
+    : [];
+
+  const shCertifications = (shCandidate?.certification || []).map((cert) => ({
+    value: cert.name,
+    key: cert.authority || null,
+    source: "Social Media",
+  }));
+
+  const shOrganizations = (shCandidate?.organization || []).map((org) => ({
+    value: org.name,
+    key: org.position || null,
+    source: "Social Media",
+  }));
+
+  const shSocialLinks = (shCandidate?.social || [])
+    .filter((s) => s.link)
+    .map((s) => ({
+      key: (shSocialMap[s.type] || s.type).toUpperCase(),
+      value: s.link,
+      source: "Social Media",
+      url: s.link,
+      urlLabel: "View Profile",
+    }));
+
+  const shHonorAwards = (shCandidate?.honorAward || []).map((award) => ({
+    value: award.name,
+    key: award.issue || null,
+    source: "Social Media",
+  }));
+
+  const shBio = shCandidate?.summary
+    ? [{ value: shCandidate.summary, source: "Social Media" }]
+    : [];
+
   const EmailProfile = {
     fullNames,
     userNames,
@@ -236,6 +306,14 @@ export const ProfileFromEmailApis = (results) => {
     qualifications,
     experience,
     skills,
+    shExperience,
+    shEducation,
+    shSkills,
+    shCertifications,
+    shOrganizations,
+    shHonorAwards,
+    shBio,
+    shSocialLinks,
   };
 
   return EmailProfile;

@@ -211,6 +211,7 @@ export const AuthProvider = ({ children }) => {
         tlgData: data.telData || null,
         syncData: data.syncData || null,
         vcData: data.vcData || null,
+        signalHireData: data.signalHireData || null,
         // osPhoneData: data.osPhoneData || null,
         // srfullData: data.srfullData || null, // ✅ Make sure you access this
         errors: data.errors || {},
@@ -254,6 +255,7 @@ export const AuthProvider = ({ children }) => {
         // console.log("User credits updated:", data.credits);
       }
       setResults(data.data); // Or whatever structure you use
+      // console.log("email data:", data);
       return data;
     } catch (error) {
       if (error.response) {

@@ -1,7 +1,7 @@
-import { Check, Icon, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useIsEmpty } from "../hook/useIsEmpty";
 import IconWithFallback from "./IconWithFallback";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 const InfoList = ({ title, items }) => {
   if (!items || items.length === 0) return null;
@@ -31,19 +31,9 @@ const InfoList = ({ title, items }) => {
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-sm text-blue-400 hover:underline"
+                className="ml-2 px-3 py-1 rounded-full bg-blue-700/20 text-blue-300 font-semibold text-xs shadow hover:bg-blue-700/40 transition"
               >
-                {item.urlLabel || "View"}
-              </a>
-            )}
-            {item.url && (
-              <a
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-sm text-blue-400 hover:underline"
-              >
-                {item.urlLabel || "View"}
+                {item.urlLabel || "View Profile"}
               </a>
             )}
           </li>
@@ -62,6 +52,7 @@ const DataCard = ({ title, items }) => {
     </div>
   );
 };
+
 
 const iconMap = {
   "X (Twitter)": "twitter",
@@ -206,6 +197,46 @@ const EmailProfileCard = ({
                 source: s.source,
               }))}
             />
+          )}
+          <DataCard title="Bio" items={profile.shBio} />
+          <DataCard title="Experience" items={profile.shExperience} />
+          <DataCard title="Education" items={profile.shEducation} />
+          <DataCard title="Skills" items={profile.shSkills} />
+          <DataCard title="Certifications" items={profile.shCertifications} />
+          <DataCard title="Organizations" items={profile.shOrganizations} />
+          <DataCard title="Awards & Honors" items={profile.shHonorAwards} />
+          {profile.shSocialLinks?.length > 0 && (
+            <div className="bg-gray-900/80 rounded-xl shadow-lg p-6 border border-gray-800 hover:border-lime-400 transition">
+              <h3 className="text-lg font-bold text-lime-200 mb-4">Social Profiles</h3>
+              <div className="flex flex-col gap-2">
+                {profile.shSocialLinks.map((link, i) => (
+                  <a
+                    key={i}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-3 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-lime-400 transition group"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center shrink-0 shadow group-hover:ring-2 group-hover:ring-lime-400 transition">
+                      <img
+                        src={getIconUrl(link.key.toLowerCase())}
+                        alt={link.key}
+                        className="w-5 h-5 object-contain"
+                        style={{ filter: "invert(1)" }}
+                        onError={(e) => { e.target.style.display = "none"; }}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-semibold text-sm capitalize">{link.key.toLowerCase()}</p>
+                      <p className="text-gray-400 text-xs truncate">{link.value}</p>
+                    </div>
+                    <span className="text-lime-400 text-xs font-bold group-hover:text-lime-300 transition shrink-0">
+                      View →
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
           )}
         </div>
 

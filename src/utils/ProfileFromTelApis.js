@@ -5,6 +5,13 @@ export const ProfileFromTelApis = (results) => {
   const getIfExists = (val, source, key) =>
     val ? { value: val, source, key } : null;
 
+  // SignalHire — pick first successful candidate
+  const shCandidate = (() => {
+    const arr = results?.signalHireData?.results;
+    if (!Array.isArray(arr)) return null;
+    return arr.find((r) => r.status === "success")?.candidate || null;
+  })();
+
   const vcPrimary = getIfExists(
     results?.vcData?.data?.[0]?.name,
     "Social Media"
@@ -43,6 +50,7 @@ export const ProfileFromTelApis = (results) => {
       "Social Media"
     ),
     getIfExists(results?.tlgData?.username, "Social Media"),
+    getIfExists(shCandidate?.fullName, "Social Media"),
   ].filter(Boolean);
 
   const userNames = [
@@ -58,6 +66,7 @@ export const ProfileFromTelApis = (results) => {
     getIfExists(results?.syncData?.data?.geospace?.latitude, "Latitude"),
     getIfExists(results?.syncData?.data?.geospace?.longitude, "Longitude"),
     getIfExists(results?.syncData?.data?.geospace?.country, "Social Media"),
+    ...(shCandidate?.addresses?.map((a) => ({ value: a.display, source: "Social Media" })) || []),
   ].filter(Boolean);
 
   const phones = [
@@ -69,6 +78,9 @@ export const ProfileFromTelApis = (results) => {
     getIfExists(results?.spuData?.data?.mobile_number, "Gov"),
     getIfExists(results?.spkData?.data?.mobile, "Gov"),
     getIfExists(results?.tlgData?.phone_visible, "Social Media"),
+    ...(shCandidate?.contacts
+      ?.filter((c) => c.type === "phone")
+      .map((c) => ({ value: c.value, source: "Social Media", key: c.subType?.replace(/_/g, " ") })) || []),
   ].filter(Boolean);
 
   if (Array.isArray(spKResults?.phone_info)) {
@@ -79,7 +91,11 @@ export const ProfileFromTelApis = (results) => {
     });
   }
 
-  const emails = [].filter(Boolean);
+  const emails = [
+    ...(shCandidate?.contacts
+      ?.filter((c) => c.type === "email")
+      .map((c) => ({ value: c.value, source: "Social Media", key: c.subType?.replace(/_/g, " ") })) || []),
+  ].filter(Boolean);
 
   if (Array.isArray(spKResults?.email_info)) {
     spKResults.email_info.forEach((item) => {
@@ -99,6 +115,12 @@ export const ProfileFromTelApis = (results) => {
   isSocialPresence("whatsapp", results?.wpData?.isUser);
   isSocialPresence("facebook", results?.smData?.response?.fb);
   isSocialPresence("telegram", results?.tlgData?.status === "success");
+
+  const shSocialMap = { li: "linkedin", fb: "facebook", tw: "twitter", gh: "github", ins: "instagram" };
+  (shCandidate?.social || []).forEach((s) => {
+    const key = shSocialMap[s.type] || s.type;
+    isSocialPresence(key, s.link || true);
+  });
 
   // Add sources from osData
   if (Array.isArray(osResults)) {
@@ -252,6 +274,7 @@ export const ProfileFromTelApis = (results) => {
   const profileImages = [
     getIfExists(results?.wpData?.urlImage, "WhatsApp"),
     ...telegramImages,
+    getIfExists(shCandidate?.photo?.url, "Social Media"),
   ].filter(Boolean);
   // console.log(profileImages);
   const carriers = [
@@ -282,6 +305,7 @@ export const ProfileFromTelApis = (results) => {
 
   const jobProfiles = [
     getIfExists(results?.tcData?.data?.basicInfo?.jobTitle, "Social Media"),
+    getIfExists(shCandidate?.headLine, "Social Media"),
   ].filter(Boolean);
 
   const lastUpdated = [
@@ -329,7 +353,52 @@ export const ProfileFromTelApis = (results) => {
   const telBio = [
     getIfExists(results?.tlgData?.bio, "Social Media"),
     getIfExists(whatsappAboutWithDate, "WhatsApp"),
+    getIfExists(shCandidate?.summary, "Social Media"),
   ].filter(Boolean);
+
+  // SignalHire-specific professional data
+  const shExperience = (shCandidate?.experience || []).map((exp) => ({
+    value: `${exp.position}${exp.company ? ` @ ${exp.company}` : ""}${exp.location ? `, ${exp.location}` : ""} (${exp.started ? new Date(exp.started).getFullYear() : "?"} — ${exp.ended ? new Date(exp.ended).getFullYear() : "Present"})`,
+    source: "Social Media",
+    key: exp.current ? "Current" : null,
+  }));
+
+  const shEducation = (shCandidate?.education || []).map((ed) => ({
+    value: `${ed.university}${ed.faculty ? ` · ${ed.faculty}` : ""}${ed.startedYear ? ` (${ed.startedYear}–${ed.endedYear || ""})` : ""}`,
+    source: "Social Media",
+  }));
+
+  const shSkills = shCandidate?.skills?.length
+    ? [{ value: shCandidate.skills.join(", "), source: "Social Media" }]
+    : [];
+
+  const shCertifications = (shCandidate?.certification || []).map((cert) => ({
+    value: cert.name,
+    key: cert.authority || null,
+    source: "Social Media",
+  }));
+
+  const shOrganizations = (shCandidate?.organization || []).map((org) => ({
+    value: org.name,
+    key: org.position || null,
+    source: "Social Media",
+  }));
+
+  const shSocialLinks = (shCandidate?.social || [])
+    .filter((s) => s.link)
+    .map((s) => ({
+      key: (shSocialMap[s.type] || s.type).toUpperCase(),
+      value: s.link,
+      source: "Social Media",
+      url: s.link,
+      urlLabel: "View Profile",
+    }));
+
+  const shHonorAwards = (shCandidate?.honorAward || []).map((award) => ({
+    value: award.name,
+    key: award.issue || null,
+    source: "Social Media",
+  }));
   const TelProfile = {
     fullNames,
     userNames,
@@ -354,6 +423,13 @@ export const ProfileFromTelApis = (results) => {
     socialMediaPresence,
     isCreditExists,
     telBio,
+    shExperience,
+    shEducation,
+    shSkills,
+    shCertifications,
+    shOrganizations,
+    shHonorAwards,
+    shSocialLinks,
   };
 
   return TelProfile;
