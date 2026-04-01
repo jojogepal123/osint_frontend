@@ -89,11 +89,22 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
           <div className="flex flex-col lg:flex-row md:items-center md:justify-between gap-4">
             <div className="w-full md:w-auto">
               <div className="flex justify-center items-center gap-3">
+                <button
+                  className="w-10 h-10 rounded-xl bg-slate-800/80 border border-slate-700/50 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/50 hover:bg-slate-800 transition-all flex items-center justify-center flex-shrink-0"
+                  onClick={handleBack}
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                {type && (
+                  <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-cyan-500/15 text-cyan-400 border border-cyan-500/25 flex-shrink-0 uppercase tracking-wide">
+                    {type === "tel" ? "Phone" : "Email"}
+                  </span>
+                )}
                 <span className="text-white text-lg sm:text-xl font-medium truncate">
                   {userInput || searchInput}
                 </span>
                 <button
-                  className="text-cyan-400 relative hover:text-cyan-300 transition-colors"
+                  className="w-9 h-9 rounded-lg bg-slate-800/50 border border-slate-700/30 text-cyan-400 hover:text-cyan-300 hover:border-cyan-500/40 hover:bg-slate-800 transition-all flex items-center justify-center flex-shrink-0"
                   onClick={() => {
                     if (userInput || searchInput) {
                       navigator.clipboard.writeText(userInput || searchInput);
@@ -104,7 +115,7 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
                     }
                   }}
                 >
-                  <ClipboardCopy className="w-5 h-5" />
+                  <ClipboardCopy className="w-4 h-4" />
                 </button>
                 {copied && (
                   <span className="text-xs text-black bg-cyan-400 px-3 py-1 rounded-full transition-opacity duration-500 flex items-center gap-1">
@@ -116,9 +127,9 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
                 )}
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto items-center">
+            <div className="flex flex-col sm:flex-row gap-2.5 w-full md:w-auto items-center">
               <button
-                className="flex items-center gap-2 w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/30 transition-all text-sm font-medium"
+                className="flex items-center gap-2 w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-500/20 to-cyan-500/20 border border-violet-500/30 text-violet-300 hover:from-violet-500/30 hover:to-cyan-500/30 hover:border-violet-400/50 transition-all text-sm font-medium"
                 onClick={handleGenerateReport}
               >
                 <Sparkles className="w-4 h-4" />
@@ -129,7 +140,7 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
                 location.pathname !== "/verification-results" && (
                   <div className="relative w-full sm:w-auto">
                     <button
-                      className="flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm bg-slate-800/50 border border-slate-700/50 text-slate-300 hover:bg-slate-700/50 hover:border-cyan-500/50 transition-all w-full sm:w-auto"
+                      className="flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm bg-slate-800/60 border border-slate-700/40 text-slate-300 hover:bg-slate-800 hover:border-slate-600/60 transition-all w-full sm:w-auto"
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     >
                       <FileDown className="w-4 h-4" />
@@ -155,18 +166,12 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
                 )}
               
               {user && (
-                <div className="text-sm text-slate-900 rounded-xl px-4 py-2.5 bg-gradient-to-r from-cyan-400 to-emerald-400 font-medium">
-                  Credits: <span className="font-semibold">{Number(user.credits).toFixed(2)}</span>
+                <div className="flex items-center gap-2 text-sm rounded-xl px-4 py-2.5 bg-slate-800/60 border border-slate-700/40 font-medium">
+                  <span className="text-slate-400">Credits</span>
+                  <span className="w-px h-4 bg-slate-700"></span>
+                  <span className="text-cyan-400 font-semibold">{Number(user.credits).toFixed(2)}</span>
                 </div>
               )}
-
-              <button
-                className="flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black transition-all w-full sm:w-auto"
-                onClick={handleBack}
-              >
-                <ArrowLeft className="w-4 h-4" />
-                New Search
-              </button>
             </div>
           </div>
         </div>

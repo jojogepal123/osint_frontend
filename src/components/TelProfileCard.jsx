@@ -7,33 +7,31 @@ import RcPopup from "./RcPopup";
 import CreditReportModal from "./CreditReportModal";
 import { toast } from "react-toastify";
 import useAuthContext from "../context/AuthContext";
-import { Phone, User, Mail, MapPin, CreditCard, Shield, Car, Building2, AlertTriangle, Globe, FileText } from "lucide-react";
+import { Phone, User, Mail, MapPin, CreditCard, Shield, Car, Building2, AlertTriangle, Globe, FileText, Briefcase } from "lucide-react";
 
 const InfoList = ({ title, items, onCreditReport, icon: IconComponent }) => {
   if (!items || items.length === 0) return null;
 
   return (
-    <div>
-      <h3 className="text-base font-semibold text-cyan-400 mb-3 flex items-center gap-2">
-        {IconComponent && <IconComponent className="w-4 h-4" />}
+    <div className="mb-4">
+      <h3 className="text-sm font-semibold text-cyan-400 mb-2 flex items-center gap-2 uppercase tracking-wide">
+        {IconComponent && <IconComponent className="w-3.5 h-3.5" />}
         {title}
       </h3>
-      <ul className="space-y-2">
+      <ul className="space-y-1.5">
         {items.map((item, idx) => (
-          <li key={idx} className="flex flex-col gap-1">
-            <div className="flex items-start gap-2">
-              {item.key && (
-                <span className="text-sm text-emerald-400 font-medium">{item.key}:</span>
+          <li key={idx} className="flex items-center gap-2">
+            {item.key && (
+              <span className="text-xs text-emerald-400 font-medium whitespace-nowrap">{item.key}:</span>
+            )}
+            <span className="text-slate-300 text-sm">
+              {typeof item.value === "string" && item.value.includes("\n") ? (
+                <span className="whitespace-pre-line">{item.value}</span>
+              ) : (
+                item.value
               )}
-              <span className="text-slate-300 text-sm">
-                {typeof item.value === "string" && item.value.includes("\n") ? (
-                  <span className="whitespace-pre-line">{item.value}</span>
-                ) : (
-                  item.value
-                )}
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
+            </span>
+            <div className="flex items-center gap-2 ml-auto flex-shrink-0">
               {item.source && (
                 <span className="text-xs text-slate-500 px-2 py-0.5 rounded-full bg-slate-800/50">
                   {item.source}
@@ -57,12 +55,14 @@ const InfoList = ({ title, items, onCreditReport, icon: IconComponent }) => {
   );
 };
 
-const DataCard = ({ title, items, onCreditReport, icon: IconComponent }) => {
-  if (!items || items.length === 0) return null;
-
+const ResumeSection = ({ title, children, icon: IconComponent }) => {
   return (
-    <div className="bg-slate-900/60 backdrop-blur-sm rounded-xl shadow-lg p-5 min-h-[120px] flex flex-col justify-between border border-slate-700/50 hover:border-cyan-500/30 hover:bg-slate-900/80 transition-all duration-300 group">
-      <InfoList title={title} items={items} onCreditReport={onCreditReport} icon={IconComponent} />
+    <div className="mb-6">
+      <div className="flex items-center gap-3 mb-4 pb-2 border-b border-slate-700/50">
+        {IconComponent && <IconComponent className="w-4 h-4 text-cyan-400" />}
+        <h3 className="text-lg font-semibold text-white uppercase tracking-wide">{title}</h3>
+      </div>
+      {children}
     </div>
   );
 };
@@ -213,6 +213,14 @@ const TelProfileCard = ({
     }
   };
 
+  const primaryName = profile.fullNames?.find((n) => n.source === "Gov")?.value || 
+                      profile.fullNames?.[0]?.value || 
+                      "Unknown";
+  const primaryPhone = profile.phones?.[0]?.value || userInput;
+  const primaryEmail = profile.emails?.[0]?.value;
+  const primaryLocation = profile.locations?.[0]?.value || 
+                         profile.verifiedAddress?.[0]?.value;
+
   return (
     <>
       {modalOpen && selectedImage && (
@@ -235,260 +243,264 @@ const TelProfileCard = ({
         </div>
       )}
       
-      <div className="space-y-6 bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-2xl p-6 md:p-8 text-white border border-slate-700/50">
-        {/* Header */}
-        <div className="flex items-center gap-4 pb-4 border-b border-slate-700/50">
-          <div className="w-1 h-14 bg-gradient-to-b from-cyan-400 to-emerald-400 rounded-full shadow-lg shadow-cyan-500/30"></div>
-          <div className="flex-1">
-            <div className="flex flex-col md:flex-row md:items-center gap-2">
-              <h2 className="text-2xl md:text-3xl font-bold text-white">
-                Profile Summary
-              </h2>
-              <p className="flex items-center gap-2 text-cyan-400 font-medium">
-                <Phone className="w-4 h-4" />
-                {userInput}
-              </p>
-              {profile.isSpam && (
-                <span className="flex items-center gap-1 text-red-400 text-sm font-medium bg-red-500/10 px-3 py-1 rounded-full border border-red-500/30">
-                  <AlertTriangle className="w-4 h-4" />
-                  Marked as Spam
-                </span>
+      <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-2xl text-white border border-slate-700/50 overflow-hidden">
+        {/* Resume Header */}
+        <div className="bg-gradient-to-r from-slate-900/80 to-slate-800/60 p-6 md:p-8 border-b border-slate-700/50">
+          <div className="flex flex-col md:flex-row items-start gap-6">
+            {/* Profile Photo */}
+            <div className="flex-shrink-0">
+              {profile.profileImages?.length > 0 ? (
+                <div className="relative group cursor-pointer" onClick={() => {
+                  setModalOpen(true);
+                  setSelectedImage(profile.profileImages[0].value);
+                }}>
+                  <img
+                    src={profile.profileImages[0].value}
+                    alt="Profile"
+                    className="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover border-2 border-cyan-500/30 shadow-xl"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/no-image.png";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-cyan-500/20 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+              ) : (
+                <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border-2 border-cyan-500/30 flex items-center justify-center">
+                  <User className="w-10 h-10 text-cyan-400" />
+                </div>
               )}
+            </div>
+
+            {/* Header Info */}
+            <div className="flex-1">
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">
+                    {primaryName}
+                  </h1>
+                  {profile.isSpam && (
+                    <span className="inline-flex items-center gap-1 text-red-400 text-sm font-medium bg-red-500/10 px-3 py-1 rounded-full border border-red-500/30 mt-2">
+                      <AlertTriangle className="w-3 h-3" />
+                      Marked as Spam
+                    </span>
+                  )}
+                </div>
+              </div>
+              
+              {/* Contact Bar */}
+              <div className="flex flex-wrap gap-4 mt-3 text-sm">
+                <div className="flex items-center gap-2 text-slate-300">
+                  <Phone className="w-4 h-4 text-cyan-400" />
+                  <span>{primaryPhone}</span>
+                </div>
+                {primaryEmail && (
+                  <div className="flex items-center gap-2 text-slate-300">
+                    <Mail className="w-4 h-4 text-cyan-400" />
+                    <span>{primaryEmail}</span>
+                  </div>
+                )}
+                {primaryLocation && (
+                  <div className="flex items-center gap-2 text-slate-300">
+                    <MapPin className="w-4 h-4 text-cyan-400" />
+                    <span>{primaryLocation}</span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Profile Images */}
-        <div className="flex flex-col md:flex-row items-start gap-6">
-          {profile.profileImages?.length > 0 && (
-            <div className="flex flex-wrap gap-4 items-center">
-              {profile.profileImages.map((img, idx) => (
-                <div key={idx} className="relative flex flex-col items-center group">
-                  <div className="relative overflow-hidden rounded-full">
-                    <img
-                      src={img.value}
-                      alt={`Profile ${idx}`}
-                      className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-2 border-cyan-500/30 shadow-xl shadow-cyan-500/10 hover:shadow-cyan-500/30 transition-all duration-300 cursor-pointer group-hover:scale-105"
-                      referrerPolicy="no-referrer"
-                      onClick={() => {
-                        setModalOpen(true);
-                        setSelectedImage(img.value);
-                      }}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "/no-image.png";
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-cyan-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
-                  </div>
-                  <span className="mt-2 text-xs px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                    {img.source}
-                  </span>
+        {/* Resume Body */}
+        <div className="p-6 md:p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Main Content */}
+            <div className="lg:col-span-2">
+              <ResumeSection title="Personal Information" icon={User}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <InfoList title="Full Names" items={profile.fullNames} icon={User} />
+                  <InfoList title="Usernames" items={profile.userNames} icon={User} />
+                  <InfoList title="Phone Numbers" items={profile.phones} icon={Phone} />
+                  <InfoList title="Emails" items={profile.emails} icon={Mail} />
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              </ResumeSection>
 
-        {/* Personal Info Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <DataCard title="Full Names and Alias" items={profile.fullNames} icon={User} />
-          <DataCard title="Usernames" items={profile.userNames} icon={User} />
-          <DataCard title="Phone Numbers" items={profile.phones} icon={Phone} />
-          <DataCard title="Emails" items={profile.emails} icon={Mail} />
-          <DataCard title="Basic Info" items={profile.basicInfo} icon={User} />
-          <DataCard title="Bank Details" items={profile.bankDetails} icon={CreditCard} />
-          
-          <DataCard
-            title="Upi Ids"
-            items={
-              Array.isArray(profile.upiDetails)
-                ? profile.upiDetails.map((upi, idx) => ({
-                    value: (
-                      <div
-                        key={idx}
-                        className="flex items-center justify-between gap-4"
-                      >
-                        <span className="text-slate-300 font-medium">
-                          {upi.value}
-                        </span>
+              <ResumeSection title="Financial Information" icon={CreditCard}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <InfoList title="Bank Details" items={profile.bankDetails} icon={CreditCard} />
+                  <InfoList title="UPI IDs" items={
+                    Array.isArray(profile.upiDetails)
+                      ? profile.upiDetails.map((upi, idx) => ({
+                          value: (
+                            <div key={idx} className="flex items-center justify-between gap-4">
+                              <span className="text-slate-300 font-medium">{upi.value}</span>
+                              <button
+                                onClick={() => handleUpiClick(upi.value)}
+                                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/20 text-cyan-400 font-medium shadow-md hover:bg-cyan-500/30 border border-cyan-500/30 transition-all text-sm"
+                              >
+                                View Details
+                              </button>
+                            </div>
+                          ),
+                          source: upi.source,
+                        }))
+                      : profile.upiDetails
+                      ? [{
+                          value: (
+                            <div className="flex items-center justify-between gap-4">
+                              <span className="text-slate-300 font-medium">{profile.upiDetails.value}</span>
+                              <button
+                                onClick={() => handleUpiClick(profile.upiDetails.value)}
+                                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/20 text-cyan-400 font-medium shadow-md hover:bg-cyan-500/30 border border-cyan-500/30 transition-all text-sm"
+                              >
+                                View Details
+                              </button>
+                            </div>
+                          ),
+                          source: profile.upiDetails.source,
+                        }]
+                      : []
+                  } icon={CreditCard} />
+                </div>
+              </ResumeSection>
+
+              <ResumeSection title="Identity & Address" icon={Shield}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <InfoList title="Identity Proofs" items={profile.idProofs} onCreditReport={handleCreditReport} icon={Shield} />
+                  <InfoList title="Verified Address" items={profile.verifiedAddress} icon={MapPin} />
+                  <InfoList title="Locations" items={profile.locations} icon={MapPin} />
+                </div>
+              </ResumeSection>
+
+              <ResumeSection title="Vehicle Information" icon={Car}>
+                <InfoList title="RC Numbers" items={profile.rcNumber.map((rc) => ({
+                  value: (
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <span className="text-slate-300 font-medium">{rc}</span>
+                      <div className="flex gap-2 flex-wrap">
                         <button
-                          onClick={() => handleUpiClick(upi.value)}
-                          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/20 text-cyan-400 font-medium shadow-md hover:bg-cyan-500/30 border border-cyan-500/30 transition-all text-sm"
+                          onClick={() => handleRCClick(rc)}
+                          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/20 text-cyan-400 font-medium shadow-md hover:bg-cyan-500/30 border border-cyan-500/30 transition-all text-xs"
                         >
                           View Details
                         </button>
+                        <button
+                          onClick={() => handleChallanClick(rc)}
+                          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium shadow-md hover:bg-emerald-500/30 border border-emerald-500/30 transition-all text-xs"
+                        >
+                          Challan Details
+                        </button>
                       </div>
-                    ),
-                    source: upi.source,
-                  }))
-                : profile.upiDetails
-                ? [
-                    {
-                      value: (
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-slate-300 font-medium">
-                            {profile.upiDetails.value}
-                          </span>
-                          <button
-                            onClick={() =>
-                              handleUpiClick(profile.upiDetails.value)
-                            }
-                            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/20 text-cyan-400 font-medium shadow-md hover:bg-cyan-500/30 border border-cyan-500/30 transition-all text-sm"
-                          >
-                            View Details
-                          </button>
-                        </div>
-                      ),
-                      source: profile.upiDetails.source,
-                    },
-                  ]
-                : []
-            }
-            icon={CreditCard}
-          />
-          
-          <DataCard
-            title="Identity Proofs"
-            items={profile.idProofs}
-            onCreditReport={handleCreditReport}
-            icon={Shield}
-          />
-          <DataCard title="Verified Address" items={profile.verifiedAddress} icon={MapPin} />
-          <DataCard title="Locations" items={profile.locations} icon={MapPin} />
-          <DataCard title="Country Codes" items={profile.countryCodes} icon={Globe} />
-          <DataCard title="Carriers" items={profile.carriers} icon={Building2} />
-          <DataCard title="Job Profiles" items={profile.jobProfiles} icon={Building2} />
-          <DataCard title="Bio" items={profile.telBio} icon={User} />
-          
-          <DataCard
-            title="RC Numbers"
-            items={profile.rcNumber.map((rc) => ({
-              value: (
-                <div
-                  className="flex flex-col sm:flex-row items-start sm:items-center gap-2"
-                >
-                  <span className="text-slate-300 font-medium">{rc}</span>
-                  <div className="flex gap-2 flex-wrap">
-                    <button
-                      onClick={() => handleRCClick(rc)}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/20 text-cyan-400 font-medium shadow-md hover:bg-cyan-500/30 border border-cyan-500/30 transition-all text-xs"
-                    >
-                      View Details
-                    </button>
-                    <button
-                      onClick={() => handleChallanClick(rc)}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium shadow-md hover:bg-emerald-500/30 border border-emerald-500/30 transition-all text-xs"
-                    >
-                      Challan Details
-                    </button>
-                  </div>
-                </div>
-              ),
-            }))}
-            icon={Car}
-          />
-        </div>
-
-        {/* Social Media Links */}
-        {Object.keys(profile.socialMediaPresence).length > 0 && (
-          <div className="bg-slate-900/40 backdrop-blur-sm border border-slate-700/50 rounded-xl p-5">
-            <div className="flex items-center gap-3 mb-4">
-              <Globe className="w-5 h-5 text-cyan-400" />
-              <h3 className="text-lg font-semibold text-white">Internet Presence</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {Object.entries(profile.socialMediaPresence).map(
-                ([platform, isPresent]) => (
-                  <div
-                    key={platform}
-                    className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${
-                      isPresent 
-                        ? "bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20" 
-                        : "bg-slate-800/50 border-slate-700/50 hover:bg-slate-800/70"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        isPresent ? "bg-emerald-500/20" : "bg-slate-700/50"
-                      }`}>
-                        <IconWithFallback platform={platform} size={24} />
-                      </div>
-                      <span className="capitalize font-medium text-slate-200">
-                        {platform}
-                      </span>
                     </div>
-                    {isPresent ? (
-                      <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold border border-emerald-500/30">
-                        <Check className="w-3 h-3" />
-                        Active
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-700/50 text-slate-400 text-xs font-medium border border-slate-600/30">
-                        <X className="w-3 h-3" />
-                        Inactive
-                      </span>
+                  ),
+                }))} icon={Car} />
+              </ResumeSection>
+            </div>
+
+            {/* Right Column - Sidebar */}
+            <div className="lg:col-span-1">
+              <ResumeSection title="Basic Info" icon={User}>
+                <InfoList items={profile.basicInfo} />
+              </ResumeSection>
+
+              <ResumeSection title="Carrier Info" icon={Building2}>
+                <InfoList title="Carriers" items={profile.carriers} icon={Building2} />
+                <InfoList title="Country Codes" items={profile.countryCodes} icon={Globe} />
+              </ResumeSection>
+
+              <ResumeSection title="Professional" icon={Briefcase}>
+                <InfoList title="Job Profiles" items={profile.jobProfiles} icon={Building2} />
+                <InfoList title="Bio" items={profile.telBio} icon={User} />
+              </ResumeSection>
+
+              {profile?.isBusiness && (
+                <div className="mb-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Building2 className="w-4 h-4 text-emerald-400" />
+                    <h4 className="font-semibold text-white text-sm">Whatsapp Business</h4>
+                  </div>
+                  <p className="text-emerald-400 font-medium text-sm">Yes</p>
+                </div>
+              )}
+
+              {profile?.imsi && (
+                <div className="mb-4 p-3 rounded-lg bg-slate-800/50">
+                  <div className="flex items-center gap-2 mb-1">
+                    <FileText className="w-4 h-4 text-cyan-400" />
+                    <h4 className="font-semibold text-white text-sm">Phone IMSI</h4>
+                  </div>
+                  <p className="text-cyan-400 font-mono text-sm">{profile?.imsi}</p>
+                </div>
+              )}
+
+              {profile?.lastUpdated && (
+                <div className="mb-4 p-3 rounded-lg bg-slate-800/50">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Shield className="w-4 h-4 text-emerald-400" />
+                    <h4 className="font-semibold text-white text-sm">Phone Status</h4>
+                  </div>
+                  <p className="text-emerald-400 text-sm">{profile?.lastUpdated}</p>
+                </div>
+              )}
+
+              {/* Internet Presence as Sidebar Section */}
+              {Object.keys(profile.socialMediaPresence).length > 0 && (
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-700/50">
+                    <Globe className="w-3.5 h-3.5 text-cyan-400" />
+                    <h4 className="text-sm font-semibold text-white uppercase tracking-wide">Internet Presence</h4>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.entries(profile.socialMediaPresence).map(
+                      ([platform, isPresent]) => (
+                        <div
+                          key={platform}
+                          className={`flex items-center gap-2 px-2.5 py-2 rounded-lg border transition-all duration-300 ${
+                            isPresent 
+                              ? "bg-slate-800/60 border-cyan-500/30" 
+                              : "bg-slate-900/30 border-slate-800/50 opacity-50"
+                          }`}
+                        >
+                          <div className={`w-6 h-6 rounded flex-shrink-0 flex items-center justify-center ${
+                            isPresent ? "bg-cyan-500/20" : "bg-slate-800/50"
+                          }`}>
+                            <IconWithFallback platform={platform} size={14} />
+                          </div>
+                          <span className={`text-xs font-medium truncate ${
+                            isPresent ? "text-white" : "text-slate-500"
+                          }`}>
+                            {platform}
+                          </span>
+                          <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                            isPresent ? "bg-emerald-400 shadow-sm shadow-emerald-400/50" : "bg-slate-700"
+                          }`}></div>
+                        </div>
+                      )
                     )}
                   </div>
-                )
+                </div>
               )}
             </div>
           </div>
-        )}
 
-        {/* Other Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {profile?.isBusiness && (
-            <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 p-4 rounded-xl">
-              <div className="flex items-center gap-2 mb-2">
-                <Building2 className="w-4 h-4 text-cyan-400" />
-                <h3 className="font-semibold text-white text-sm">Whatsapp Business</h3>
-              </div>
-              <p className="text-emerald-400 font-medium">
-                {profile?.isBusiness ? "Yes" : "No"}
-              </p>
-            </div>
-          )}
-          {profile?.imsi && (
-            <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 p-4 rounded-xl">
-              <div className="flex items-center gap-2 mb-2">
-                <FileText className="w-4 h-4 text-cyan-400" />
-                <h3 className="font-semibold text-white text-sm">Phone IMSI</h3>
-              </div>
-              <p className="text-cyan-400 font-medium">
-                {profile?.imsi || "N/A"}
-              </p>
-            </div>
-          )}
-          {profile?.lastUpdated && (
-            <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 p-4 rounded-xl">
-              <div className="flex items-center gap-2 mb-2">
-                <Shield className="w-4 h-4 text-emerald-400" />
-                <h3 className="font-semibold text-white text-sm">Phone Status</h3>
-              </div>
-              <p className="text-emerald-400 font-medium">
-                {profile?.lastUpdated}
-              </p>
+          {profile.facebook?.profile_url && (
+            <div className="mt-6 pt-6 border-t border-slate-700/50">
+              <h4 className="text-sm font-semibold text-cyan-400 mb-2 flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Facebook Profile
+              </h4>
+              <a
+                href={profile.facebook.profile_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:text-cyan-300 hover:underline break-all text-sm"
+              >
+                {profile.facebook.profile_url}
+              </a>
             </div>
           )}
         </div>
-
-        {profile.facebook?.profile_url && (
-          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 p-4 rounded-xl">
-            <h3 className="font-semibold text-white text-sm mb-2 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-cyan-400" />
-              Facebook Profile
-            </h3>
-            <a
-              href={profile.facebook.profile_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-cyan-400 hover:text-cyan-300 hover:underline break-all text-sm"
-            >
-              {profile.facebook.profile_url}
-            </a>
-          </div>
-        )}
       </div>
 
       <RcPopup

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthContext from "../context/AuthContext";
 import Loader from "../components/Loader";
-import { toast } from "react-toastify";
+import { useAlert } from "../components/Alert";
 import { Eye, EyeOff, Search, Shield, ChevronRight } from "lucide-react";
 import instance from "../api/axios";
 
@@ -11,12 +11,13 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password_confirmation, setPassswordConfirmation] = useState("");
-  const { register, errors } = useAuthContext();
+  const { register } = useAuthContext();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [registrationEnabled, setRegistrationEnabled] = useState(null);
   const navigate = useNavigate();
+  const showAlert = useAlert();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +25,7 @@ const Register = () => {
     try {
       await register({ name, email, password, password_confirmation });
     } catch (error) {
-      toast.error("Register failed. Please check your credentials.");
+      // Alert already shown by AuthContext
     } finally {
       setLoading(false);
     }
@@ -165,11 +166,6 @@ const Register = () => {
                       onChange={(e) => setName(e.target.value)}
                       required
                     />
-                    {errors.name && errors.name[0] && (
-                      <div className="text-red-400 text-sm py-1 mt-1">
-                        {errors.name[0]}
-                      </div>
-                    )}
                   </div>
 
                   <div className="relative">
@@ -184,11 +180,6 @@ const Register = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
-                    {errors.email && errors.email[0] && (
-                      <div className="text-red-400 text-sm py-1 mt-1">
-                        {errors.email[0]}
-                      </div>
-                    )}
                   </div>
 
                   <div className="relative">
@@ -210,11 +201,6 @@ const Register = () => {
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
-                    {errors.password && errors.password[0] && (
-                      <div className="text-red-400 text-sm py-1 mt-1">
-                        {errors.password[0]}
-                      </div>
-                    )}
                   </div>
 
                   <div className="relative">
@@ -236,11 +222,6 @@ const Register = () => {
                     >
                       {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
-                    {errors.password_confirmation && errors.password_confirmation[0] && (
-                      <div className="text-red-400 text-sm py-1 mt-1">
-                        {errors.password_confirmation[0]}
-                      </div>
-                    )}
                   </div>
 
                   <button

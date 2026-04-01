@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Loader from "./Loader";
 import {
   Mail,
-  Phone,
   Database,
   Building2,
   ShieldCheck,
@@ -59,19 +58,9 @@ const SidebarLarge = () => {
   const navItems = [
     {
       icon: Mail,
-      label: "Email Search",
-      active: inputType === "email" && dashboardActive,
+      label: "Email & Phone",
+      active: dashboardActive,
       onClick: () => {
-        setInputType("email");
-        if (!dashboardActive) navigate("/dashboard");
-      },
-    },
-    {
-      icon: Phone,
-      label: "Phone Search",
-      active: inputType === "tel" && dashboardActive,
-      onClick: () => {
-        setInputType("tel");
         if (!dashboardActive) navigate("/dashboard");
       },
     },
@@ -118,7 +107,7 @@ const SidebarLarge = () => {
               <Search className="w-5 h-5 text-cyan-400" />
             </div>
             <Link to="/" className="flex-1 overflow-hidden">
-              <h1 className="text-base font-bold bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent truncate">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent truncate">
                 {import.meta.env.VITE_APP_NAME}
               </h1>
             </Link>

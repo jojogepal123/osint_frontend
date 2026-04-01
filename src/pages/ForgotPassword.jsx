@@ -1,7 +1,7 @@
 import { useState } from "react";
 import useAuthContext from "../context/AuthContext";
 import axios from "../api/axios";
-import { toast } from "react-toastify";
+import { useAlert } from "../components/Alert";
 import { Shield, Mail, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -10,6 +10,7 @@ const ForgotPassword = () => {
   const [errors, setErrors] = useState([]);
   const [status, setStatus] = useState(null);
   const { csrf, loading, setLoading } = useAuthContext();
+  const showAlert = useAlert();
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
@@ -21,15 +22,7 @@ const ForgotPassword = () => {
     try {
       const response = await axios.post("/forgot-password", { email });
       setStatus(response.data.status);
-      toast.success("Password reset link sent successfully!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "light",
-      });
+      showAlert.success("Password reset link sent successfully!", { title: "Email Sent" });
     } catch (error) {
       if (error.response.status == 422) {
         setErrors(error.response.data.errors);

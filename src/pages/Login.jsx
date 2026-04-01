@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthContext from "../context/AuthContext";
-import { toast } from "react-toastify";
+import { useAlert } from "../components/Alert";
 import { Eye, EyeOff, Search, Shield, ChevronRight } from "lucide-react";
 import Loader from "../components/Loader";
 
@@ -9,9 +9,10 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login, errors } = useAuthContext();
+  const { login } = useAuthContext();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const showAlert = useAlert();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,7 +20,7 @@ const Login = () => {
     try {
       await login({ email, password });
     } catch (error) {
-      toast.error("Login failed. Please check your credentials.");
+      // Alert already shown by AuthContext
     } finally {
       setLoading(false);
     }
@@ -112,11 +113,6 @@ const Login = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
-                    {errors.email && errors.email[0] && (
-                      <div className="text-red-400 text-sm py-1 mt-1">
-                        {errors.email[0]}
-                      </div>
-                    )}
                   </div>
                   
                   <div className="relative">
@@ -138,11 +134,6 @@ const Login = () => {
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
-                    {errors.password && errors.password[0] && (
-                      <div className="text-red-400 text-sm py-1 mt-1">
-                        {errors.password[0]}
-                      </div>
-                    )}
                   </div>
 
                   <button

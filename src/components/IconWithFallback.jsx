@@ -1,75 +1,238 @@
 import React, { useState } from "react";
 
-// Platform name mappings for various icon services
-const iconMap = {
-  "X (Twitter)": "twitter",
-  "Google+": "google-plus",
-  "Chess.com": "chesscom",
-  "Picsart": "picsart",
-  "X": "x",
-  "x": "twitter",
+const platformIconMap = {
+  "x (twitter)": "x",
+  "x": "x",
+  "twitter": "twitter",
+  "xtwitter": "x",
+  "facebook": "facebook",
+  "instagram": "instagram",
+  "linkedin": "linkedin",
+  "github": "github",
+  "youtube": "youtube",
+  "tiktok": "tiktok",
+  "snapchat": "snapchat",
+  "reddit": "reddit",
+  "pinterest": "pinterest",
+  "tumblr": "tumblr",
+  "whatsapp": "whatsapp",
+  "telegram": "telegram",
+  "discord": "discord",
+  "twitch": "twitch",
+  "vimeo": "vimeo",
+  "flickr": "flickr",
+  "medium": "medium",
+  "wordpress": "wordpress",
+  "blogger": "blogger",
+  "spotify": "spotify",
+  "soundcloud": "soundcloud",
+  "steam": "steam",
+  "chess.com": "chessdotcom",
+  "chesscom": "chessdotcom",
+  "picsart": "picsart",
+  "google+": "google",
+  "googleplus": "google",
+  "google": "google",
+  "vk": "vk",
+  "ok.ru": "odnoklassniki",
+  "okru": "odnoklassniki",
+  "weibo": "sina-weibo",
+  "qq": "tencent-qq",
+  "line": "line",
+  "signal": "signal",
+  "threads": "threads",
+  "mastodon": "mastodon",
+  "bluesky": "bluesky",
+  "patreon": "patreon",
+  "ko-fi": "kofi",
+  "kofi": "kofi",
+  "onlyfans": "onlyfans",
+  "roblox": "roblox",
+  "fortnite": "fortnite",
+  "minecraft": "minecraft",
+  "playstation": "playstation",
+  "xbox": "xbox",
+  "nintendo": "nintendoswitch",
+  "amazon": "amazon",
+  "ebay": "ebay",
+  "alibaba": "alibaba",
+  "aliexpress": "aliexpress",
+  "shopify": "shopify",
+  "etsy": "etsy",
+  "paypal": "paypal",
+  "stripe": "stripe",
+  "bitcoin": "bitcoin",
+  "ethereum": "ethereum",
+  "apple": "apple",
+  "android": "android",
+  "windows": "windows",
+  "linux": "linux",
+  "ubuntu": "ubuntu",
+  "debian": "debian",
+  "arch": "archlinux",
+  "docker": "docker",
+  "kubernetes": "kubernetes",
+  "git": "git",
+  "gitlab": "gitlab",
+  "bitbucket": "bitbucket",
+  "stackoverflow": "stackoverflow",
+  "codepen": "codepen",
+  "replit": "replit",
+  "heroku": "heroku",
+  "netlify": "netlify",
+  "vercel": "vercel",
+  "cloudflare": "cloudflare",
+  "digitalocean": "digitalocean",
+  "aws": "amazonaws",
+  "azure": "microsoftazure",
+  "firebase": "firebase",
+  "supabase": "supabase",
+  "mongodb": "mongodb",
+  "mysql": "mysql",
+  "postgresql": "postgresql",
+  "redis": "redis",
+  "sqlite": "sqlite",
+  "php": "php",
+  "python": "python",
+  "javascript": "javascript",
+  "typescript": "typescript",
+  "react": "react",
+  "vue": "vuedotjs",
+  "angular": "angular",
+  "svelte": "svelte",
+  "next.js": "nextdotjs",
+  "nextjs": "nextdotjs",
+  "nuxt": "nuxtdotjs",
+  "laravel": "laravel",
+  "django": "django",
+  "flask": "flask",
+  "rails": "rubyonrails",
+  "spring": "spring",
+  "dotnet": "dotnet",
+  "java": "java",
+  "kotlin": "kotlin",
+  "swift": "swift",
+  "rust": "rust",
+  "go": "go",
+  "dart": "dart",
+  "flutter": "flutter",
+  "unity": "unity",
+  "unreal": "unrealengine",
+  "godot": "godotengine",
+  "figma": "figma",
+  "adobe": "adobe",
+  "photoshop": "adobephotoshop",
+  "illustrator": "adobeillustrator",
+  "xd": "adobexd",
+  "canva": "canva",
+  "notion": "notion",
+  "trello": "trello",
+  "jira": "jira",
+  "slack": "slack",
+  "zoom": "zoom",
+  "teams": "microsoftteams",
+  "skype": "skype",
+  "hangouts": "googlehangouts",
+  "meetup": "meetup",
+  "eventbrite": "eventbrite",
+  "yelp": "yelp",
+  "tripadvisor": "tripadvisor",
+  "airbnb": "airbnb",
+  "uber": "uber",
+  "lyft": "lyft",
+  "doordash": "doordash",
+  "grubhub": "grubhub",
+  "netflix": "netflix",
+  "hulu": "hulu",
+  "disney": "disney",
+  "hbo": "hbomax",
+  "peacock": "peacock",
+  "paramount": "paramountplus",
+  "crunchyroll": "crunchyroll",
+  "funimation": "funimation",
+  "tubi": "tubi",
+  "pluto": "plutotv",
+  "roku": "roku",
+  "chromecast": "googlechromecast",
+  "airplay": "airplay",
+  "sonos": "sonos",
+  "bose": "bose",
+  "jbl": "jbl",
+  "sennheiser": "sennheiser",
+  "beats": "beatsbydre",
+  "airpods": "airpods",
+  "pixel": "googlepixel",
+  "galaxy": "samsung",
+  "iphone": "apple",
+  "ipad": "apple",
+  "macbook": "apple",
+  "surface": "microsoftsurface",
+  "thinkpad": "lenovo",
+  "rog": "rog",
+  "alienware": "alienware",
+  "razer": "razer",
+  "corsair": "corsair",
+  "logitech": "logitech",
+  "steelseries": "steelseries",
+  "hyperx": "hyperx",
+  "asus": "asus",
+  "msi": "msi",
+  "gigabyte": "gigabyte",
+  "evga": "evga",
+  "nvidia": "nvidia",
+  "amd": "amd",
+  "intel": "intel",
+  "qualcomm": "qualcomm",
+  "mediatek": "mediatek",
+  "samsung": "samsung",
+  "lg": "lg",
+  "sony": "sony",
+  "panasonic": "panasonic",
+  "philips": "philips",
+  "xiaomi": "xiaomi",
+  "oneplus": "oneplus",
+  "oppo": "oppo",
+  "vivo": "vivo",
+  "realme": "realme",
+  "huawei": "huawei",
+  "honor": "honor",
+  "motorola": "motorola",
+  "nokia": "nokia",
+  "htc": "htc",
+  "blackberry": "blackberry",
+  "palm": "palm",
+  "zune": "zune",
+  "ipod": "apple",
+  "itunes": "apple",
+  "appstore": "apple",
+  "playstore": "googleplay",
+  "google play": "googleplay",
+  "ixigo": "trainline",
+  "hitek": "tech",
+  "office365": "microsoftoffice",
+  "dubsmash": "tiktok",
 };
 
-const fallbackSources = {
-  // Primary source - Iconify with specific icon sets
-  iconify: (platform) => {
-    // Special cases for specific platforms
-    const iconifyMappings = {
-      chesscom: "chess", // Map Chess.com to chess icon
-      x: "simple-icons:x", // Use specific icon set for X
-      twitter: "simple-icons:twitter", // Specific Twitter icon
-      xtwitter: "simple-icons:x", // Handle xtwitter case
-    };
-
-    const iconName = iconifyMappings[platform] || `simple-icons:${platform}`;
-    return `https://api.iconify.design/${iconName}.svg`;
-  },
-  // Secondary source - Font Awesome
-  fontAwesome: (platform) => {
-    // Special cases for Font Awesome
-    const faMapping = {
-      x: "twitter-x", // Font Awesome's name for X
-      chesscom: "chess",
-      xtwitter: "twitter-x",
-    };
-    const faName = faMapping[platform] || platform;
-    return `https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/svgs/brands/${faName}.svg`;
-  },
-  default: "https://api.iconify.design/lucide:help-circle.svg",
+const getSimpleIconName = (platform) => {
+  const normalized = platform.toLowerCase().replace(/[\s().+]/g, "").trim();
+  return platformIconMap[normalized] || normalized;
 };
+
+const FALLBACK_ICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cpath d='M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20'%3E%3C/path%3E%3Cpath d='M2 12h20'%3E%3C/path%3E%3C/svg%3E";
 
 export default function IconWithFallback({ platform, size = 20 }) {
-  const [currentSource, setCurrentSource] = useState(0);
-  const normalizedPlatform =
-    iconMap[platform] || platform.toLowerCase().replace(/[\s().+]/g, "");
-
-  // Get current icon URL based on fallback state
-  const getIconUrl = () => {
-    const sources = Object.values(fallbackSources);
-    if (currentSource >= sources.length - 1) {
-      return fallbackSources.default;
-    }
-    const currentProvider = sources[currentSource];
-    return typeof currentProvider === "function"
-      ? currentProvider(normalizedPlatform)
-      : currentProvider;
-  };
-  const handleError = (e) => {
-    if (currentSource >= Object.values(fallbackSources).length - 1) {
-      e.target.onerror = null;
-      return;
-    }
-    setCurrentSource((prev) => prev + 1);
-  };
+  const [failed, setFailed] = useState(false);
+  const iconName = getSimpleIconName(platform);
+  const iconUrl = failed ? FALLBACK_ICON : `https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/${iconName}.svg`;
 
   return (
     <img
-      src={getIconUrl()}
+      src={iconUrl}
       alt={platform}
       loading="lazy"
       className="object-contain"
       style={{ width: size, height: size, filter: "invert(1)" }}
-      onError={handleError}
+      onError={() => setFailed(true)}
     />
   );
 }

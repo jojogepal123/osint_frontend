@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Plus, Minus, Search } from "lucide-react";
-import { toast } from "react-toastify";
-import StyledDropdown from "../components/StyledDropdown";
+import { Plus, Minus, Search, User, Mail, Phone, AtSign } from "lucide-react";
+import { useAlert } from "../components/Alert";
 import { OsintCard } from "../components/cards/OsintCard";
 import instance from "../api/axios";
 import FullScreenLoader from "../components/FullScreenLoader";
@@ -10,11 +9,18 @@ import MainHeader from "../components/MainHeader";
 import useAuthContext from "../context/AuthContext";
 
 const FIELD_TYPES = {
-  name: { label: "Name", type: "text", placeholder: "Enter Name" },
-  email: { label: "Email", type: "email", placeholder: "Enter Email" },
-  phone: { label: "Phone", type: "tel", placeholder: "Enter Phone Number" },
-  username: { label: "Username", type: "text", placeholder: "Enter Username" },
+  name: { label: "Name", type: "text", placeholder: "Enter Name", icon: User },
+  email: { label: "Email", type: "email", placeholder: "Enter Email", icon: Mail },
+  phone: { label: "Phone", type: "tel", placeholder: "Enter Phone Number", icon: Phone },
+  username: { label: "Username", type: "text", placeholder: "Enter Username", icon: AtSign },
 };
+
+const FIELD_OPTIONS = [
+  { key: "name", label: "Name" },
+  { key: "email", label: "Email" },
+  { key: "phone", label: "Phone" },
+  { key: "username", label: "Username" },
+];
 const LeakDataFinder = () => {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
@@ -26,6 +32,15 @@ const LeakDataFinder = () => {
   const [fields, setFields] = useState([
     { id: Date.now(), type: "name", value: "", isValid: true, error: "" },
   ]);
+  const showAlert = useAlert();
+
+  const handleAddField = (type) => {
+    if (fields.length >= 4) {
+      showAlert.warning("You can only add 4 fields");
+    } else {
+      setFields([...fields, { id: Date.now(), type, value: "", isValid: true, error: "" }]);
+    }
+  };
 
   const validateField = (type, value) => {
     if (!value.trim()) {
@@ -58,14 +73,6 @@ const LeakDataFinder = () => {
     return { isValid: true, error: "" };
   };
 
-  const handleAddField = () => {
-    if (fields.length >= 4) {
-      toast.warning("You can only add 4 fields");
-    } else {
-      setFields([...fields, { id: Date.now(), type: "name", value: "" }]);
-    }
-  };
-
   const handleRemoveField = (id) => {
     setFields(fields.filter((field) => field.id !== id));
   };
@@ -91,11 +98,11 @@ const LeakDataFinder = () => {
     });
     setFields(validatedFields);
     if (!hasSufficientCredits()) {
-      toast.warning("Insufficient credits. Please upgrade your plan.");
+      showAlert.warning("Insufficient credits. Please upgrade your plan.");
       return;
     }
     if (!allValid) {
-      toast.error(firstInvalidError || "Please enter a valid input.");
+      showAlert.error(firstInvalidError || "Please enter a valid input.");
       return;
     }
     setCurrentPage(page);
@@ -117,18 +124,18 @@ const LeakDataFinder = () => {
         setCurrentPage(results.page || 1);
         setEmptyResults(!results.data || results.data.length === 0);
       } else {
-        toast.error("Something went wrong. Please try again.");
+        showAlert.error("Something went wrong. Please try again.");
       }
     } catch (err) {
       if (err.response?.status === 402) {
         const message = err.response?.data?.message || "Insufficient credits.";
-        toast.warning(message);
+        showAlert.warning(message);
       } else {
         const message =
           err.response?.data?.error ||
           err.response?.data?.details ||
           "Something went wrong. Please try again.";
-        toast.error(message);
+        showAlert.error(message);
       }
     } finally {
       setLoading(false);
@@ -139,61 +146,96 @@ const LeakDataFinder = () => {
     <>
       {loading && <FullScreenLoader text="Searching..." />}
       <UserCard />
-      <div className="w-full max-h-full flex flex-col items-center z-10 mt-32 sm:mt-20 md:pl-64">
+      <div className="w-full flex flex-col items-center justify-center z-10 mt-16 pl-4 md:pl-64 text-white">
         <MainHeader header="Leak Data Finder" />
-        <div className="space-y-2 w-full max-w-5xl text-white px-4 md:px-0">
-          {fields.map((field, index) => (
-            <div key={field.id} className="flex items-center space-x-3 rounded">
-              {index === 0 ? (
-                <button
-                  onClick={handleAddField}
-                  className="p-1.5 md:p-3 border rounded-xl font-bold text-cyan-400 bg-slate-800/50 hover:bg-cyan-500/20 hover:border-cyan-500/50 border-cyan-500/30 transition-all"
-                >
-                  <Plus size={24} />
-                </button>
-              ) : (
-                <button
-                  onClick={() => handleRemoveField(field.id)}
-                  className="p-1.5 md:p-3 border rounded-xl font-bold text-red-400/70 bg-slate-800/50 border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 transition-all"
-                >
-                  <Minus size={24} />
-                </button>
-              )}
-
-              <StyledDropdown
-                value={field.type}
-                onChange={(val) => handleChange(field.id, "type", val)}
-              />
-
-              <input
-                type={FIELD_TYPES[field.type].type}
-                placeholder={FIELD_TYPES[field.type].placeholder}
-                value={field.value}
-                onChange={(e) =>
-                  handleChange(field.id, "value", e.target.value)
-                }
-                className={`relative w-full flex-1 py-2 md:py-2.5 px-4 border rounded-xl transition-all text-sm md:text-lg ${
-                  field.isValid === false 
-                    ? "border-red-500/50 bg-red-500/10 text-white placeholder:text-red-400/50" 
-                    : "border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
-                } outline-none`}
-                maxLength={50}
-              />
+        <div className="min-h-auto max-w-full sm:max-w-3xl lg:max-w-4xl xl:max-w-7xl w-auto sm:w-full m-4 sm:mx-auto flex flex-col gap-6 bg-transparent backdrop-blur-none border border-transparent rounded-xl p-4 md:p-8 shadow-none">
+          {/* type buttons */}
+          <div>
+            <p className="mb-3 text-xs font-semibold text-slate-500 tracking-widest uppercase">Field Type</p>
+            <div className="flex flex-wrap gap-2">
+              {FIELD_OPTIONS.map((option) => {
+                const isAdded = fields.some((f) => f.type === option.key);
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={() => handleAddField(option.key)}
+                    disabled={isAdded}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                      isAdded
+                        ? "bg-cyan-500/15 border border-cyan-500/40 text-cyan-400 cursor-not-allowed opacity-50"
+                        : "bg-slate-800/40 border border-slate-700/40 text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 hover:border-slate-600/60"
+                    }`}
+                  >
+                    <Plus size={14} className="inline mr-1" />
+                    {option.label}
+                  </button>
+                );
+              })}
             </div>
-          ))}
-          <div className="flex justify-center items-center">
-            <button
-              type="submit"
-              onClick={() => handleSearch(1)}
-              disabled={loading}
-              className="bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black rounded-xl font-bold border-none px-4 md:px-8 py-2 md:py-3 text-sm md:text-lg flex items-center justify-center gap-2 mt-2 shadow-lg shadow-cyan-500/25 transition-all disabled:opacity-50"
-            >
-              <Search size={24} />
-              Search
-            </button>
           </div>
+
+          <div className="w-full h-px bg-slate-700/50" />
+
+          {/* input fields */}
+          <div className="w-full flex flex-col gap-4">
+            {fields.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/50 mb-3">
+                  <Plus className="w-5 h-5 text-slate-500" />
+                </div>
+                <p className="text-slate-500 text-sm">
+                  Click a field type above to add search criteria
+                </p>
+              </div>
+            ) : (
+              fields.map((field) => {
+                const FieldTypeIcon = FIELD_TYPES[field.type].icon;
+                return (
+                  <div key={field.id} className="flex items-end gap-3">
+                    <div className="flex-1 flex flex-col">
+                      <label className="flex items-center gap-1.5 text-xs font-medium text-slate-300 mb-2">
+                        {FieldTypeIcon && <FieldTypeIcon className="w-3.5 h-3.5 text-cyan-400/70" />}
+                        {FIELD_TYPES[field.type].label}
+                      </label>
+                      <input
+                        type={FIELD_TYPES[field.type].type}
+                        placeholder={FIELD_TYPES[field.type].placeholder}
+                        value={field.value}
+                        onChange={(e) =>
+                          handleChange(field.id, "value", e.target.value)
+                        }
+                        className={`px-4 py-3 rounded-xl border text-sm font-medium transition-all duration-300 outline-none ${
+                          field.isValid === false
+                            ? "border-red-500/50 bg-red-500/10 text-white placeholder:text-red-400/50 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                            : "border-slate-700/50 bg-slate-800/60 text-white placeholder:text-slate-500 focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20 focus:bg-slate-800/80 hover:border-slate-600/60"
+                        } shadow-lg shadow-black/10 focus:shadow-xl focus:shadow-black/20`}
+                        maxLength={50}
+                      />
+                    </div>
+                    <button
+                      onClick={() => handleRemoveField(field.id)}
+                      className="mb-0.5 p-2.5 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400/70 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 transition-all duration-300 shadow-lg shadow-black/10"
+                    >
+                      <Minus size={16} />
+                    </button>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          <button
+            type="submit"
+            onClick={() => handleSearch(1)}
+            disabled={loading || fields.length === 0}
+            className="self-start mt-4 px-6 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black rounded-xl text-sm font-bold shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/30 transition-all duration-300 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+          >
+            <Search size={18} />
+            Search
+          </button>
         </div>
-        <div className="w-full max-w-5xl my-8 px-4 md:px-0">
+        <div className="w-full max-w-7xl my-8 px-4 md:px-0">
           {results && results.length > 0 ? (
             <>
               {totalResults < 10 && (

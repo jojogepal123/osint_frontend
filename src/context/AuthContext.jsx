@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import instance from "../api/axios";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useAlert } from "../components/Alert";
 
 const AuthContext = createContext({});
 
@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const showAlert = useAlert();
 
   // const csrf = useCallback(() => instance.get("/sanctum/csrf-cookie"), []);
 
@@ -77,7 +78,7 @@ export const AuthProvider = ({ children }) => {
       // console.log("Token Expires At:", expiry);
       if (expiry && new Date(expiry) <= new Date()) {
         logout();
-        toast.warning("Session expired. Please log in again.");
+        showAlert.warning("Session expired. Please log in again.");
       }
     }, 60000); // every 60 seconds
 
@@ -102,17 +103,11 @@ export const AuthProvider = ({ children }) => {
   const login = async ({ ...data }) => {
     try {
       setErrors([]);
-
       const response = await instance.post("/api/login", data);
-
-      // Save token in localStorage
       localStorage.setItem("auth_token", response.data.token);
-      localStorage.setItem("token_expiry", response.data.expires_at); // Save token expiry
-      // Set the token in axios headers globally
+      localStorage.setItem("token_expiry", response.data.expires_at);
       instance.defaults.headers.common["Authorization"] =
         `Bearer ${response.data.token}`;
-
-      // Fetch user using the token
       await getUser();
       navigate("/dashboard");
     } catch (error) {
@@ -126,12 +121,20 @@ export const AuthProvider = ({ children }) => {
             otpExpiresAt: error.response?.data?.otp_expires_at,
           },
         });
-        toast.warning(error.response?.data?.message);
+        showAlert.warning(error.response?.data?.message);
+        return;
       }
-      // console.error("Login error:", error);
       if (error.response?.status === 422) {
-        setErrors(error.response.data.errors);
+        const errors = error.response.data.errors;
+        setErrors(errors);
+        const firstError = Object.values(errors)[0];
+        if (firstError) {
+          showAlert.error(Array.isArray(firstError) ? firstError[0] : firstError);
+        }
+      } else {
+        showAlert.error("Login failed. Please check your credentials.");
       }
+      throw error;
     }
   };
 
@@ -140,14 +143,21 @@ export const AuthProvider = ({ children }) => {
       setErrors([]);
       const response = await instance.post("/api/register", data);
       if (response.status === 201) {
-        toast.success("Registration successful! Please log in.");
-        // await getUser();
+        showAlert.success("Registration successful! Please log in.", { title: "Account Created" });
         navigate("/login");
       }
     } catch (error) {
       if (error.response?.status === 422) {
-        setErrors(error.response.data.errors);
+        const errors = error.response.data.errors;
+        setErrors(errors);
+        const firstError = Object.values(errors)[0];
+        if (firstError) {
+          showAlert.error(Array.isArray(firstError) ? firstError[0] : firstError);
+        }
+      } else {
+        showAlert.error("Registration failed. Please check your details.");
       }
+      throw error;
     }
   };
 
@@ -170,7 +180,7 @@ export const AuthProvider = ({ children }) => {
       inputType === "email" ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/ : /^\d{10}$/;
 
     if (!regex.test(inputValue)) {
-      toast.error(
+      showAlert.error(
         inputType === "email"
           ? "Please enter a valid email address"
           : "Please enter a valid phone number",
@@ -191,7 +201,6 @@ export const AuthProvider = ({ children }) => {
       const { data } = await instance.get("/api/tel", {
         params: { number: fullPhoneNumber },
       });
-      // console.log("Raw /api/tel response:", data); // ✅ Log full response
       const parsedHLR =
         typeof data.hlrData === "string"
           ? JSON.parse(data.hlrData)
@@ -211,8 +220,6 @@ export const AuthProvider = ({ children }) => {
         tlgData: data.telData || null,
         syncData: data.syncData || null,
         vcData: data.vcData || null,
-        // osPhoneData: data.osPhoneData || null,
-        // srfullData: data.srfullData || null, // ✅ Make sure you access this
         errors: data.errors || {},
         credits: data.credits ?? null,
       };
@@ -220,7 +227,6 @@ export const AuthProvider = ({ children }) => {
       if (data.credits !== undefined) {
         updateUser({ credits: data.credits });
       }
-      // console.log("Parsed tel results:", newResults); // ✅ Extra log
       setResults(JSON.parse(JSON.stringify(newResults)));
       return newResults;
     } catch (error) {
@@ -228,13 +234,12 @@ export const AuthProvider = ({ children }) => {
         const { status, data } = error.response;
 
         if (status === 402) {
-          toast.warning(data.message || "Insufficient credits.");
-          // updateUser({ credits: data.credits }); // Optional: update UI
+          showAlert.warning(data.message || "Insufficient credits.");
         } else {
-          toast.error(data.message || "Something went wrong.");
+          showAlert.error(data.message || "Something went wrong.");
         }
       } else {
-        toast.error("Something went wrong.");
+        showAlert.error("Something went wrong.");
       }
       setResults({});
     } finally {
@@ -251,22 +256,20 @@ export const AuthProvider = ({ children }) => {
 
       if (data.credits !== undefined) {
         updateUser({ credits: data.credits });
-        // console.log("User credits updated:", data.credits);
       }
-      setResults(data.data); // Or whatever structure you use
+      setResults(data.data);
       return data;
     } catch (error) {
       if (error.response) {
         const { status, data } = error.response;
 
         if (status === 402) {
-          toast.warning(data.message || "Insufficient credits.");
-          // updateUser({ credits: data.credits }); // Optional: update UI
+          showAlert.warning(data.message || "Insufficient credits.");
         } else {
-          toast.error(data.message || "Something went wrong.");
+          showAlert.error(data.message || "Something went wrong.");
         }
       } else {
-        toast.error("Something went wrong.");
+        showAlert.error("Something went wrong.");
       }
       setResults({});
     } finally {

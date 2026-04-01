@@ -1,17 +1,10 @@
-import React from "react";
-
 const MainHeader = ({ header }) => {
   return (
-    <div className="max-w-4xl mx-auto mb-6 md:mb-12 space-y-1 md:space-y-3">
-      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent text-center">
+    <div className="max-w-4xl mx-auto mt-24 mb-4 flex flex-col md:flex-row items-center gap-2.5">
+      <span className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
         {import.meta.env.VITE_APP_NAME}
-      </h1>
-      <span
-        className="block ml-1 text-cyan-400 px-2 underline underline-offset-8 text-3xl sm:text-4xl font-semibold text-center mb-8"
-        style={{ fontFamily: '"Times New Roman", Times, serif' }}
-      >
-        {header}
       </span>
+      <span className="text-2xl font-bold text-cyan-400">{header}</span>
     </div>
   );
 };

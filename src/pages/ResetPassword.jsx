@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import useAuthContext from "../context/AuthContext";
 import { Eye, EyeOff } from "lucide-react";
-import { toast } from "react-toastify";
+import { useAlert } from "../components/Alert";
 import { Shield, Key, ArrowRight, ArrowLeft } from "lucide-react";
 import instance from "../api/axios";
 
@@ -17,6 +17,7 @@ const ResetPassword = () => {
   const { csrf, loading, setLoading } = useAuthContext();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const showAlert = useAlert();
 
   useEffect(() => {
     setEmail(searchParams.get("email") || "");
@@ -37,17 +38,9 @@ const ResetPassword = () => {
         password_confirmation,
       });
       setStatus(response.data.status);
-      toast.success(
+      showAlert.success(
         "Your password has been reset successfully! Click the button to go back to login.",
-        {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "light",
-        }
+        { title: "Password Reset" }
       );
     } catch (error) {
       if (error.response.status == 422) {

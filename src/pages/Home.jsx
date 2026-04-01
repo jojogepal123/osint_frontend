@@ -2,10 +2,11 @@ import useAuthContext from "../context/AuthContext";
 import { useEffect, useState, useRef } from "react";
 import Options from "./Options";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useAlert } from "../components/Alert";
 import FullScreenLoader from "../components/FullScreenLoader";
 import UserCard from "../components/UserCard";
-import { Search } from "lucide-react";
+import MainHeader from "../components/MainHeader";
+import { Search, Mail, Phone } from "lucide-react";
 
 const Home = () => {
   const {
@@ -13,6 +14,7 @@ const Home = () => {
     setInputValue,
     setResults,
     inputType,
+    setInputType,
     validateInput,
     loading,
     setLoading,
@@ -27,6 +29,7 @@ const Home = () => {
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const [isChecked, setIsChecked] = useState(false);
+  const showAlert = useAlert();
 
   useEffect(() => {
     setResults({});
@@ -40,11 +43,11 @@ const Home = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!hasSufficientCredits()) {
-      toast.warning("Insufficient credits. Please upgrade your plan.");
+      showAlert.warning("Insufficient credits. Please upgrade your plan.");
       return;
     }
     if (!isChecked) {
-      toast.error("Please accept the terms before submitting");
+      showAlert.error("Please accept the terms before submitting");
       return;
     }
     if (validateInput()) {
@@ -75,24 +78,43 @@ const Home = () => {
     <>
       {loading && <FullScreenLoader text="Searching..." />}
       <UserCard />
-      <main className="flex-1 flex flex-col items-center justify-center p-8 -mt-36 sm:-mt-20 z-10 md:pl-64">
-        <div className="max-w-4xl mx-auto h-full flex flex-col items-center md:-mt-20 justify-center space-y-1.5 md:space-y-4 mb-2 md:mb-8 cursor-default">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
-            {import.meta.env.VITE_APP_NAME}
-          </h1>
-          <div className="text-white text-3xl sm:text-5xl font-semibold text-center pb-4">
-            Search
-            <br className="block md:hidden" />
-            <span
-              className="ml-1 text-cyan-400 px-2 underline underline-offset-8"
-              style={{ fontFamily: '"Times New Roman", Times, serif' }}
-            >
-              {inputType === "tel" ? "Phone number" : "Email"}
-            </span>
+      <div className="w-full flex flex-col items-center justify-center z-10 mt-16 pl-4 md:pl-64 text-white">
+        <MainHeader header="Email & Phone" />
+        <div className="min-h-auto max-w-full sm:max-w-3xl lg:max-w-4xl xl:max-w-7xl w-auto sm:w-full m-4 sm:mx-auto flex flex-col gap-6 bg-transparent backdrop-blur-none border border-transparent rounded-xl p-4 md:p-8 shadow-none">
+          {/* type buttons */}
+          <div>
+            <p className="mb-3 text-xs font-semibold text-slate-500 tracking-widest uppercase">Search Type</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => { setInputType("email"); setInputValue(""); }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                  inputType === "email"
+                    ? "bg-cyan-500/15 border border-cyan-500/40 text-cyan-400"
+                    : "bg-slate-800/40 border border-slate-700/40 text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 hover:border-slate-600/60"
+                }`}
+              >
+                <Mail size={14} />
+                Email
+              </button>
+              <button
+                type="button"
+                onClick={() => { setInputType("tel"); setInputValue(""); }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                  inputType === "tel"
+                    ? "bg-cyan-500/15 border border-cyan-500/40 text-cyan-400"
+                    : "bg-slate-800/40 border border-slate-700/40 text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 hover:border-slate-600/60"
+                }`}
+              >
+                <Phone size={14} />
+                Phone
+              </button>
+            </div>
           </div>
-        </div>
 
-        <form onSubmit={handleSubmit} className="w-full max-w-xl lg:max-w-3xl">
+          <div className="w-full h-px bg-slate-700/50" />
+
+          <form onSubmit={handleSubmit} className="w-full">
           <div className="relative w-full mb-3 flex items-center space-x-2">
             {inputType === "tel" && (
               <Options
@@ -154,7 +176,8 @@ const Home = () => {
             </label>
           </div>
         </form>
-      </main>
+        </div>
+      </div>
     </>
   );
 };

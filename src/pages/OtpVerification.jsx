@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import instance from "../api/axios";
 import { useState, useEffect, useRef } from "react";
 import Loader from "../components/Loader";
-import { toast } from "react-toastify";
+import { useAlert } from "../components/Alert";
 import useAuthContext from "../context/AuthContext";
 import { Shield, Mail, ArrowRight, RefreshCw } from "lucide-react";
 
@@ -20,6 +20,7 @@ const OtpVerification = () => {
     location.state?.otpExpiresAt
   );
   const inputRefs = useRef([]);
+  const showAlert = useAlert();
 
   useEffect(() => {
     if (!otpExpireString) return;
@@ -77,7 +78,7 @@ const OtpVerification = () => {
     const otpValue = otp.join("");
 
     if (!/^\d{6}$/.test(otpValue)) {
-      toast.error("Invalid OTP value");
+      showAlert.error("Invalid OTP value");
       return;
     }
 
@@ -106,13 +107,13 @@ const OtpVerification = () => {
     setLoading(true);
     try {
       const res = await instance.post("/api/resend-otp", { email });
-      toast.success(res.data?.message || "OTP resend successfully.");
+      showAlert.success(res.data?.message || "OTP resend successfully.");
       const newExpiry = new Date(res.data?.otp_expires_at).getTime();
       setOtpExpireString(res.data?.otp_expires_at);
       setTimeLeft(newExpiry - Date.now());
       setCanResend(false);
     } catch (err) {
-      toast.error("Failed to resend OTP.");
+      showAlert.error("Failed to resend OTP.");
     } finally {
       setLoading(false);
     }

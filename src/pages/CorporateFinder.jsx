@@ -3,7 +3,7 @@ import { Listbox } from "@headlessui/react";
 import { ChevronDown, Search } from "lucide-react";
 import UserCard from "../components/UserCard";
 import instance from "../api/axios";
-import { toast } from "react-toastify";
+import { useAlert } from "../components/Alert";
 import MainHeader from "../components/MainHeader";
 import { useNavigate } from "react-router-dom";
 import FullScreenLoader from "../components/FullScreenLoader";
@@ -140,6 +140,7 @@ const CorporateFinder = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { hasSufficientCredits, updateUser } = useAuthContext();
+  const showAlert = useAlert();
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
@@ -196,7 +197,7 @@ const CorporateFinder = () => {
     const errors = validateFields();
     setErrors(errors);
     if (Object.keys(errors).length > 0) {
-      toast.error(Object.values(errors)[0]);
+      showAlert.error(Object.values(errors)[0]);
       return;
     }
 
@@ -205,7 +206,7 @@ const CorporateFinder = () => {
       data: inputValues,
     };
     if (!hasSufficientCredits()) {
-      toast.warning("Insufficient credits. Please upgrade your plan.");
+      showAlert.warning("Insufficient credits. Please upgrade your plan.");
       return;
     }
     setLoading(true);
@@ -241,7 +242,7 @@ const CorporateFinder = () => {
         link.click();
         link.remove();
         window.URL.revokeObjectURL(url);
-        toast.success("Report downloaded successfully");
+        showAlert.success("Report downloaded successfully");
         setInputValues({});
         setLoading(false);
         return;
@@ -249,7 +250,7 @@ const CorporateFinder = () => {
         navigate("/corporate-results", {
           state: { data: response.data.data, searchInput },
         });
-        toast.success("Found data based on your search");
+        showAlert.success("Found data based on your search");
       }
     } catch (error) {
       const status = error?.response?.status;
@@ -259,13 +260,13 @@ const CorporateFinder = () => {
       const credits = error?.response?.data?.credits;
 
       if (credits !== undefined) {
-        toast.error(`${message} You have ${credits} credits remaining.`);
+        showAlert.error(`${message} You have ${credits} credits remaining.`);
       } else {
-        toast.error(message);
+        showAlert.error(message);
       }
 
       if (selectedOption.key === "credit_report") {
-        toast.error("Error occurred. Please check your data and try again.");
+        showAlert.error("Error occurred. Please check your data and try again.");
         return;
       }
 
@@ -273,9 +274,9 @@ const CorporateFinder = () => {
         navigate("/corporate-results", {
           state: { data: null },
         });
-        toast.warn("No data found");
+        showAlert.warning("No data found");
       } else if (status !== 402) {
-        toast.error("Something went wrong");
+        showAlert.error("Something went wrong");
       }
     } finally {
       setLoading(false);
@@ -304,37 +305,36 @@ const CorporateFinder = () => {
         />
       )}
       <UserCard />
-      <div className="w-full flex flex-col items-center z-10 text-white mt-10 sm:mt-20 md:pl-64">
+      <div className="w-full flex flex-col items-center justify-center z-10 mt-16 pl-4 md:pl-64 text-white">
         <MainHeader header="Corporate Intelligence" />
-        <div className="min-h-auto max-w-full sm:max-w-3xl lg:max-w-4xl xl:max-w-7xl md:min-h-[450px] w-auto sm:w-full m-4 sm:mx-auto flex flex-col md:flex-row gap-4 sm:gap-6 lg:gap-8 items-center md:items-start bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-xl p-4 md:p-8 shadow-2xl">
-          <div className="w-full md:w-1/3 flex flex-col justify-start px-4 md:px-0">
-            <label className="mb-2 text-sm font-medium text-slate-300">Select Search Type</label>
-            <Listbox value={selectedOption} onChange={handleOptionSelect}>
-              <div className="relative">
-                <Listbox.Button className="w-full py-3 px-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white font-medium focus:outline-none focus:border-cyan-500/50 flex justify-between items-center hover:border-cyan-500/50 transition-all">
-                  {selectedOption.label}
-                  <ChevronDown className="w-5 h-5 text-cyan-400" />
-                </Listbox.Button>
-                <Listbox.Options className="absolute mt-2 w-full bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-xl shadow-2xl z-10 overflow-hidden">
-                  {SEARCH_OPTIONS.map((option) => (
-                    <Listbox.Option
-                      key={option.key}
-                      value={option}
-                      className={({ active }) =>
-                        `cursor-pointer select-none px-4 py-3 transition-all ${
-                          active ? "bg-cyan-500/20 text-cyan-400" : "text-slate-300 hover:bg-slate-800/50"
-                        }`
-                      }
-                    >
-                      {option.label}
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </div>
-            </Listbox>
+        <div className="min-h-auto max-w-full sm:max-w-3xl lg:max-w-4xl xl:max-w-7xl w-auto sm:w-full m-4 sm:mx-auto flex flex-col gap-6 bg-transparent backdrop-blur-none border border-transparent rounded-xl p-4 md:p-8 shadow-none">
+          {/* type buttons */}
+          <div>
+            <p className="mb-3 text-xs font-semibold text-slate-500 tracking-widest uppercase">Search Type</p>
+            <div className="flex flex-wrap gap-2">
+              {SEARCH_OPTIONS.map((option) => {
+                const isActive = selectedOption.key === option.key;
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={() => handleOptionSelect(option)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+                      isActive
+                        ? "bg-cyan-500/15 border border-cyan-500/40 text-cyan-400"
+                        : "bg-slate-800/40 border border-slate-700/40 text-slate-400 hover:bg-slate-800/70 hover:text-slate-200 hover:border-slate-600/60"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <div className="w-px bg-slate-700/50 self-stretch hidden md:block"></div>
-          <div className="w-full md:w-2/3 px-4 md:px-0">
+
+          <div className="w-full h-px bg-slate-700/50" />
+
+          <div className="w-full">
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               {selectedOption.fields.map((field) => {
                 if (field.type === "text") {
@@ -350,11 +350,11 @@ const CorporateFinder = () => {
                         placeholder={
                           field.placeholder || `Enter ${field.label}`
                         }
-                        className={`p-3 rounded-xl bg-slate-800/50 border ${
+                        className={`p-3 rounded-xl bg-slate-800/60 border ${
                           errors[field.name]
                             ? "border-red-500/50 bg-red-500/10"
-                            : "border-slate-700/50 focus:border-cyan-500/50"
-                        } text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all`}
+                            : "border-slate-700/50 focus:border-cyan-500/60"
+                        } text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all focus:bg-slate-800/80`}
                       />
                     </div>
                   );
@@ -371,10 +371,10 @@ const CorporateFinder = () => {
                       >
                         <div className="relative">
                           <Listbox.Button
-                            className={`w-full py-3 px-4 rounded-xl bg-slate-800/50 border ${
+                            className={`w-full py-3 px-4 rounded-xl bg-slate-800/60 border ${
                               errors[field.name]
                                 ? "border-red-500/50"
-                                : "border-slate-700/50 focus:border-cyan-500/50"
+                                : "border-slate-700/50 focus:border-cyan-500/60"
                             } text-white outline-none focus:ring-2 focus:ring-cyan-500/20 flex justify-between items-center hover:border-cyan-500/50 transition-all`}
                           >
                             {inputValues[field.name] || field.options[0]}
@@ -471,7 +471,7 @@ const CorporateFinder = () => {
 
               <button
                 type="submit"
-                className="self-center w-48 mt-6 px-6 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black rounded-xl font-bold shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="self-start mt-4 px-5 py-2 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black rounded-lg text-sm font-bold shadow-lg shadow-cyan-500/25 transition-all flex items-center gap-2 disabled:opacity-50"
                 disabled={loading}
               >
                 <Search size={20} />

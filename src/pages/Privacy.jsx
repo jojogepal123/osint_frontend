@@ -1,89 +1,179 @@
-import React from "react";
-import Navbar from "../components/Navbar";
-import { Shield, Mail, Globe } from "lucide-react";
+import { motion } from "framer-motion";
+import { Shield, Mail, Globe, Database, Share2, Lock, Activity, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import PublicNavbar from "../components/PublicNavbar";
 
 const Privacy = () => {
+  const sections = [
+    {
+      icon: Database,
+      title: "1. Information We Collect",
+      color: "cyan",
+      items: [
+        "Publicly Available Data — gathered from open sources and collection APIs for investigative purposes.",
+        "User-Provided Information — basic details like email or name when you interact with our platform.",
+        "Usage Data — non-personal information such as IP addresses, browser type, and device details.",
+      ],
+    },
+    {
+      icon: Shield,
+      title: "2. How We Use Your Information",
+      color: "emerald",
+      items: [
+        "Provide OSINT-based investigative services to law enforcement, investigators, and journalists.",
+        "Enhance platform functionality, security, and user experience.",
+        "Analyze usage trends to improve our analytical capabilities.",
+        "Ensure compliance with legal and ethical standards.",
+      ],
+    },
+    {
+      icon: Lock,
+      title: "3. Data Protection & Security",
+      color: "teal",
+      items: [
+        "Industry-standard security measures to protect data from unauthorized access, misuse, or disclosure.",
+        "While we strive to safeguard information, no system can guarantee complete security.",
+      ],
+    },
+    {
+      icon: Share2,
+      title: "4. Data Sharing",
+      color: "cyan",
+      items: [
+        "We do not sell or trade personal information.",
+        "Certain publicly available data may be analyzed using third-party services.",
+        "We comply with legal requests if required by law enforcement.",
+      ],
+    },
+  ];
+
+  const colorMap = {
+    cyan:    { card: "hover:border-cyan-500/30",    icon: "bg-cyan-500/10 border-cyan-500/20",       text: "text-cyan-400",    dot: "bg-cyan-400",    bar: "from-cyan-500"    },
+    emerald: { card: "hover:border-emerald-500/30", icon: "bg-emerald-500/10 border-emerald-500/20", text: "text-emerald-400", dot: "bg-emerald-400", bar: "from-emerald-500" },
+    teal:    { card: "hover:border-teal-500/30",    icon: "bg-teal-500/10 border-teal-500/20",       text: "text-teal-400",    dot: "bg-teal-400",    bar: "from-teal-500"    },
+  };
+
   return (
-    <div className="lg:h-screen flex flex-col lg:flex-row justify-center items-center space-y-4 md:px-24 2xl:px-32 relative shadow-sm z-10">
-      <Navbar />
-      <div className="w-full md:max-w-[80%] lg:max-w-[60%] md:h-[75%] bg-gradient-to-br from-slate-900/80 via-slate-900/90 to-slate-800/80 backdrop-blur-xl border border-slate-700/50 p-8 rounded-2xl shadow-2xl overflow-hidden">
-        <div
-          id="home"
-          className="w-full h-full flex flex-col justify-start items-start tab-content animate-slide-up overflow-y-auto custom-scrollbar"
-        >
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-4">
-            <Shield className="w-3 h-3" />
-            Legal
-          </span>
-          <h1 className="text-2xl md:text-3xl px-2 py-2 text-white font-bold mb-4">
-            Privacy Policy –
-            <span className="text-2xl md:text-3xl bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent font-bold">
-              &nbsp;{import.meta.env.VITE_APP_NAME}
+    <div className="relative min-h-screen w-full">
+      <PublicNavbar />
+
+      {/* hero */}
+      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="inline-flex items-center gap-2 text-cyan-400 text-sm font-semibold tracking-widest uppercase mb-4">
+              <Activity className="w-4 h-4" />
+              Legal
             </span>
-          </h1>
-          <div className="px-4 py-4 text-justify leading-relaxed space-y-4 custom-scrollbar overflow-y-auto max-h-full">
-            <p className="text-slate-300 text-sm md:text-base">
-              At {import.meta.env.VITE_APP_NAME}, we value your privacy and are
-              committed to protecting any information collected through our
-              platform. This Privacy Policy explains how we collect, use, and
-              safeguard data when you use our services.
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mt-2 mb-6">
+              Privacy
+              <span className="block bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                Policy
+              </span>
+            </h1>
+            <p className="text-lg sm:text-xl text-slate-400">
+              At <span className="text-cyan-400 font-semibold">{import.meta.env.VITE_APP_NAME}</span>, we value your
+              privacy and are committed to protecting any information collected through our platform.
             </p>
+          </motion.div>
+        </div>
+      </section>
 
-            <div className="bg-slate-800/30 p-4 rounded-xl border border-slate-700/30">
-              <h3 className="text-cyan-400 font-semibold mb-2">1. Information We Collect</h3>
-              <ul className="list-disc list-inside space-y-1 text-slate-400 text-sm">
-                <li>Publicly Available Data: We gather data from open sources and collection APIs for investigative purposes.</li>
-                <li>User-Provided Information: When you interact with our platform, such as contacting us, we may collect basic details like email or name.</li>
-                <li>Usage Data: We collect non-personal information such as IP addresses, browser type, and device details.</li>
-              </ul>
-            </div>
+      {/* policy sections */}
+      <section className="relative py-8 lg:py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-6">
+            {sections.map((sec, i) => {
+              const cls = colorMap[sec.color];
+              return (
+                <motion.div
+                  key={sec.title}
+                  className={`group relative bg-slate-900/40 backdrop-blur-sm border border-slate-800/50 rounded-2xl p-6 ${cls.card} transition-all duration-500 overflow-hidden`}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ y: -6 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative">
+                    <div className={`w-12 h-12 rounded-xl ${cls.icon} border flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                      <sec.icon className={`w-6 h-6 ${cls.text}`} />
+                    </div>
+                    <h3 className={`text-base font-bold mb-3 ${cls.text}`}>{sec.title}</h3>
+                    <ul className="space-y-2">
+                      {sec.items.map((item, j) => (
+                        <li key={j} className="flex items-start gap-2.5 text-slate-400 text-sm leading-relaxed">
+                          <div className={`mt-2 w-1.5 h-1.5 rounded-full shrink-0 ${cls.dot}`} />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${cls.bar} to-emerald-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300`} />
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-            <div className="bg-slate-800/30 p-4 rounded-xl border border-slate-700/30">
-              <h3 className="text-cyan-400 font-semibold mb-2">2. How We Use Your Information</h3>
-              <ul className="list-disc list-inside space-y-1 text-slate-400 text-sm">
-                <li>Provide OSINT-based investigative services to law enforcement, investigators, and journalists.</li>
-                <li>Enhance our platform's functionality and security.</li>
-                <li>Improve user experience by analyzing trends and usage patterns.</li>
-                <li>Ensure compliance with legal and ethical standards.</li>
-              </ul>
-            </div>
-
-            <div className="bg-slate-800/30 p-4 rounded-xl border border-slate-700/30">
-              <h3 className="text-cyan-400 font-semibold mb-2">3. Data Protection & Security</h3>
-              <p className="text-slate-300 text-sm">
-                We implement industry-standard security measures to protect data from unauthorized access, misuse, or disclosure. While we strive to safeguard information, we cannot guarantee complete security.
-              </p>
-            </div>
-
-            <div className="bg-slate-800/30 p-4 rounded-xl border border-slate-700/30">
-              <h3 className="text-cyan-400 font-semibold mb-2">4. Data Sharing</h3>
-              <ul className="list-disc list-inside space-y-1 text-slate-400 text-sm">
-                <li>We do not sell or trade personal information.</li>
-                <li>Certain publicly available data may be analyzed using third-party services.</li>
-                <li>We comply with legal requests if required by law enforcement.</li>
-              </ul>
-            </div>
-
-            <div className="bg-gradient-to-r from-cyan-500/10 to-emerald-500/10 p-4 rounded-xl border border-cyan-500/30">
-              <h3 className="text-cyan-400 font-semibold mb-2">Contact Us</h3>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <Mail className="w-4 h-4 text-cyan-400" />
-                  <span className="text-sm bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-                    info@intelltrace.com
-                  </span>
+      {/* contact section */}
+      <section className="relative py-16 lg:py-24">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            className="bg-slate-900/40 backdrop-blur-sm border border-cyan-500/20 rounded-3xl p-10 lg:p-14"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">
+              Questions About
+              <span className="bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent"> Privacy?</span>
+            </h2>
+            <p className="text-slate-400 text-base mb-8">
+              Reach out to our team and we'll clarify anything about how we handle your data.
+            </p>
+            <div className="flex flex-wrap justify-center gap-6 mb-8">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                  <Mail className="w-5 h-5 text-cyan-400" />
                 </div>
-                <div className="flex items-center gap-2 text-slate-300">
-                  <Globe className="w-4 h-4 text-emerald-400" />
-                  <span className="text-sm bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+                <div className="text-left">
+                  <p className="text-[10px] text-slate-500 tracking-widest uppercase">Email</p>
+                  <p className="text-sm font-semibold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+                    info@intelltrace.com
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div className="text-left">
+                  <p className="text-[10px] text-slate-500 tracking-widest uppercase">Website</p>
+                  <p className="text-sm font-semibold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
                     Intelltrace.com
-                  </span>
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
+            <Link
+              to="/contact-us"
+              className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 text-white font-bold text-base overflow-hidden"
+            >
+              Contact Us
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </motion.div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

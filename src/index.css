@@ -14,8 +14,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   @apply bg-[#0b323d];
 }
 
-body {
+html, body {
   font-family: "Outfit", sans-serif;
+  position: relative;
 }
 
 .main-heading {
@@ -36,4 +37,15 @@ body {
 
 .custom-scrollbar::-webkit-scrollbar-track {
   background-color: #1e293b;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

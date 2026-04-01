@@ -8,7 +8,6 @@ import { ProfileFromTelApis } from "../utils/ProfileFromTelApis";
 import { ProfileFromEmailApis } from "../utils/ProfileFromEmailApis";
 import TelProfileCard from "../components/TelProfileCard";
 import EmailProfileCard from "../components/EmailProfileCard";
-import no_results_image from "../assets/noresults.png";
 import { useState, Suspense, lazy } from "react";
 import InlineLoader from "../components/InlineLoader";
 
@@ -76,17 +75,42 @@ const Results = () => {
 
   if (isResultEmpty()) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen z-10">
-        <img
-          src={no_results_image}
-          className="w-96 sm:w-2/5 mb-8"
-          alt="no-results"
-        />
+      <div className="flex flex-col items-center justify-center min-h-[80vh] z-10 px-4">
+        <div className="relative mb-8">
+          <div className="w-36 h-36 rounded-full bg-slate-800/60 border border-slate-700/50 flex items-center justify-center overflow-hidden">
+            <svg className="w-20 h-20" viewBox="0 0 100 100" fill="none">
+              <circle cx="42" cy="42" r="22" stroke="#475569" strokeWidth="3" className="animate-[pulse_2s_ease-in-out_infinite]" />
+              <line x1="58" y1="58" x2="78" y2="78" stroke="#475569" strokeWidth="4" strokeLinecap="round" className="animate-[pulse_2s_ease-in-out_infinite]" />
+              <circle cx="42" cy="42" r="8" fill="#22d3ee" className="animate-[ping_2s_ease-in-out_infinite]" opacity="0.3" />
+              <circle cx="42" cy="42" r="4" fill="#22d3ee" className="animate-[pulse_1.5s_ease-in-out_infinite]" />
+              <circle cx="42" cy="42" r="30" stroke="#22d3ee" strokeWidth="1" strokeDasharray="4 4" className="animate-[spin_8s_linear_infinite]" opacity="0.4" />
+              <circle cx="42" cy="42" r="38" stroke="#6d758c" strokeWidth="0.5" strokeDasharray="2 6" className="animate-[spin_12s_linear_infinite_reverse]" opacity="0.3" />
+            </svg>
+          </div>
+          <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center">
+            <div className="w-2 h-2 rounded-full bg-red-400 animate-pulse"></div>
+          </div>
+          <div className="absolute -bottom-1 -left-3 w-4 h-4 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center">
+            <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></div>
+          </div>
+        </div>
+        
+        <h2 className="text-2xl font-bold text-white mb-2">No Results Found</h2>
+        <p className="text-slate-400 text-center max-w-md mb-2">
+          We couldn't find any data for <span className="text-cyan-400 font-medium">{userInput}</span>. Try adjusting your search or check the input format.
+        </p>
+        <p className="text-slate-500 text-sm mb-8">
+          Tip: Ensure the email or phone number is entered correctly
+        </p>
+        
         <button
           onClick={handleNewSearch}
-          className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 font-bold uppercase text-black rounded-xl shadow-lg transition-all"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-violet-500/20 to-cyan-500/20 border border-violet-500/30 text-violet-300 hover:from-violet-500/30 hover:to-cyan-500/30 hover:border-violet-400/50 transition-all font-medium"
         >
-          Start a new search
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          Try Another Search
         </button>
       </div>
     );
@@ -176,16 +200,16 @@ const Results = () => {
             </div>
             {Array.isArray(hibpResults) && hibpResults.length > 0 && (
               <div className="h-full mt-4">
-                <div className="w-full h-full bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+                <div className="w-full bg-slate-900/60 backdrop-blur-sm border border-red-500/20 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-5 pb-3 border-b border-red-500/20">
+                    <div className="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke="#22d3ee"
+                        stroke="#f87171"
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -196,31 +220,37 @@ const Results = () => {
                         <path d="M12 17h.01"></path>
                       </svg>
                     </div>
-                    <h2 className="text-white text-xl font-bold tracking-wide">
-                      Found breaches
-                    </h2>
+                    <div>
+                      <h2 className="text-white text-lg font-bold uppercase tracking-wide">
+                        Found Breaches
+                      </h2>
+                      <p className="text-red-400 text-xs font-medium">{hibpResults.length} breach{hibpResults.length > 1 ? 'es' : ''} detected</p>
+                    </div>
                   </div>
-                  <ul className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <ul className="space-y-2">
                     {hibpResults.map((result, index) => (
                       <li
                         key={index}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-all duration-200 shadow group border border-slate-700/50"
+                        className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/40 hover:bg-slate-800/60 transition-all duration-200 group border-l-2 border-red-500/40"
                       >
                         <img
                           src={
                             result.LogoPath || "https://via.placeholder.com/50"
                           }
                           alt={result.Name}
-                          className="w-8 h-8 rounded-full border border-slate-600 shadow-sm bg-white object-contain"
+                          className="w-8 h-8 rounded-lg bg-white object-contain p-0.5"
                         />
-                        <span className="font-semibold text-slate-200 group-hover:text-cyan-400">
-                          {result.Name}
-                        </span>
-                        {result.BreachDate && (
-                          <span className="ml-auto px-2 py-0.5 rounded-full bg-cyan-500/20 text-xs text-cyan-400 font-medium">
-                            {new Date(result.BreachDate).getFullYear()}
+                        <div className="flex-1 min-w-0">
+                          <span className="font-semibold text-slate-200 group-hover:text-red-400 transition-colors block truncate">
+                            {result.Name}
                           </span>
-                        )}
+                          {result.BreachDate && (
+                            <span className="text-xs text-slate-500">
+                              {new Date(result.BreachDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                            </span>
+                          )}
+                        </div>
+                        <div className="w-2 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500/50 flex-shrink-0"></div>
                       </li>
                     ))}
                   </ul>

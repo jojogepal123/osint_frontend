@@ -38,7 +38,7 @@ function App() {
   return (
     <>
       <ToastContainer />
-      <div className="relative flex flex-col min-h-screen w-full">
+      <div className="relative flex flex-col min-h-screen w-full overflow-x-hidden">
         <Background />
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
