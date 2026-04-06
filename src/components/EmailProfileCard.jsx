@@ -1,4 +1,3 @@
-import { Check, X } from "lucide-react";
 import { useIsEmpty } from "../hook/useIsEmpty";
 import IconWithFallback from "./IconWithFallback";
 import { useState, useEffect } from "react";
@@ -78,7 +77,6 @@ const EmailProfileCard = ({
   setSelectedImage,
 }) => {
   const isEmpty = useIsEmpty(profile);
-  if (isEmpty) return null;
 
   useEffect(() => {
     if (modalOpen) {
@@ -90,6 +88,8 @@ const EmailProfileCard = ({
       document.body.style.overflow = "";
     };
   }, [modalOpen]);
+
+  if (isEmpty) return null;
 
   const primaryName = profile.fullNames?.[0]?.value || "Unknown";
   const primaryEmail = profile.emails?.[0]?.value || userInput;
@@ -106,7 +106,7 @@ const EmailProfileCard = ({
           <img
             src={selectedImage}
             alt="Full View"
-            className="max-w-[90vw] max-h-[90vh] min-w-[400px] rounded-2xl shadow-2xl border border-slate-700/50"
+            className="max-w-[90vw] max-h-[90vh] w-full rounded-2xl shadow-2xl border border-slate-700/50"
             onClick={(e) => e.stopPropagation()}
           />
           <button
@@ -262,14 +262,14 @@ const EmailProfileCard = ({
               )}
 
               {/* Internet Presence as Sidebar Section */}
-              {Object.keys(profile.socialMediaPresence).length > 0 && (
+              {profile.socialMediaPresence && Object.keys(profile.socialMediaPresence).length > 0 && (
                 <div className="mb-4">
                   <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-700/50">
                     <Globe className="w-3.5 h-3.5 text-cyan-400" />
                     <h4 className="text-sm font-semibold text-white uppercase tracking-wide">Internet Presence</h4>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    {Object.entries(profile.socialMediaPresence).map(
+                    {Object.entries(profile.socialMediaPresence || {}).map(
                       ([platform, isPresent]) => (
                         <div
                           key={platform}

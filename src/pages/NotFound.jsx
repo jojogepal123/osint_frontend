@@ -1,13 +1,11 @@
-import React from "react";
-import notFoundImage from "../assets/notfound.png";
 import { useNavigate } from "react-router-dom";
-import { Home, Search } from "lucide-react";
+import { Home } from "lucide-react";
 
 const NotFound = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white px-4 z-10">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white px-4 z-10 relative">
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-emerald-500/5" />
       
       <div className="relative z-10 text-center">

@@ -12,7 +12,7 @@ const FullScreenLoader = ({ text }) => {
           </div>
         </div>
       </div>
-      <span className="text-cyan-400/70 text-lg font-medium mt-6 tracking-wide">{text}</span>
+      <span className="text-cyan-400/70 text-lg font-medium mt-6 tracking-wide">{text || 'Loading...'}</span>
     </div>
   );
 };

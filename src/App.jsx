@@ -7,20 +7,17 @@ import AuthLayout from "./layouts/AuthLayout";
 import GuestLayout from "./layouts/GuestLayout";
 import ResetPassword from "./pages/ResetPassword";
 import Results from "./pages/Results";
-import useAuthContext from "./context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Background from "./layouts/Background";
-import Subscription from "./pages/Subscription";
 import About from "./pages/About";
 import ContactUs from "./pages/ContactUs";
 import Main from "./pages/Main";
 import Privacy from "./pages/Privacy";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import PageTransition from "./components/PageTransition";
 import RefundPolicy from "./pages/RefundPolicy";
 import TermsConditions from "./pages/TermsConditions";
-import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 import LeakDataFinder from "./pages/LeakDataFinder";
 import CorporateFinder from "./pages/CorporateFinder";
@@ -32,7 +29,6 @@ import Upgrade from "./pages/Upgrade";
 import OtpVerification from "./pages/OtpVerification";
 
 function App() {
-  const { user, isLoading } = useAuthContext();
   const location = useLocation();
 
   return (

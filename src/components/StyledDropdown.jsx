@@ -1,6 +1,5 @@
 import { Listbox } from "@headlessui/react";
 import { Check, ChevronDown } from "lucide-react";
-import { useState } from "react";
 
 const options = [
   { key: "name", label: "Name" },
@@ -16,7 +15,7 @@ export default function StyledDropdown({ value, onChange }) {
     <div className="relative w-28 md:w-40">
       <Listbox value={value} onChange={onChange}>
         <Listbox.Button className="relative w-full rounded-xl py-2 md:py-2.5 px-4 border text-slate-300 font-medium border-slate-700/50 hover:border-cyan-500/50 transition-all text-left cursor-pointer bg-slate-800/50 hover:bg-slate-700/50">
-          <span className="pr-6">{selectedOption?.label}</span>
+          <span className="pr-6">{selectedOption?.label || 'Select...'}</span>
           <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-cyan-400" />
         </Listbox.Button>
 
@@ -29,7 +28,7 @@ export default function StyledDropdown({ value, onChange }) {
                 `px-4 py-3 cursor-pointer transition-all ${
                   active
                     ? "bg-cyan-500/20 text-cyan-400"
-                    : "hover:bg-slate-800/50 text-slate-300 hover:text-white"
+                    : "text-slate-300"
                 }`
               }
             >

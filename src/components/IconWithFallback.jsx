@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 
 const platformIconMap = {
   "x (twitter)": "x",
@@ -224,6 +224,10 @@ export default function IconWithFallback({ platform, size = 20 }) {
   const [failed, setFailed] = useState(false);
   const iconName = getSimpleIconName(platform);
   const iconUrl = failed ? FALLBACK_ICON : `https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/${iconName}.svg`;
+
+  useEffect(() => {
+    setFailed(false);
+  }, [platform]);
 
   return (
     <img

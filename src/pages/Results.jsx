@@ -31,6 +31,14 @@ const Results = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   // console.log("Results:", results);
+
+  const formatBreachDate = (dateStr) => {
+    if (!dateStr) return null;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
+
   const isResultEmpty = () => {
     if (!results) return true;
 
@@ -179,6 +187,24 @@ const Results = () => {
               selectedImage={selectedImage}
               setSelectedImage={setSelectedImage}
             />
+            {Array.isArray(mapData) && mapData.length !== 0 && (
+              <div className="z-10 w-full gap-4 max-w-6xl mx-auto mt-8 mb-4 bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 p-4 rounded-xl">
+                <Suspense
+                  fallback={
+                    <div className="flex items-center justify-center py-12">
+                      <InlineLoader />
+                    </div>
+                  }
+                >
+                  <h2 className="text-2xl font-bold mb-4 text-white">
+                    Locations ({mapData.length})
+                  </h2>
+                  <div className="">
+                    <Map data={mapData} />
+                  </div>
+                </Suspense>
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 items-stretch">
               {emailData?.PROFILE_CONTAINER?.profile?.personId && (
                 <div className="h-full">
@@ -246,7 +272,7 @@ const Results = () => {
                           </span>
                           {result.BreachDate && (
                             <span className="text-xs text-slate-500">
-                              {new Date(result.BreachDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                              {formatBreachDate(result.BreachDate)}
                             </span>
                           )}
                         </div>
@@ -259,24 +285,6 @@ const Results = () => {
             )}
             {osResults !== null && <OsintCard data={osResults} />}
           </div>
-          {Array.isArray(mapData) && mapData.length !== 0 && (
-            <div className="z-10 w-full gap-4 max-w-6xl mx-auto mb-12 bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 p-4 rounded-xl">
-              <Suspense
-                fallback={
-                  <div className="flex items-center justify-center py-12">
-                    <InlineLoader />
-                  </div>
-                }
-              >
-                <h2 className="text-2xl font-bold mb-4 text-white">
-                  Locations
-                </h2>
-                <div className="">
-                  <Map data={mapData} />
-                </div>
-              </Suspense>
-            </div>
-          )}
         </>
       )}
     </>

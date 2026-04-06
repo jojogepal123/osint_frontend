@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValue, useSpring, useMotionTemplate } from "framer-motion";
 import {
   Shield,
   Search,
@@ -46,6 +46,9 @@ const InteractiveBackground = () => {
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
+  const cyanGradient = useMotionTemplate`radial-gradient(600px circle at ${cursorX}px ${cursorY}px, rgba(34, 211, 238, 0.08), transparent 40%)`;
+  const emeraldGradient = useMotionTemplate`radial-gradient(400px circle at ${cursorX}px ${cursorY}px, rgba(16, 185, 129, 0.1), transparent 40%)`;
+
   useEffect(() => {
     const handleMouseMove = (e) => {
       mouseX.set(e.clientX);
@@ -63,14 +66,14 @@ const InteractiveBackground = () => {
       <motion.div
         className="absolute inset-0 opacity-30"
         style={{
-          background: `radial-gradient(600px circle at ${cursorX.get()}px ${cursorY.get()}px, rgba(34, 211, 238, 0.08), transparent 40%)`,
+          background: cyanGradient,
         }}
       />
       
       <motion.div
         className="absolute inset-0 opacity-20"
         style={{
-          background: `radial-gradient(400px circle at ${cursorX.get()}px ${cursorY.get()}px, rgba(16, 185, 129, 0.1), transparent 40%)`,
+          background: emeraldGradient,
         }}
       />
 
@@ -94,7 +97,7 @@ const InteractiveBackground = () => {
           key={i}
           className="absolute w-1 h-1 rounded-full bg-cyan-400/30"
           initial={{ 
-            x: Math.random() * typeof window !== 'undefined' ? window.innerWidth : 1920,
+            x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1920),
             y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1080),
           }}
           animate={{
@@ -433,6 +436,26 @@ const VerticalNavDots = ({ activeSection, navItems, onNavigate }) => {
 
 const Navbar = ({ activeSection, onNavigate }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const itemRefs = useRef({});
+  const [activeIndicatorPos, setActiveIndicatorPos] = useState({ left: 0, width: 0 });
+
+  useEffect(() => {
+    const updateIndicator = () => {
+      const activeEl = itemRefs.current[activeSection];
+      if (activeEl) {
+        const rect = activeEl.getBoundingClientRect();
+        const parent = activeEl.parentElement;
+        const parentRect = parent.getBoundingClientRect();
+        setActiveIndicatorPos({
+          left: rect.left - parentRect.left,
+          width: rect.width,
+        });
+      }
+    };
+    updateIndicator();
+    window.addEventListener("resize", updateIndicator);
+    return () => window.removeEventListener("resize", updateIndicator);
+  }, [activeSection]);
 
   const navItems = [
     { id: "home", label: "Home" },
@@ -477,11 +500,12 @@ const Navbar = ({ activeSection, onNavigate }) => {
               </span>
             </motion.div>
 
-            <div className="hidden lg:flex items-center gap-10">
+            <div className="hidden lg:flex items-center gap-10 relative">
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
+                  ref={(el) => { itemRefs.current[item.id] = el; }}
                   className={`relative text-sm font-medium transition-all duration-300 ${
                     activeSection === item.id
                       ? "text-cyan-400"
@@ -489,15 +513,12 @@ const Navbar = ({ activeSection, onNavigate }) => {
                   }`}
                 >
                   {item.label}
-                  {activeSection === item.id && (
-                    <motion.div
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 to-emerald-400"
-                      layoutId="navIndicator"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                  )}
                 </button>
               ))}
+              <motion.div
+                className="absolute -bottom-1 h-0.5 bg-gradient-to-r from-cyan-400 to-emerald-400"
+                animate={activeIndicatorPos}
+              />
             </div>
 
             <div className="hidden lg:flex items-center gap-4">

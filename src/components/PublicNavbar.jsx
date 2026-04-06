@@ -31,7 +31,7 @@ const PublicNavbar = () => {
                 <Search className="w-5 h-5 text-cyan-400" />
               </div>
               <span className="text-lg font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-                {import.meta.env.VITE_APP_NAME}
+                {import.meta.env.VITE_APP_NAME || 'OSINT Platform'}
               </span>
             </motion.div>
           </Link>
@@ -75,7 +75,7 @@ const PublicNavbar = () => {
           </div>
 
           {/* mobile toggle */}
-          <button className="lg:hidden text-slate-300 p-2" onClick={() => setOpen(!open)}>
+          <button className="lg:hidden text-slate-300 p-2" onClick={() => setOpen(!open)} aria-expanded={open} aria-label={open ? "Close menu" : "Open menu"} aria-controls="mobile-menu">
             {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
@@ -84,8 +84,11 @@ const PublicNavbar = () => {
       {/* mobile menu */}
       <motion.div
         className="lg:hidden bg-slate-950/95 backdrop-blur-xl border-t border-cyan-500/10 overflow-hidden"
+        id="mobile-menu"
         initial={false}
         animate={{ opacity: open ? 1 : 0, height: open ? "auto" : 0 }}
+        aria-hidden={!open}
+        inert={!open || undefined}
       >
         <div className="px-4 py-4 space-y-1">
           {navItems.map((item) => {

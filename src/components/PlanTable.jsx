@@ -1,4 +1,3 @@
-import React from "react";
 
 const PlanTable = ({ plans, onSelect }) => {
   return (
@@ -32,8 +31,11 @@ const PlanTable = ({ plans, onSelect }) => {
                 key={plan.name}
                 title={onSelect ? "Click to subscribe" : ""}
                 onClick={onSelect ? () => onSelect(plan) : undefined}
+                tabIndex={onSelect ? 0 : undefined}
+                role={onSelect ? "button" : undefined}
+                onKeyDown={onSelect ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(plan); } } : undefined}
                 className={`${
-                  onSelect ? "cursor-pointer hover:bg-slate-700/50" : ""
+                  onSelect ? "cursor-pointer hover:bg-slate-700/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500" : ""
                 } transition-all duration-300`}
               >
                 <td className="px-4 py-4 lg:py-5 flex items-center gap-3">
@@ -67,8 +69,11 @@ const PlanTable = ({ plans, onSelect }) => {
           <div
             key={plan.name}
             onClick={onSelect ? () => onSelect(plan) : undefined}
+            tabIndex={onSelect ? 0 : undefined}
+            role={onSelect ? "button" : undefined}
+            onKeyDown={onSelect ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(plan); } } : undefined}
             className={`bg-slate-800/50 backdrop-blur-xl rounded-xl p-4 shadow-lg border border-slate-700/50 hover:border-cyan-500/30 ${
-              onSelect ? "cursor-pointer hover:bg-slate-800/70" : ""
+              onSelect ? "cursor-pointer hover:bg-slate-800/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500" : ""
             } transition-all duration-300`}
           >
             <div className="flex items-center gap-3 mb-3">

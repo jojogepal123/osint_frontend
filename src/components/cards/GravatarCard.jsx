@@ -5,7 +5,7 @@ export const GravatarCard = ({ data }) => {
 
   return data.map((item, index) => (
     <div
-      key={index}
+      key={item?.username || item?.avatar_url || index}
       className="w-full h-full bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-lg p-5 hover:border-cyan-500/30 transition-all duration-300"
     >
       <div className="flex items-center gap-3 mb-5 pb-3 border-b border-slate-700/50">
@@ -36,7 +36,7 @@ export const GravatarCard = ({ data }) => {
         <div className="flex flex-col space-y-3 flex-1">
           <div className="flex items-start gap-2">
             <span className="text-cyan-400 font-medium text-sm min-w-[80px]">Username:</span>
-            <span className="text-white">@{item.username}</span>
+            <span className="text-white">@{item?.username ?? 'unknown'}</span>
           </div>
           {item.profile_url && (
             <div className="flex items-start gap-2">

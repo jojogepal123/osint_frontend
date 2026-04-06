@@ -42,7 +42,7 @@ const CorporateResults = () => {
   return (
     <>
       {data && <ResultHeader searchInput={searchInput} />}
-      <div className="w-full px-4 mt-8 text-white flex flex-col items-center z-10 md:pl-64">
+      <div className="w-full px-4 mt-8 text-white flex flex-col items-center z-10 md:pl-64 md:pr-8">
         <div className="max-w-6xl w-full bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 p-6 rounded-xl shadow-2xl">
           <h2 className="text-xl font-bold mb-4 border-b border-slate-700/50 pb-4 flex items-center gap-3 group">
             <span className="min-w-[32px] h-8 flex items-center justify-center rounded-lg bg-cyan-500/20 text-cyan-400 transition-transform duration-100 group-hover:scale-110">

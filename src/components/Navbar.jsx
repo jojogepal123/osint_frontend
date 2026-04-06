@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import {
@@ -102,7 +101,7 @@ const Navbar = () => {
           <div className="flex flex-col items-center space-y-3 sm:space-y-4">
             <div className="relative">
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent drop-shadow-lg tracking-tight">
-                {import.meta.env.VITE_APP_NAME}
+                {import.meta.env.VITE_APP_NAME || 'OSINT Platform'}
               </h1>
               <div className="absolute -bottom-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50" />
             </div>
@@ -113,26 +112,26 @@ const Navbar = () => {
             </p>
 
             <div className="flex items-center gap-4 sm:gap-6 mt-3">
-              <div className="group flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-slate-300 hover:bg-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 cursor-pointer shadow-lg shadow-cyan-500/5">
+              <button className="group flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-slate-300 hover:bg-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 cursor-pointer shadow-lg shadow-cyan-500/5" aria-label="OSINT search">
                 <Search className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
                 <span className="text-[10px] sm:text-xs font-bold tracking-wider">OSINT</span>
                 <ChevronRight className="w-3 h-3 text-cyan-400/50 group-hover:translate-x-1 transition-transform" />
-              </div>
+              </button>
 
               <div className="w-px h-6 bg-gradient-to-b from-transparent via-slate-600 to-transparent" />
 
-              <div className="group flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-slate-300 hover:bg-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300 cursor-pointer shadow-lg shadow-emerald-500/5">
+              <button className="group flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-slate-300 hover:bg-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300 cursor-pointer shadow-lg shadow-emerald-500/5" aria-label="Intelligence view">
                 <Eye className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
                 <span className="text-[10px] sm:text-xs font-bold tracking-wider">Intelligence</span>
                 <ChevronRight className="w-3 h-3 text-emerald-400/50 group-hover:translate-x-1 transition-transform" />
-              </div>
+              </button>
             </div>
 
-            <div className="flex items-center gap-3 mt-4">
-              <div className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse delay-100" />
-              <div className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-pulse delay-200" />
-            </div>
+              <div className="flex items-center gap-3 mt-4">
+                <div className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" style={{ animationDelay: "0ms" }} />
+                <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" style={{ animationDelay: "100ms" }} />
+                <div className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-pulse" style={{ animationDelay: "200ms" }} />
+              </div>
 
             <div className="mt-4 pt-4 border-t border-slate-800/50 w-full flex justify-center">
               <div className="flex items-center gap-2 text-slate-500 text-[10px] tracking-widest">

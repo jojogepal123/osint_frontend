@@ -1,6 +1,6 @@
 import { Check, X } from "lucide-react";
 import { useIsEmpty } from "../hook/useIsEmpty";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import instance from "../api/axios";
 import IconWithFallback from "./IconWithFallback";
 import RcPopup from "./RcPopup";
@@ -76,7 +76,6 @@ const TelProfileCard = ({
   setSelectedImage,
 }) => {
   const isEmpty = useIsEmpty(profile);
-  if (isEmpty) return null;
 
   useEffect(() => {
     if (modalOpen) {
@@ -102,6 +101,8 @@ const TelProfileCard = ({
     name: "",
     mobile: "",
   });
+
+  if (isEmpty) return null;
 
   const handleRCClick = async (rc) => {
     setSelectedRC(rc);
@@ -167,7 +168,7 @@ const TelProfileCard = ({
 
   const handleCreditReport = (panNumber) => {
     const name =
-      profile.fullNames?.find((n) => n.source === "Gov")?.value || "";
+      profile.fullNames?.find((n) => n?.source === "Gov")?.value || "";
     const mobile =
       profile.phones?.find((ph) => ph.source === "Gov")?.value || "";
     setCreditModalData({ pan: panNumber, name, mobile });
@@ -213,7 +214,7 @@ const TelProfileCard = ({
     }
   };
 
-  const primaryName = profile.fullNames?.find((n) => n.source === "Gov")?.value || 
+  const primaryName = profile.fullNames?.find((n) => n?.source === "Gov")?.value || 
                       profile.fullNames?.[0]?.value || 
                       "Unknown";
   const primaryPhone = profile.phones?.[0]?.value || userInput;
@@ -231,7 +232,7 @@ const TelProfileCard = ({
           <img
             src={selectedImage}
             alt="Full View"
-            className="max-w-[90vw] max-h-[90vh] min-w-[400px] rounded-2xl shadow-2xl border border-slate-700/50"
+            className="max-w-[90vw] max-h-[90vh] w-full rounded-2xl shadow-2xl border border-slate-700/50"
             onClick={(e) => e.stopPropagation()}
           />
           <button
@@ -374,7 +375,7 @@ const TelProfileCard = ({
               </ResumeSection>
 
               <ResumeSection title="Vehicle Information" icon={Car}>
-                <InfoList title="RC Numbers" items={profile.rcNumber.map((rc) => ({
+                <InfoList title="RC Numbers" items={profile.rcNumber?.map((rc) => ({
                   value: (
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                       <span className="text-slate-300 font-medium">{rc}</span>
@@ -445,14 +446,14 @@ const TelProfileCard = ({
               )}
 
               {/* Internet Presence as Sidebar Section */}
-              {Object.keys(profile.socialMediaPresence).length > 0 && (
+              {profile.socialMediaPresence && Object.keys(profile.socialMediaPresence).length > 0 && (
                 <div className="mb-4">
                   <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-700/50">
                     <Globe className="w-3.5 h-3.5 text-cyan-400" />
                     <h4 className="text-sm font-semibold text-white uppercase tracking-wide">Internet Presence</h4>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    {Object.entries(profile.socialMediaPresence).map(
+                    {Object.entries(profile.socialMediaPresence || {}).map(
                       ([platform, isPresent]) => (
                         <div
                           key={platform}

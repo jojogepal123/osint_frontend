@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthContext from "../context/AuthContext";
-import { useAlert } from "../components/Alert";
 import { Eye, EyeOff, Search, Shield, ChevronRight } from "lucide-react";
 import Loader from "../components/Loader";
 
@@ -12,7 +11,6 @@ const Login = () => {
   const { login } = useAuthContext();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const showAlert = useAlert();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -102,10 +100,11 @@ const Login = () => {
                 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="relative">
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                    <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
                       Email Address
                     </label>
                     <input
+                      id="email"
                       type="email"
                       className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 outline-none transition-all duration-300 focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
                       placeholder="Enter your email"
@@ -116,10 +115,11 @@ const Login = () => {
                   </div>
                   
                   <div className="relative">
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                    <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
                       Password
                     </label>
                     <input
+                      id="password"
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -130,6 +130,7 @@ const Login = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                       className="absolute right-4 top-[42px] text-slate-400 hover:text-slate-200 transition-colors"
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}

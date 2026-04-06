@@ -77,7 +77,7 @@ const Privacy = () => {
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-400">
-              At <span className="text-cyan-400 font-semibold">{import.meta.env.VITE_APP_NAME}</span>, we value your
+              At <span className="text-cyan-400 font-semibold">{import.meta.env.VITE_APP_NAME || 'OSINT Platform'}</span>, we value your
               privacy and are committed to protecting any information collected through our platform.
             </p>
           </motion.div>

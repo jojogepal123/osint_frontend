@@ -1,12 +1,14 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import instance from "../api/axios";
 import FullScreenLoader from "./FullScreenLoader";
 import { X, Download, AlertCircle, Car, CreditCard, FileText } from "lucide-react";
+import { useAlert } from "./Alert";
 
 const RcPopup = ({ id, type, data, loading, onClose }) => {
   const contentRef = useRef();
   const [downloading, setDownloading] = useState(false);
   const [loadingData, setLoadingData] = useState(loading);
+  const showAlert = useAlert();
 
   useEffect(() => {
     setLoadingData(loading);
@@ -100,7 +102,7 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      // Handle error if needed
+      showAlert.error("Failed to download PDF. Please try again.");
     } finally {
       setDownloading(false);
     }
@@ -137,7 +139,7 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
           text={
             downloading
               ? "Generating PDF..."
-              : `Loading ${type?.toUpperCase()} details...`
+              : `Loading ${type?.toUpperCase() || 'DATA'} details...`
           }
         />
       )}
@@ -159,6 +161,7 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
             </div>
             <button
               onClick={onClose}
+              aria-label={`Close ${getTitle()}`}
               className="w-10 h-10 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-400 hover:text-red-400 hover:border-red-500/30 transition-all flex items-center justify-center"
             >
               <X className="w-5 h-5" />
@@ -222,7 +225,7 @@ const RcPopup = ({ id, type, data, loading, onClose }) => {
                   <AlertCircle className="w-8 h-8 text-slate-500" />
                 </div>
                 <p className="text-slate-400 text-lg">
-                  No {type?.toUpperCase()} data available
+                  No {type?.toUpperCase() || 'DATA'} data available
                 </p>
               </div>
             )}

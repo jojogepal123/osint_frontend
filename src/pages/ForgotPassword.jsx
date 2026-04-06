@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState([]);
-  const [status, setStatus] = useState(null);
   const { csrf, loading, setLoading } = useAuthContext();
   const showAlert = useAlert();
 
@@ -17,15 +16,15 @@ const ForgotPassword = () => {
     setLoading(true);
     await csrf();
     setErrors([]);
-    setStatus(null);
 
     try {
       const response = await axios.post("/forgot-password", { email });
-      setStatus(response.data.status);
       showAlert.success("Password reset link sent successfully!", { title: "Email Sent" });
     } catch (error) {
-      if (error.response.status == 422) {
+      if (error.response?.status === 422) {
         setErrors(error.response.data.errors);
+      } else {
+        showAlert.error("Failed to send reset link. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -47,7 +46,7 @@ const ForgotPassword = () => {
                   <Shield className="w-8 h-8 text-cyan-400" />
                 </div>
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent text-center">
-                  {import.meta.env.VITE_APP_NAME}
+                  {import.meta.env.VITE_APP_NAME || 'OSINT Platform'}
                 </h2>
                 <p className="text-slate-400 text-sm mt-2 text-center">
                   Enter your email to receive a password reset link

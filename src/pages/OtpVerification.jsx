@@ -107,7 +107,7 @@ const OtpVerification = () => {
     setLoading(true);
     try {
       const res = await instance.post("/api/resend-otp", { email });
-      showAlert.success(res.data?.message || "OTP resend successfully.");
+      showAlert.success(res.data?.message || "OTP resent successfully.");
       const newExpiry = new Date(res.data?.otp_expires_at).getTime();
       setOtpExpireString(res.data?.otp_expires_at);
       setTimeLeft(newExpiry - Date.now());

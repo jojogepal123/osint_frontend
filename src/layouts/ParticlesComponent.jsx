@@ -1,6 +1,5 @@
-import React from "react";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
-import { useEffect, useState } from "react";
+import { useEffect, memo } from "react";
 import { loadSlim } from "@tsparticles/slim";
 
 const particlesOptions = {
@@ -83,19 +82,16 @@ const particlesOptions = {
   detectRetina: true,
 };
 
-const ParticlesComponent = React.memo((props) => {
-  const [init, setInit] = useState(false);
+const ParticlesComponent = memo(function ParticlesComponent(props) {
 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
       await loadSlim(engine);
-    }).then(() => {
-      setInit(true);
     });
   }, []);
 
-  const particlesLoaded = (container) => {
-    // console.log("Particles Loaded:", container);
+  const particlesLoaded = () => {
+    // console.log("Particles Loaded");
   };
 
   return (
@@ -105,7 +101,7 @@ const ParticlesComponent = React.memo((props) => {
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
       <Particles
         id={props.id}
-        init={particlesLoaded}
+        particlesLoaded={particlesLoaded}
         options={particlesOptions}
         className="absolute inset-0"
       />

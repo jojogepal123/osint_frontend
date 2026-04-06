@@ -56,6 +56,8 @@ const About = () => {
     teal:    { card: "hover:border-teal-500/30",    icon: "bg-teal-500/10 border-teal-500/20",    text: "text-teal-400"    },
   };
 
+  const DEFAULT_COLOR_CLASS = { card: "", icon: "bg-slate-700/50 border-slate-600/50", text: "text-slate-400" };
+
   return (
     <div className="relative min-h-screen w-full">
       <PublicNavbar />
@@ -115,7 +117,7 @@ const About = () => {
               </h2>
               <div className="space-y-4 text-slate-400 text-base leading-relaxed">
                 <p>
-                  <span className="text-cyan-400 font-semibold">{import.meta.env.VITE_APP_NAME}</span> is a dedicated OSINT
+                  <span className="text-cyan-400 font-semibold">{import.meta.env.VITE_APP_NAME || 'OSINT Platform'}</span> is a dedicated OSINT
                   platform designed to assist law enforcement agencies, investigators, and journalists in conducting
                   digital investigations efficiently. We collect and analyze publicly available data from various
                   internet sources and collection APIs, providing professionals with the intelligence they need
@@ -125,7 +127,7 @@ const About = () => {
                   Our goal is to bridge the gap between publicly accessible data and actionable insights —
                   enabling professionals to conduct in-depth research, track digital trails, and enhance
                   security measures. With a strong commitment to ethical intelligence gathering, privacy
-                  protection, and data integrity, {import.meta.env.VITE_APP_NAME} continues to evolve with
+                  protection, and data integrity, {import.meta.env.VITE_APP_NAME || 'OSINT Platform'} continues to evolve with
                   advanced analytical capabilities.
                 </p>
               </div>
@@ -187,7 +189,7 @@ const About = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {values.map((v, i) => {
-              const cls = colorMap[v.color];
+              const cls = colorMap[v.color] || DEFAULT_COLOR_CLASS;
               return (
                 <motion.div
                   key={v.title}

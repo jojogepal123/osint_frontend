@@ -2,7 +2,7 @@ import { useState } from "react";
 import instance from "../api/axios";
 import InlineLoader from "../components/InlineLoader";
 import { useNavigate, useLocation } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useAlert } from "./Alert";
 import FullScreenLoader from "./FullScreenLoader";
 import useAuthContext from "../context/AuthContext";
 import { ClipboardCopy, Sparkles, FileDown, ArrowLeft } from "lucide-react";
@@ -16,6 +16,7 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
   const { user } = useAuthContext();
   const location = useLocation();
   const handleBack = () => navigate(-1);
+  const showAlert = useAlert();
 
   const handleSaveResults = async () => {
     setIsLoading(true);
@@ -41,7 +42,7 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      toast.error("Error generating report. Please try again.");
+      showAlert.error("Error generating report. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +72,7 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      toast.error("Error generating AI report. Please try again.");
+      showAlert.error("Error generating AI report. Please try again.");
     } finally {
       setIsAiLoading(false);
     }
@@ -107,11 +108,16 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
                   className="w-9 h-9 rounded-lg bg-slate-800/50 border border-slate-700/30 text-cyan-400 hover:text-cyan-300 hover:border-cyan-500/40 hover:bg-slate-800 transition-all flex items-center justify-center flex-shrink-0"
                   onClick={() => {
                     if (userInput || searchInput) {
-                      navigator.clipboard.writeText(userInput || searchInput);
-                      setCopied(true);
-                      setTimeout(() => {
-                        setCopied(false);
-                      }, 3000);
+                      navigator.clipboard.writeText(userInput || searchInput)
+                        .then(() => {
+                          setCopied(true);
+                          setTimeout(() => {
+                            setCopied(false);
+                          }, 3000);
+                        })
+                        .catch(() => {
+                          showAlert.error("Failed to copy to clipboard");
+                        });
                     }
                   }}
                 >
@@ -169,7 +175,7 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
                 <div className="flex items-center gap-2 text-sm rounded-xl px-4 py-2.5 bg-slate-800/60 border border-slate-700/40 font-medium">
                   <span className="text-slate-400">Credits</span>
                   <span className="w-px h-4 bg-slate-700"></span>
-                  <span className="text-cyan-400 font-semibold">{Number(user.credits).toFixed(2)}</span>
+                  <span className="text-cyan-400 font-semibold">{Number(user.credits ?? 0).toFixed(2)}</span>
                 </div>
               )}
             </div>

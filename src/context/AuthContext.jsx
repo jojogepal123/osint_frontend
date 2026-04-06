@@ -257,7 +257,7 @@ export const AuthProvider = ({ children }) => {
       if (data.credits !== undefined) {
         updateUser({ credits: data.credits });
       }
-      setResults(data.data);
+      setResults(data?.data ?? {});
       return data;
     } catch (error) {
       if (error.response) {
@@ -278,7 +278,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const hasSufficientCredits = () => {
-    return parseFloat(user.credits) > 0;
+    return parseFloat(user?.credits) > 0;
   };
 
   const value = {

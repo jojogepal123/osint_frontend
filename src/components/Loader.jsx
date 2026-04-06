@@ -1,6 +1,6 @@
 const Loader = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[200px] h-screen">
+    <div className="flex flex-col items-center justify-center min-h-[200px] h-screen" role="status" aria-live="polite">
       <div className="relative flex items-center justify-center">
         <div className="absolute w-24 h-24 rounded-full border border-cyan-500/20 animate-ping" />
         <div className="absolute w-16 h-16 rounded-full border border-emerald-500/20 animate-ping [animation-delay:0.5s]" />
@@ -12,6 +12,7 @@ const Loader = () => {
           </div>
         </div>
       </div>
+      <span className="sr-only">Loading…</span>
     </div>
   );
 };

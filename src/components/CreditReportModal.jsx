@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import instance from "../api/axios";
-import { toast } from "react-toastify";
+import { useAlert } from "./Alert";
 import { X, FileText, Download, CheckCircle } from "lucide-react";
 import InlineLoader from "./InlineLoader";
 
 const CreditReportModal = ({ open, onClose, pan, name, mobile, onSuccess }) => {
   const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
+  const showAlert = useAlert();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!gender) {
-      toast.error("Please select gender.");
+      showAlert.error("Please select gender.");
       return;
     }
 
@@ -45,14 +46,12 @@ const CreditReportModal = ({ open, onClose, pan, name, mobile, onSuccess }) => {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      toast.success("Report downloaded successfully");
+      showAlert.success("Report downloaded successfully");
       if (onSuccess) onSuccess();
       onClose();
-      setLoading(false);
       return;
     } catch (error) {
-      toast.error("Error occurred. Please check your data and try again.");
-      setLoading(false);
+      showAlert.error("Error occurred. Please check your data and try again.");
       return;
     } finally {
       setLoading(false);

@@ -74,6 +74,7 @@ function AlertItem({ alert, onDismiss }) {
       </div>
       <button
         onClick={() => onDismiss(alert.id)}
+        aria-label={`Dismiss ${alert.title || 'alert'}`}
         className={`w-7 h-7 rounded-lg ${style.iconBg} flex items-center justify-center flex-shrink-0 hover:opacity-80 transition-opacity`}
       >
         <X className={`w-3.5 h-3.5 ${style.icon}`} />

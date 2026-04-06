@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Search } from "lucide-react";
 import UserCard from "../components/UserCard";
 import instance from "../api/axios";

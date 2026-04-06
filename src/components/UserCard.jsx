@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import useAuthContext from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import InlineLoader from "./InlineLoader";
 import { LogOut, User, Wallet, ChevronDown, Sparkles } from "lucide-react";
 
@@ -9,7 +8,6 @@ const UserCard = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -23,12 +21,13 @@ const UserCard = () => {
 
   const handleLogout = () => {
     setLoading(true);
-    setDropdownOpen(false);
-    setTimeout(() => {
-      logout()
-        .then(() => navigate("/"))
-        .finally(() => setLoading(false));
-    }, 1000);
+    logout()
+      .then(() => {
+        setDropdownOpen(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   };
 
   const getInitials = (name) => {

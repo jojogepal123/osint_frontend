@@ -108,7 +108,7 @@ const SidebarLarge = () => {
             </div>
             <Link to="/" className="flex-1 overflow-hidden">
               <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent truncate">
-                {import.meta.env.VITE_APP_NAME}
+                {import.meta.env.VITE_APP_NAME || 'OSINT Platform'}
               </h1>
             </Link>
           </div>
@@ -151,7 +151,7 @@ const SidebarLarge = () => {
 
             <div className="mt-6 pt-4 border-t border-slate-800">
               <Link
-                to={"/dashboard"}
+                to={"/help"}
                 className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent hover:border-slate-700/50 transition-all duration-300"
               >
                 <div className="w-10 h-10 rounded-lg bg-slate-800/50 group-hover:bg-slate-700/50 flex items-center justify-center transition-all duration-300">
@@ -190,7 +190,7 @@ const SidebarLarge = () => {
           </div>
           <div className="mt-3 text-center">
             <p className="text-xs text-slate-600">
-              {import.meta.env.VITE_APP_NAME} © {new Date().getFullYear()}
+              {import.meta.env.VITE_APP_NAME || 'OSINT Platform'} © {new Date().getFullYear()}
             </p>
           </div>
         </div>

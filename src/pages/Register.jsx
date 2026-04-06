@@ -10,9 +10,9 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [password_confirmation, setPassswordConfirmation] = useState("");
+  const [password_confirmation, setPasswordConfirmation] = useState("");
   const { register } = useAuthContext();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [registrationEnabled, setRegistrationEnabled] = useState(null);
@@ -38,8 +38,13 @@ const Register = () => {
       .then((res) => {
         setRegistrationEnabled(res.data.registration_enabled);
       })
-      .catch(() => {
-        setRegistrationEnabled(false);
+      .catch((error) => {
+        if (error.response?.status === 403) {
+          setRegistrationEnabled(false);
+        } else {
+          setRegistrationEnabled(true);
+          showAlert.error("Failed to check registration status. Please try again.");
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -210,7 +215,7 @@ const Register = () => {
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       value={password_confirmation}
-                      onChange={(e) => setPassswordConfirmation(e.target.value)}
+                      onChange={(e) => setPasswordConfirmation(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 outline-none transition-all duration-300 focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 pr-12"
                       placeholder="Confirm your password"
                       required

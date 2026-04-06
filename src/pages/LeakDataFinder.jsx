@@ -30,7 +30,7 @@ const LeakDataFinder = () => {
   const [emptyResults, setEmptyResults] = useState(false);
   const { updateUser, hasSufficientCredits } = useAuthContext();
   const [fields, setFields] = useState([
-    { id: Date.now(), type: "name", value: "", isValid: true, error: "" },
+    { id: crypto.randomUUID(), type: "name", value: "", isValid: true, error: "" },
   ]);
   const showAlert = useAlert();
 
@@ -38,7 +38,7 @@ const LeakDataFinder = () => {
     if (fields.length >= 4) {
       showAlert.warning("You can only add 4 fields");
     } else {
-      setFields([...fields, { id: Date.now(), type, value: "", isValid: true, error: "" }]);
+      setFields([...fields, { id: crypto.randomUUID(), type, value: "", isValid: true, error: "" }]);
     }
   };
 
@@ -115,9 +115,9 @@ const LeakDataFinder = () => {
       );
       if (res.status === 200) {
         const results = res.data;
-        const credits = results.credits ?? "";
-        if (credits !== undefined) {
-          updateUser({ credits: credits });
+        const credits = results.credits;
+        if (credits != null) {
+          updateUser({ credits });
         }
         setResults(results.data || []);
         setTotalResults(results.total || 0);
@@ -160,7 +160,7 @@ const LeakDataFinder = () => {
                     key={option.key}
                     type="button"
                     onClick={() => handleAddField(option.key)}
-                    disabled={isAdded}
+                    disabled={isAdded || fields.length >= 4}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
                       isAdded
                         ? "bg-cyan-500/15 border border-cyan-500/40 text-cyan-400 cursor-not-allowed opacity-50"

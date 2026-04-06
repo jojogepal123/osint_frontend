@@ -1,4 +1,3 @@
-import React from "react";
 import PlanTable from "../components/PlanTable";
 import Footer from "../components/Footer";
 

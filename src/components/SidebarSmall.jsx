@@ -100,6 +100,9 @@ const SidebarSmall = () => {
       <button
         onClick={() => setSidebarVisible(!sidebarVisible)}
         className="fixed top-3 left-4 z-[60] p-2 rounded-lg bg-slate-800/90 backdrop-blur-sm border border-slate-700/50 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/30 transition-all md:hidden"
+        aria-label="Toggle sidebar"
+        aria-expanded={sidebarVisible}
+        aria-controls="sidebar"
       >
         {sidebarVisible ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
@@ -131,7 +134,7 @@ const SidebarSmall = () => {
             </div>
             <Link to="/" className="flex-1 overflow-hidden" onClick={() => setSidebarVisible(false)}>
               <h1 className="text-base font-bold bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent truncate">
-                {import.meta.env.VITE_APP_NAME}
+                {import.meta.env.VITE_APP_NAME || 'OSINT Platform'}
               </h1>
             </Link>
           </div>
@@ -171,7 +174,7 @@ const SidebarSmall = () => {
 
             <div className="mt-6 pt-4 border-t border-slate-800">
               <Link
-                to={"/dashboard"}
+                to={"/help"}
                 onClick={() => setSidebarVisible(false)}
                 className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent hover:border-slate-700/50 transition-all duration-300"
               >
@@ -211,7 +214,7 @@ const SidebarSmall = () => {
           </div>
           <div className="mt-3 text-center">
             <p className="text-xs text-slate-600">
-              {import.meta.env.VITE_APP_NAME} © {new Date().getFullYear()}
+              {import.meta.env.VITE_APP_NAME || 'OSINT Platform'} © {new Date().getFullYear()}
             </p>
           </div>
         </div>

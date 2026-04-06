@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import useAuthContext from "../context/AuthContext";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Key, ArrowRight, ArrowLeft } from "lucide-react";
 import { useAlert } from "../components/Alert";
-import { Shield, Key, ArrowRight, ArrowLeft } from "lucide-react";
 import instance from "../api/axios";
 
 const ResetPassword = () => {
@@ -43,8 +42,10 @@ const ResetPassword = () => {
         { title: "Password Reset" }
       );
     } catch (error) {
-      if (error.response.status == 422) {
+      if (error.response?.status === 422) {
         setErrors(error.response.data.errors);
+      } else {
+        showAlert.error("Failed to reset password. Please try again.");
       }
     } finally {
       setLoading(false);

@@ -1,4 +1,3 @@
-import React from "react";
 import Footer from "../components/Footer";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";

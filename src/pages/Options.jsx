@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
   const [countries, setCountries] = useState([]);
@@ -329,9 +329,9 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
             />
           </div>
           <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
-            {getFilteredCountries().map((country, index) => (
+            {getFilteredCountries().map((country) => (
               <div
-                key={index}
+                key={country.shortName}
                 className="flex items-center p-3 hover:bg-slate-800/50 cursor-pointer transition-colors duration-150"
                 onClick={() => handleCountrySelect(country.code)}
               >

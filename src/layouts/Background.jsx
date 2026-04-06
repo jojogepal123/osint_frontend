@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useId } from "react";
 
-const Background = React.memo(() => {
+const Background = React.memo(function Background() {
+  const gridId = useId();
   return (
     <div className="fixed inset-0 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950" />
@@ -8,11 +9,11 @@ const Background = React.memo(() => {
       <div className="absolute inset-0">
         <svg className="absolute inset-0 w-full h-full opacity-[0.03]">
           <defs>
-            <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+            <pattern id={gridId} width="60" height="60" patternUnits="userSpaceOnUse">
               <path d="M 60 0 L 0 0 0 60" fill="none" stroke="currentColor" strokeWidth="1" className="text-cyan-400"/>
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
+          <rect width="100%" height="100%" fill={`url(#${gridId})`} />
         </svg>
       </div>
 

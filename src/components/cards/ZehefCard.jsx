@@ -1,6 +1,11 @@
 export const ZehefCard = ({ data }) => {
   if (!data || data.length === 0) return null;
 
+  const getLogoSrc = (logo) => {
+    if (!logo) return '';
+    return `http://localhost:8000/assets/${logo.split("/").pop()}`;
+  };
+
   return (
     <div className="w-full bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-xl hover:bg-slate-800/70 transition-all duration-300 p-6">
       <h2 className="text-cyan-400 text-xl font-bold mb-6 flex items-center gap-3">
@@ -17,27 +22,39 @@ export const ZehefCard = ({ data }) => {
             (item) => item.status === "found" && item.source !== "Gravatar"
           )
           .map((item, index) => (
-            <a
-              key={index}
-              href={item.profile_url || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-gradient-to-br from-slate-800 to-slate-900/80 rounded-xl p-4 flex flex-col items-center border border-slate-700/50 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 group"
-            >
-              <img
-                src={`http://localhost:8000/assets/${item.logo
-                  ?.split("/")
-                  .pop()}`}
-                alt={item.source}
-                className="w-16 h-16 object-contain bg-slate-700/50 rounded-xl mb-3 group-hover:scale-105 transition-transform duration-300"
-              />
-              <p className="text-slate-300 text-sm text-center font-medium">{item.source}</p>
-              {item.profile_url && (
-                <span className="text-cyan-400/60 text-xs mt-2 group-hover:text-cyan-400 transition-colors duration-300">
-                  View Profile →
-                </span>
-              )}
-            </a>
+            item.profile_url ? (
+              <a
+                key={item.source || index}
+                href={item.profile_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gradient-to-br from-slate-800 to-slate-900/80 rounded-xl p-4 flex flex-col items-center border border-slate-700/50 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 group"
+              >
+                <img
+                  src={getLogoSrc(item.logo)}
+                  alt={item.source}
+                  className="w-16 h-16 object-contain bg-slate-700/50 rounded-xl mb-3 group-hover:scale-105 transition-transform duration-300"
+                />
+                <p className="text-slate-300 text-sm text-center font-medium">{item.source}</p>
+                {item.profile_url && (
+                  <span className="text-cyan-400/60 text-xs mt-2 group-hover:text-cyan-400 transition-colors duration-300">
+                    View Profile →
+                  </span>
+                )}
+              </a>
+            ) : (
+              <div
+                key={item.source || index}
+                className="bg-gradient-to-br from-slate-800 to-slate-900/80 rounded-xl p-4 flex flex-col items-center border border-slate-700/50 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 group"
+              >
+                <img
+                  src={getLogoSrc(item.logo)}
+                  alt={item.source}
+                  className="w-16 h-16 object-contain bg-slate-700/50 rounded-xl mb-3 group-hover:scale-105 transition-transform duration-300"
+                />
+                <p className="text-slate-300 text-sm text-center font-medium">{item.source}</p>
+              </div>
+            )
           ))}
       </div>
     </div>

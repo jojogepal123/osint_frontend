@@ -10,13 +10,12 @@ export const OsintCard = ({ data = [], type }) => {
     return initialState;
   });
   const [imageErrors, setImageErrors] = useState({});
-  if (!Array.isArray(data) || data.length === 0) return null;
 
   const getValue = (obj, key) => {
     const keys = Array.isArray(key) ? key : [key];
     return keys.reduce((value, k) => {
-      if (value) return value;
-      return obj[k] || obj[k.toLowerCase()] || null;
+      if (value !== null && value !== undefined) return value;
+      return (obj[k] !== undefined && obj[k] !== null) ? obj[k] : ((obj[k.toLowerCase()] !== undefined && obj[k.toLowerCase()] !== null) ? obj[k.toLowerCase()] : null);
     }, null);
   };
 
@@ -45,7 +44,7 @@ export const OsintCard = ({ data = [], type }) => {
     };
 
     return isValidImageUrl(imageUrl) ? imageUrl : null;
-  }, []);
+  }, [getValue]);
 
   useEffect(() => {
     setOpenDropdowns(prev => {
@@ -58,6 +57,8 @@ export const OsintCard = ({ data = [], type }) => {
       return newState;
     });
   }, [data.length]);
+
+  if (!Array.isArray(data) || data.length === 0) return null;
 
   return (
     <div className={`w-full mt-4 ${type === "leak-data-finder" ? "p-0" : ""}`}>
