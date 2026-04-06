@@ -30,6 +30,9 @@ import VerificationResults from "./pages/VerificationResults";
 import LiveOnlyRoute from "./components/LiveOnlyRoute";
 import Upgrade from "./pages/Upgrade";
 import OtpVerification from "./pages/OtpVerification";
+import SocialIntel from "./pages/SocialIntel";
+import VehicleFinder from "./pages/VehicleFinder";
+import VehicleResults from "./pages/VehicleResults";
 
 function App() {
   const { sidebarVisible, setSidebarVisible, user, isLoading } =
@@ -39,6 +42,8 @@ function App() {
     "/leak-data-finder",
     "/corporate",
     "/verification-id",
+    "/social-intel",
+    "/vehicle-intel",
   ];
   const location = useLocation();
   const showSidebar = showSidebarPaths.includes(location.pathname);
@@ -119,6 +124,23 @@ function App() {
                 }
               />
               <Route path="/upgrade" element={<Upgrade />} />
+              <Route path="/social-intel" element={<SocialIntel />} />
+              <Route
+                path="/vehicle-intel"
+                element={
+                  <LiveOnlyRoute>
+                    <VehicleFinder />
+                  </LiveOnlyRoute>
+                }
+              />
+              <Route
+                path="/vehicle-results"
+                element={
+                  <LiveOnlyRoute>
+                    <VehicleResults />
+                  </LiveOnlyRoute>
+                }
+              />
             </Route>
             <Route path="/otp-verification" element={<OtpVerification />} />
             {/* Guest routes */}
