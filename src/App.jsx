@@ -33,6 +33,11 @@ import OtpVerification from "./pages/OtpVerification";
 import SocialIntel from "./pages/SocialIntel";
 import VehicleFinder from "./pages/VehicleFinder";
 import VehicleResults from "./pages/VehicleResults";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminUserDetail from "./pages/admin/AdminUserDetail";
+import AdminQueries from "./pages/admin/AdminQueries";
 
 function App() {
   const { sidebarVisible, setSidebarVisible, user, isLoading } =
@@ -195,6 +200,14 @@ function App() {
               <Route path="/refund-policy" element={<RefundPolicy />} />
               <Route path="/terms-conditions" element={<TermsConditions />} />
             </Route>
+            {/* Admin routes */}
+            <Route element={<AdminLayout />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/users/:id" element={<AdminUserDetail />} />
+              <Route path="/admin/queries" element={<AdminQueries />} />
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>
