@@ -129,7 +129,14 @@ function App() {
                 }
               />
               <Route path="/upgrade" element={<Upgrade />} />
-              <Route path="/social-intel" element={<SocialIntel />} />
+              <Route
+                path="/social-intel"
+                element={
+                  <LiveOnlyRoute>
+                    <SocialIntel />
+                  </LiveOnlyRoute>
+                }
+              />
               <Route
                 path="/vehicle-intel"
                 element={

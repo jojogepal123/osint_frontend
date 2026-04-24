@@ -68,7 +68,7 @@ const SidebarSmall = () => {
           ${!sidebarVisible ? "hidden md:flex" : "flex"}
         `}
       >
-        <div className="flex-1 z-[9999]">
+        <div className="flex-1 z-[9999] overflow-y-auto min-h-0">
           <div className="flex items-center justify-between h-16 gap-4">
             {/* <img
               src={webName}
@@ -477,6 +477,29 @@ const SidebarSmall = () => {
                 </li>
               </div> */}
               <div>
+                {user?.is_admin && (
+                  <li>
+                    <button
+                      onClick={() => navigate("/admin")}
+                      className={`
+                          flex items-center rounded-lg
+                          transition-all duration-100 ease-in-out
+                          hover:bg-gray-800 text-white hover:text-lime-200
+                          group relative
+                          px-3 py-2.5 w-full
+                      `}
+                    >
+                      <span className="min-w-[24px] flex items-center justify-center transition-transform duration-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                        </svg>
+                      </span>
+                      <span className="whitespace-nowrap transition-all text-sm opacity-100 ml-2.5 translate-x-0">
+                        Admin Panel
+                      </span>
+                    </button>
+                  </li>
+                )}
                 {user && (
                   <li>
                     <button
