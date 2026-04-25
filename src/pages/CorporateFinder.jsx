@@ -33,6 +33,112 @@ const SEARCH_OPTIONS = [
     ],
   },
   {
+    key: "gst_intel",
+    label: "GST INTEL",
+    fields: [
+      {
+        name: "id_number",
+        label: "ID Number",
+        type: "text",
+        placeholder: "Ex. 08AKWPJ1234H1ZN",
+      },
+      { name: "filing_status", label: "Filing Status", type: "checkbox" },
+      { name: "hsn_info", label: "HSN Info", type: "checkbox" },
+      { name: "filing_frequency", label: "Filing Frequency", type: "checkbox" },
+    ],
+  },
+  {
+    key: "gstin_kyb",
+    label: "GSTIN (KYB)",
+    fields: [
+      {
+        name: "GSTIN",
+        label: "GSTIN",
+        type: "text",
+        placeholder: "Ex. 08AKWPJ1234FDG",
+      },
+      {
+        name: "business_name",
+        label: "Name of Business",
+        type: "text",
+        placeholder: "Name of Business",
+        optional: true,
+      },
+    ],
+  },
+  {
+    key: "pan_to_gstin",
+    label: "PAN TO GSTIN (KYB)",
+    fields: [
+      {
+        name: "pan",
+        label: "Pan Number",
+        type: "text",
+        placeholder: "Ex . xxxxx2353x",
+      },
+    ],
+  },
+  {
+    key: "pan_to_uan",
+    label: "PAN to UAN",
+    fields: [
+      {
+        name: "pan_number",
+        label: "PAN Number",
+        type: "text",
+        placeholder: "Ex. xxxx1234xxxx",
+      },
+    ],
+  },
+  {
+    key: "pan_to_udyam",
+    label: "PAN TO UDYAM (KYB)",
+    fields: [
+      {
+        name: "pan",
+        label: "Pan Number",
+        type: "text",
+        placeholder: "Ex . xxxxx2353x",
+      },
+    ],
+  },
+  {
+    key: "corporate_cin",
+    label: "Corporate CIN",
+    fields: [
+      {
+        name: "id_number",
+        label: "ID Number",
+        type: "text",
+        placeholder: "Ex. U65999MH1995PLC123456",
+      },
+    ],
+  },
+  {
+    key: "employment_history",
+    label: "Employment History UAN",
+    fields: [
+      {
+        name: "id_number",
+        label: "ID Number",
+        type: "text",
+        placeholder: "Ex. 111779821234",
+      },
+    ],
+  },
+  {
+    key: "find_uan",
+    label: "Find UAN",
+    fields: [
+      {
+        name: "mobile_number",
+        label: "Mobile Number",
+        type: "text",
+        placeholder: "Ex. 8076027829",
+      },
+    ],
+  },
+  {
     key: "credit_report",
     label: "Credit Report",
     fields: [
@@ -65,69 +171,6 @@ const SEARCH_OPTIONS = [
         label:
           "By clicking the checkbox, I consent to the fetching of my credit report data.",
         type: "checkbox",
-      },
-    ],
-  },
-  {
-    key: "corporate_cin",
-    label: "Corporate CIN",
-    fields: [
-      {
-        name: "id_number",
-        label: "ID Number",
-        type: "text",
-        placeholder: "Ex. U65999MH1995PLC123456",
-      },
-    ],
-  },
-  {
-    key: "gst_intel",
-    label: "GST INTEL",
-    fields: [
-      {
-        name: "id_number",
-        label: "ID Number",
-        type: "text",
-        placeholder: "Ex. 08AKWPJ1234H1ZN",
-      },
-      { name: "filing_status", label: "Filing Status", type: "checkbox" },
-      { name: "hsn_info", label: "HSN Info", type: "checkbox" },
-      { name: "filing_frequency", label: "Filing Frequency", type: "checkbox" },
-    ],
-  },
-  {
-    key: "employment_history",
-    label: "Employment History UAN",
-    fields: [
-      {
-        name: "id_number",
-        label: "ID Number",
-        type: "text",
-        placeholder: "Ex. 111779821234",
-      },
-    ],
-  },
-  {
-    key: "find_uan",
-    label: "Find UAN",
-    fields: [
-      {
-        name: "mobile_number",
-        label: "Mobile Number",
-        type: "text",
-        placeholder: "Ex. 8076027829",
-      },
-    ],
-  },
-  {
-    key: "pan_to_uan",
-    label: "PAN to UAN",
-    fields: [
-      {
-        name: "pan_number",
-        label: "PAN Number",
-        type: "text",
-        placeholder: "Ex. xxxx1234xxxx",
       },
     ],
   },
@@ -220,7 +263,7 @@ const CorporateFinder = () => {
         {
           responseType:
             selectedOption.key === "credit_report" ? "blob" : "json",
-        }
+        },
       );
       const searchInput =
         inputValues.id_number ||
@@ -348,7 +391,14 @@ const CorporateFinder = () => {
                 if (field.type === "text") {
                   return (
                     <div key={field.name} className="flex flex-col">
-                      <label className="mb-1">{field.label}</label>
+                      <label className="mb-1 flex items-center gap-2">
+                        {field.label}
+                        {field.optional && (
+                          <span className="text-xs px-1 py-0.5 rounded bg-gray-200 text-gray-800 font-medium">
+                            Optional
+                          </span>
+                        )}
+                      </label>
                       <input
                         type="text"
                         value={inputValues[field.name] || ""}
@@ -413,7 +463,14 @@ const CorporateFinder = () => {
                 if (field.type === "radio") {
                   return (
                     <div key={field.name} className="flex flex-col mt-2">
-                      <label className="mb-1">{field.label}</label>
+                      <label className="mb-1 flex items-center gap-2">
+                        {field.label}
+                        {field.optional && (
+                          <span className="text-xs px-1 py-0.5 rounded bg-gray-200 text-gray-800 font-medium">
+                            Optional
+                          </span>
+                        )}
+                      </label>
                       <div className="flex gap-6">
                         {field.options.map((option) => (
                           <label
@@ -463,7 +520,7 @@ const CorporateFinder = () => {
                                 ? e.target.checked
                                   ? "Y"
                                   : "N"
-                                : e.target.checked
+                                : e.target.checked,
                             )
                           }
                           className={`form-checkbox h-4 w-4 rounded-md border-lime-400 text-lime-600 focus:ring-2 focus:ring-lime-400 accent-lime-200 transition ${
