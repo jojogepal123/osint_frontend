@@ -141,9 +141,9 @@ const LeakDataFinder = () => {
     <>
       {loading && <FullScreenLoader text="Searching..." />}
       <UserCard />
-      <div className="w-full max-h-full flex flex-col items-center z-10 mt-32 sm:mt-20">
+      <div className="w-full max-h-full flex flex-col items-center z-30 mt-32 sm:mt-20">
         <MainHeader header="Leak Data Finder" />
-        <div className="space-y-2 w-full max-w-5xl text-white px-4 md:px-0">
+        <div className="space-y-2 w-full md:max-w-2xl lg:max-w-3xl xl:max-w-5xl text-white px-4 md:px-0">
           {fields.map((field, index) => (
             <div key={field.id} className="flex items-center space-x-3 rounded">
               {index === 0 ? (
