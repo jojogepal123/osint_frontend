@@ -14,6 +14,37 @@ import InlineLoader from "../components/InlineLoader";
 
 const Map = lazy(() => import("../components/Map"));
 
+const checkTelEmpty = (TelProfile, osResults) => {
+  if (!TelProfile) return true;
+  return Object.values(TelProfile).every(
+    (val) =>
+      val === null ||
+      (Array.isArray(val) && val.length === 0) ||
+      (typeof val === "object" && Object.keys(val).length === 0)
+  ) && (!osResults || osResults.length === 0);
+};
+
+const checkEmailEmpty = (results, emailData, hibpResults, osResults) => {
+  const zehefFound = Array.isArray(results.zehefData?.data)
+    ? results.zehefData.data.some((item) => item.status === "found")
+    : false;
+  const holeheUsed = Array.isArray(results.holeheData?.used)
+    ? results.holeheData.used.length > 0
+    : false;
+  const emailEmpty =
+    !emailData || emailData.success === null || emailData.error !== undefined;
+  const hibpEmpty = !hibpResults || hibpResults.length === 0;
+  const osintEmpty = !osResults || osResults.length === 0;
+  return emailEmpty && hibpEmpty && osintEmpty && !zehefFound && !holeheUsed;
+};
+
+const isResultEmpty = (results, type, TelProfile, EmailProfile, emailData, hibpResults, zehefResults, osResults) => {
+  if (!results) return true;
+  if (type === "tel") return checkTelEmpty(TelProfile, osResults);
+  if (type === "email") return checkEmailEmpty(results, emailData, hibpResults, osResults);
+  return true;
+};
+
 const Results = () => {
   const location = useLocation();
   const { results, type, userInput } = location.state || {};
@@ -32,49 +63,8 @@ const Results = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   // console.log("Results:", results);
-  const isResultEmpty = () => {
-    if (!results) return true;
 
-    // Handle tel-based search
-    if (type === "tel") {
-      const telEmpty =
-        !TelProfile ||
-        Object.values(TelProfile).every(
-          (val) =>
-            val === null ||
-            (Array.isArray(val) && val.length === 0) ||
-            (typeof val === "object" && Object.keys(val).length === 0)
-        );
-
-      return telEmpty && (!osResults || osResults.length === 0);
-    }
-
-    // Handle email-based search
-    if (type === "email") {
-      const zehefFound = Array.isArray(results.zehefData?.data)
-        ? results.zehefData.data.some((item) => item.status === "found")
-        : false;
-
-      const holeheUsed = Array.isArray(results.holeheData?.used)
-        ? results.holeheData.used.length > 0
-        : false;
-
-      const emailEmpty =
-        !emailData ||
-        emailData.success === null ||
-        emailData.error !== undefined;
-
-      const hibpEmpty = !hibpResults || hibpResults.length === 0;
-      const osintEmpty = !osResults || osResults.length === 0;
-
-      return (
-        emailEmpty && hibpEmpty && osintEmpty && !zehefFound && !holeheUsed
-      );
-    }
-    return true;
-  };
-
-  if (isResultEmpty()) {
+  if (isResultEmpty(results, type, TelProfile, EmailProfile, emailData, hibpResults, zehefResults, osResults)) {
     return (
       <div className="flex flex-col items-center justify-center h-screen z-10">
         <img

@@ -394,11 +394,11 @@ const VerificationFinder = () => {
             <label className="mb-1 font-semibold">Select Search Type</label>
             <Listbox value={selectedOption} onChange={handleOptionSelect}>
               <div className="relative">
-                <Listbox.Button className="w-full py-2 px-4 rounded bg-gray-800 border border-lime-300 text-white font-semibold focus:outline-none flex justify-between items-center">
+                <Listbox.Button className="w-full py-2 px-4 rounded bg-custom-input-bg border border-lime-300 text-white font-semibold focus:outline-none flex justify-between items-center">
                   {selectedOption.label}
                   <ChevronDown className="w-5 h-5 text-lime-300" />
                 </Listbox.Button>
-                <Listbox.Options className="absolute mt-2 w-full bg-gray-800 border border-lime-300 rounded-md z-10">
+                <Listbox.Options className="absolute mt-2 w-full min-w-[200px] bg-custom-input-bg border border-lime-300 rounded-md z-50 overflow-y-auto max-h-60 custom-scrollbar">
                   {SEARCH_OPTIONS.map((option) => (
                     <Listbox.Option
                       key={option.key}
@@ -416,7 +416,7 @@ const VerificationFinder = () => {
               </div>
             </Listbox>
           </div>
-          <div className="w-px bg-lime-200/50 self-stretch"></div>
+          <div className="hidden md:block w-px bg-lime-200/50 self-stretch"></div>
           {/* Right: Input Fields */}
           <div className="w-full md:w-2/3 px-4 md:px-0">
             <form onSubmit={handleSubmit} className="flex flex-col gap-2">
@@ -439,7 +439,7 @@ const VerificationFinder = () => {
                         onChange={(e) =>
                           handleInputChange(field.name, e.target.value)
                         }
-                        className={`p-2 rounded bg-gray-800 border ${
+                        className={`p-2 rounded bg-custom-input-bg border ${
                           errors[field.name] || errors._employment
                             ? "border-red-500"
                             : "border-lime-300"
