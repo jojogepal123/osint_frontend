@@ -3,6 +3,23 @@ import { useNavigate } from "react-router-dom";
 import instance from "../../api/axios";
 import { toast } from "react-toastify";
 
+const SCROLLBAR_STYLES = `
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(132, 204, 22, 0.4);
+    border-radius: 3px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(132, 204, 22, 0.6);
+  }
+`;
+
 const MODE_BADGE = {
   live:  "bg-lime-500/20 text-lime-300 border-lime-500/30",
   trial: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
@@ -24,6 +41,10 @@ export default function AdminUsers() {
   const [createForm, setCreateForm] = useState({ name: "", email: "", password: "", credits: 0, app_mode: "live", is_admin: false });
   const [showPassword, setShowPassword] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [apiEngines, setApiEngines] = useState([]);
+  const [selectedApis, setSelectedApis] = useState([]);
+  const [loadingApis, setLoadingApis] = useState(false);
+  const [viewApiUser, setViewApiUser] = useState(null);
 
   const fetchUsers = () => {
     setLoading(true);
@@ -56,15 +77,31 @@ export default function AdminUsers() {
     } finally { setCreating(false); }
   };
 
-  const openEdit = (u) => {
+  const openEdit = async (u) => {
     setEditUser(u);
     setEditForm({ name: u.name, credits: u.credits, app_mode: u.app_mode, is_admin: u.is_admin });
+    setLoadingApis(true);
+    try {
+      const [enginesRes, permsRes] = await Promise.all([
+        instance.get("/api/admin/api-engines"),
+        instance.get(`/api/admin/users/${u.id}/permissions`),
+      ]);
+      setApiEngines(enginesRes.data);
+      setSelectedApis(permsRes.data.permissions);
+    } catch (e) {
+      toast.error("Failed to load API permissions.");
+    } finally {
+      setLoadingApis(false);
+    }
   };
 
   const saveEdit = async () => {
     setSaving(true);
     try {
-      await instance.put(`/api/admin/users/${editUser.id}`, editForm);
+      await Promise.all([
+        instance.put(`/api/admin/users/${editUser.id}`, editForm),
+        !editUser.is_admin && instance.put(`/api/admin/users/${editUser.id}/permissions`, { api_engine_ids: selectedApis }),
+      ]);
       toast.success("User updated.");
       setEditUser(null);
       fetchUsers();
@@ -86,6 +123,7 @@ export default function AdminUsers() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
+      <style>{SCROLLBAR_STYLES}</style>
 
       {/* Header */}
       <div className="flex items-center justify-between mb-1 gap-3">
@@ -131,6 +169,7 @@ export default function AdminUsers() {
               <th className="text-left px-4 py-3">Mode</th>
               <th className="text-left px-4 py-3">Credits</th>
               <th className="text-left px-4 py-3 hidden md:table-cell">Queries</th>
+              <th className="text-left px-4 py-3 hidden lg:table-cell">APIs</th>
               <th className="text-left px-4 py-3 hidden lg:table-cell">Admin</th>
               <th className="text-left px-4 py-3 hidden lg:table-cell">Joined</th>
               <th className="px-4 py-3"></th>
@@ -138,16 +177,16 @@ export default function AdminUsers() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} className="text-center py-10 text-gray-500">
+              <tr><td colSpan={8} className="text-center py-10 text-gray-500">
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-lime-400 border-t-transparent rounded-full animate-spin" />
                   Loading…
                 </div>
               </td></tr>
             ) : error ? (
-              <tr><td colSpan={7} className="text-center py-10 text-red-400">{error}</td></tr>
+              <tr><td colSpan={8} className="text-center py-10 text-red-400">{error}</td></tr>
             ) : users.length === 0 ? (
-              <tr><td colSpan={7} className="text-center py-10 text-gray-500">No users found.</td></tr>
+              <tr><td colSpan={8} className="text-center py-10 text-gray-500">No users found.</td></tr>
             ) : users.map((u) => (
               <tr key={u.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                 <td className="px-4 py-3">
@@ -161,6 +200,24 @@ export default function AdminUsers() {
                 </td>
                 <td className="px-4 py-3 text-gray-300 text-sm">{u.credits}</td>
                 <td className="px-4 py-3 text-gray-300 text-sm hidden md:table-cell">{u.search_queries_count}</td>
+                <td className="px-4 py-3 hidden lg:table-cell">
+                  {u.has_all_apis ? (
+                    <button
+                      onClick={() => { if (apiEngines.length === 0) { instance.get("/api/admin/api-engines").then((r) => setApiEngines(r.data)); } setViewApiUser(u); }}
+                      className="text-xs px-2 py-0.5 rounded-full border bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30 hover:border-purple-400 transition-all cursor-pointer"
+                    >All</button>
+                  ) : u.api_count > 0 ? (
+                    <button
+                      onClick={() => { if (apiEngines.length === 0) { instance.get("/api/admin/api-engines").then((r) => setApiEngines(r.data)); } setViewApiUser(u); }}
+                      className="text-xs px-2 py-0.5 rounded-full border bg-lime-500/20 text-lime-300 border-lime-500/30 hover:bg-lime-500/30 hover:border-lime-400 transition-all cursor-pointer"
+                    >{u.api_count}</button>
+                  ) : (
+                    <button
+                      onClick={() => { if (apiEngines.length === 0) { instance.get("/api/admin/api-engines").then((r) => setApiEngines(r.data)); } setViewApiUser(u); }}
+                      className="text-xs px-2 py-0.5 rounded-full border bg-gray-500/20 text-gray-400 border-gray-500/30 hover:bg-gray-500/30 hover:border-gray-400 transition-all cursor-pointer"
+                    >0</button>
+                  )}
+                </td>
                 <td className="px-4 py-3 hidden lg:table-cell">
                   {u.is_admin ? (
                     <span className="text-xs px-2 py-0.5 rounded-full border bg-blue-500/20 text-blue-300 border-blue-500/30">Admin</span>
@@ -227,6 +284,22 @@ export default function AdminUsers() {
             <div className="flex gap-4 mb-3 text-xs text-gray-400">
               <span><span className="text-white font-medium">{u.credits}</span> credits</span>
               <span><span className="text-white font-medium">{u.search_queries_count}</span> queries</span>
+              {u.has_all_apis ? (
+                <button
+                  onClick={() => { if (apiEngines.length === 0) { instance.get("/api/admin/api-engines").then((r) => setApiEngines(r.data)); } setViewApiUser(u); }}
+                  className="text-xs px-2 py-0.5 rounded-full border bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30 transition-all cursor-pointer"
+                >All</button>
+              ) : u.api_count > 0 ? (
+                <button
+                  onClick={() => { if (apiEngines.length === 0) { instance.get("/api/admin/api-engines").then((r) => setApiEngines(r.data)); } setViewApiUser(u); }}
+                  className="text-xs px-2 py-0.5 rounded-full border bg-lime-500/20 text-lime-300 border-lime-500/30 hover:bg-lime-500/30 transition-all cursor-pointer"
+                >{u.api_count}</button>
+              ) : (
+                <button
+                  onClick={() => { if (apiEngines.length === 0) { instance.get("/api/admin/api-engines").then((r) => setApiEngines(r.data)); } setViewApiUser(u); }}
+                  className="text-xs px-2 py-0.5 rounded-full border bg-gray-500/20 text-gray-400 border-gray-500/30 hover:bg-gray-500/30 transition-all cursor-pointer"
+                >0</button>
+              )}
               <span className="text-gray-600">{new Date(u.created_at).toLocaleDateString()}</span>
             </div>
 
@@ -273,7 +346,6 @@ export default function AdminUsers() {
       {showCreate && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-gray-900 border border-white/10 rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[92vh] overflow-y-auto">
-            {/* Drag handle (mobile) */}
             <div className="sm:hidden flex justify-center pt-3 pb-1">
               <div className="w-10 h-1 bg-white/20 rounded-full" />
             </div>
@@ -418,15 +490,107 @@ export default function AdminUsers() {
                     <option value="live">Live</option>
                   </select>
                 </div>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={editForm.is_admin}
-                    onChange={(e) => setEditForm({ ...editForm, is_admin: e.target.checked })}
-                    className="w-4 h-4 accent-lime-400"
-                  />
+                <label className="flex items-center gap-3 cursor-pointer rounded-lg p-2 hover:bg-white/5 transition-colors">
+                  <div className="relative flex items-center justify-center">
+                    <input
+                      type="checkbox"
+                      checked={editForm.is_admin}
+                      onChange={(e) => setEditForm({ ...editForm, is_admin: e.target.checked })}
+                      className="sr-only"
+                    />
+                    <div className={`w-5 h-5 rounded-md border-2 transition-all duration-200 flex items-center justify-center ${
+                      editForm.is_admin ? "bg-blue-500 border-blue-500" : "border-gray-600 bg-gray-800"
+                    }`}>
+                      {editForm.is_admin && (
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
                   <span className="text-sm text-gray-300">Admin access</span>
                 </label>
+                {editForm.is_admin ? (
+                  <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/30">
+                    <span className="text-xs text-blue-300">Full access to all APIs</span>
+                  </div>
+                ) : loadingApis ? (
+                  <div className="mt-4 flex items-center gap-2 text-gray-500 text-xs">
+                    <div className="w-3 h-3 border-2 border-lime-400 border-t-transparent rounded-full animate-spin" />
+                    Loading APIs...
+                  </div>
+                ) : apiEngines.length > 0 && (
+                  <div className="mt-4">
+                    <label className="text-gray-400 text-xs uppercase tracking-widest mb-2 block">API Permissions</label>
+                    <div className="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                      {Object.entries(
+                        apiEngines.reduce((acc, api) => {
+                          const normalizedCategory = api.category?.trim().toLowerCase() || 'other';
+                          if (!acc[normalizedCategory]) {
+                            acc[normalizedCategory] = { 
+                              displayName: api.category?.trim() || 'Other',
+                              apis: [] 
+                            };
+                          }
+                          acc[normalizedCategory].apis.push(api);
+                          return acc;
+                        }, {})
+                      ).map(([key, { displayName, apis }]) => (
+                        <div key={key} className="bg-gray-800/50 rounded-lg p-3 border border-white/5">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-lime-400"></div>
+                            <span className="text-lime-400 text-xs font-medium uppercase tracking-wider">{displayName}</span>
+                          </div>
+                          <div className="space-y-1.5">
+                            {apis.map((api) => (
+                              <label
+                                key={api.id}
+                                className={`flex items-center gap-3 cursor-pointer rounded-md p-1.5 transition-all duration-200 ${
+                                  selectedApis.includes(api.id)
+                                    ? "bg-lime-500/10 border border-lime-500/20"
+                                    : "hover:bg-white/5 border border-transparent"
+                                }`}
+                              >
+                                <div className="relative flex items-center justify-center">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedApis.includes(api.id)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setSelectedApis([...selectedApis, api.id]);
+                                      } else {
+                                        setSelectedApis(selectedApis.filter((id) => id !== api.id));
+                                      }
+                                    }}
+                                    className="sr-only"
+                                  />
+                                  <div
+                                    className={`w-5 h-5 rounded-md border-2 transition-all duration-200 flex items-center justify-center ${
+              selectedApis.includes(api.id)
+                ? "bg-lime-500 border-lime-500"
+                : "border-gray-600 bg-gray-800"
+            }`}
+                                  >
+            {selectedApis.includes(api.id) && (
+              <svg className="w-3 h-3 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            )}
+                                  </div>
+                                </div>
+                                <span className={`text-sm transition-colors ${
+                                  selectedApis.includes(api.id) ? "text-white font-medium" : "text-gray-400"
+                                }`}>
+                                  {api.name}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex gap-3 mt-6">
                 <button
@@ -441,6 +605,80 @@ export default function AdminUsers() {
                   className="flex-1 py-2.5 rounded-lg border border-white/10 text-gray-400 hover:text-white text-sm"
                 >
                   Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── View API Permissions Modal ── */}
+      {viewApiUser && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-gray-900 border border-white/10 rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[92vh] overflow-y-auto">
+            <div className="sm:hidden flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 bg-white/20 rounded-full" />
+            </div>
+            <div className="px-5 sm:px-6 py-4 sm:py-5">
+              <h2 className="text-white font-semibold text-lg mb-1">
+                {viewApiUser.name}
+              </h2>
+              <p className="text-gray-500 text-xs mb-5">API Permissions</p>
+
+              {viewApiUser.has_all_apis ? (
+                <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/30 mb-4">
+                  <span className="text-sm text-blue-300">Full access to all APIs</span>
+                </div>
+              ) : (
+                <div className="space-y-3 mb-4">
+                  {Object.entries(
+                    apiEngines
+                      .filter((api) => viewApiUser.api_engine_ids?.includes(api.id))
+                      .reduce((acc, api) => {
+                        const cat = api.category?.trim() || 'Other';
+                        if (!acc[cat]) acc[cat] = [];
+                        acc[cat].push(api);
+                        return acc;
+                      }, {})
+                  ).map(([category, apis]) => (
+                    <div key={category} className="bg-gray-800/30 rounded-lg p-2.5 border border-white/5">
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        <div className="w-1 h-1 rounded-full bg-purple-400"></div>
+                        <span className="text-purple-400 text-[10px] font-medium uppercase tracking-wider">{category}</span>
+                      </div>
+                      <div className="space-y-1">
+                        {apis.map((api) => (
+                          <div key={api.id} className="flex items-center gap-2 pl-2">
+                            <svg className="w-3.5 h-3.5 text-lime-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                            <span className="text-sm text-gray-300">{api.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  {viewApiUser.api_engine_ids?.length === 0 && (
+                    <span className="text-sm text-gray-500">No APIs granted</span>
+                  )}
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setViewApiUser(null);
+                    openEdit(viewApiUser);
+                  }}
+                  className="flex-1 py-2.5 rounded-lg bg-gradient-to-r from-lime-200 to-teal-700 text-gray-900 font-semibold text-sm"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => setViewApiUser(null)}
+                  className="flex-1 py-2.5 rounded-lg border border-white/10 text-gray-400 hover:text-white text-sm"
+                >
+                  Close
                 </button>
               </div>
             </div>
