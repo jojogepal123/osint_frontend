@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "../../api/axios";
 import { toast } from "react-toastify";
+import ModalService from "../../services/ModalService.jsx";
 
 const SCROLLBAR_STYLES = `
   .custom-scrollbar::-webkit-scrollbar {
@@ -98,15 +99,37 @@ export default function AdminUsers() {
   const saveEdit = async () => {
     setSaving(true);
     try {
-      await Promise.all([
-        instance.put(`/api/admin/users/${editUser.id}`, editForm),
-        !editUser.is_admin && instance.put(`/api/admin/users/${editUser.id}/permissions`, { api_engine_ids: selectedApis }),
-      ]);
+      const res = await instance.put(`/api/admin/users/${editUser.id}`, editForm);
+      
+      if (res.data.admin_change && res.data.admin_change.action === 'revoke') {
+        ModalService.init(confirmRevoke);
+        ModalService.show({ userId: editUser.id, name: editUser.name });
+        setSaving(false);
+        return;
+      }
+      
+      if (!editForm.is_admin && selectedApis.length > 0) {
+        await instance.put(`/api/admin/users/${editUser.id}/permissions`, { api_engine_ids: selectedApis });
+      }
+      
       toast.success("User updated.");
       setEditUser(null);
       fetchUsers();
-    } catch {
-      toast.error("Update failed.");
+    } catch (e) {
+      toast.error(e?.response?.data?.error ?? e?.response?.data?.message ?? "Update failed.");
+    } finally { setSaving(false); }
+  };
+
+  const confirmRevoke = async (data) => {
+    setSaving(true);
+    try {
+      await instance.post(`/api/admin/users/${data.userId}/sync-permissions`, { action: 'revoke' });
+      toast.success("User updated.");
+      ModalService.hide();
+      setEditUser(null);
+      fetchUsers();
+    } catch (e) {
+      toast.error(e?.response?.data?.error ?? "Update failed.");
     } finally { setSaving(false); }
   };
 
@@ -521,7 +544,25 @@ export default function AdminUsers() {
                   </div>
                 ) : apiEngines.length > 0 && (
                   <div className="mt-4">
-                    <label className="text-gray-400 text-xs uppercase tracking-widest mb-2 block">API Permissions</label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-gray-400 text-xs uppercase tracking-widest">API Permissions</label>
+                      {apiEngines.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const allApiIds = apiEngines.map((api) => api.id);
+                            if (selectedApis.length === allApiIds.length) {
+                              setSelectedApis([]);
+                            } else {
+                              setSelectedApis(allApiIds);
+                            }
+                          }}
+                          className="text-xs text-lime-400 hover:text-lime-300 transition-colors"
+                        >
+                          {selectedApis.length === apiEngines.length ? "Clear all" : "Select all"}
+                        </button>
+                      )}
+                    </div>
                     <div className="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                       {Object.entries(
                         apiEngines.reduce((acc, api) => {
