@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
   const [osintDataResults, setOsintDataResults] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeCase, setActiveCase] = useState(null);
   const navigate = useNavigate();
 
   // const csrf = useCallback(() => instance.get("/sanctum/csrf-cookie"), []);
@@ -99,6 +100,40 @@ export const AuthProvider = ({ children }) => {
       ...updatedUser,
     }));
   };
+
+  const fetchActiveCase = async () => {
+    try {
+      const { data } = await instance.get("/api/user/active-case");
+      setActiveCase(data.active_case);
+      return data.active_case;
+    } catch (error) {
+      setActiveCase(null);
+      return null;
+    }
+  };
+
+  const setUserActiveCase = async (caseId) => {
+    try {
+      const { data } = await instance.put("/api/user/set-active-case", {
+        case_id: caseId,
+      });
+      setActiveCase(data.active_case);
+      updateUser({ active_case_id: caseId });
+      return data.active_case;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const clearActiveCase = async () => {
+    try {
+      await instance.delete("/api/user/active-case");
+      setActiveCase(null);
+      updateUser({ active_case_id: null });
+    } catch (error) {
+      throw error;
+    }
+  };
   const login = async ({ ...data }) => {
     try {
       setErrors([]);
@@ -114,7 +149,14 @@ export const AuthProvider = ({ children }) => {
 
       // Fetch user using the token
       await getUser();
-      navigate("/dashboard");
+      
+      // Check for active case and redirect accordingly
+      const activeCaseData = await fetchActiveCase();
+      if (!activeCaseData) {
+        navigate("/cms/cases");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       if (
         error.response?.status === 403 &&
@@ -313,6 +355,10 @@ export const AuthProvider = ({ children }) => {
     setOsintDataResults,
     updateUser,
     hasSufficientCredits,
+    activeCase,
+    setActiveCase: setUserActiveCase,
+    fetchActiveCase,
+    clearActiveCase,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

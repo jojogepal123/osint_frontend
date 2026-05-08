@@ -46,6 +46,7 @@ export default function AdminUsers() {
   const [selectedApis, setSelectedApis] = useState([]);
   const [loadingApis, setLoadingApis] = useState(false);
   const [viewApiUser, setViewApiUser] = useState(null);
+  const [teams, setTeams] = useState([]);
 
   const fetchUsers = () => {
     setLoading(true);
@@ -80,20 +81,25 @@ export default function AdminUsers() {
 
   const openEdit = async (u) => {
     setEditUser(u);
-    setEditForm({ name: u.name, credits: u.credits, app_mode: u.app_mode, is_admin: u.is_admin });
-    setLoadingApis(true);
-    try {
-      const [enginesRes, permsRes] = await Promise.all([
-        instance.get("/api/admin/api-engines"),
-        instance.get(`/api/admin/users/${u.id}/permissions`),
-      ]);
-      setApiEngines(enginesRes.data);
-      setSelectedApis(permsRes.data.permissions);
-    } catch (e) {
-      toast.error("Failed to load API permissions.");
-    } finally {
-      setLoadingApis(false);
-    }
+    setEditForm({ 
+      name: u.name, 
+      credits: u.credits, 
+      app_mode: u.app_mode, 
+      is_admin: u.is_admin,
+      cms_role: u.cms_role || 'auditor',
+      team_id: u.team_id || ''
+    });
+    
+    // Fetch teams and API permissions in parallel
+    const [enginesRes, permsRes, teamsRes] = await Promise.all([
+      instance.get("/api/admin/api-engines"),
+      instance.get(`/api/admin/users/${u.id}/permissions`),
+      instance.get("/api/teams").catch(() => ({ data: [] }))
+    ]);
+    
+    setApiEngines(enginesRes.data);
+    setSelectedApis(permsRes.data.permissions);
+    setTeams(Array.isArray(teamsRes.data) ? teamsRes.data : []);
   };
 
   const saveEdit = async () => {
@@ -111,6 +117,13 @@ export default function AdminUsers() {
       if (!editForm.is_admin && selectedApis.length > 0) {
         await instance.put(`/api/admin/users/${editUser.id}/permissions`, { api_engine_ids: selectedApis });
       }
+      
+      // Update CMS role and team
+      await instance.put("/api/user/cms-role", {
+        user_id: editUser.id,
+        cms_role: editForm.cms_role,
+        team_id: editForm.team_id || null
+      });
       
       toast.success("User updated.");
       setEditUser(null);
@@ -511,6 +524,30 @@ export default function AdminUsers() {
                   >
                     <option value="trial">Trial</option>
                     <option value="live">Live</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-gray-400 text-xs uppercase tracking-widest mb-1.5 block">CMS Role</label>
+                  <select
+                    value={editForm.cms_role || 'auditor'}
+                    onChange={(e) => setEditForm({ ...editForm, cms_role: e.target.value })}
+                    className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+                  >
+                    <option value="auditor">Auditor</option>
+                    <option value="supervisor">Supervisor</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-gray-400 text-xs uppercase tracking-widest mb-1.5 block">Team</label>
+                  <select
+                    value={editForm.team_id || ''}
+                    onChange={(e) => setEditForm({ ...editForm, team_id: e.target.value })}
+                    className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+                  >
+                    <option value="">No Team</option>
+                    {teams.map((team) => (
+                      <option key={team.id} value={team.id}>{team.name}</option>
+                    ))}
                   </select>
                 </div>
                 <label className="flex items-center gap-3 cursor-pointer rounded-lg p-2 hover:bg-white/5 transition-colors">

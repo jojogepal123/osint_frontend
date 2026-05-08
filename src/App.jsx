@@ -38,6 +38,11 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminUserDetail from "./pages/admin/AdminUserDetail";
 import AdminQueries from "./pages/admin/AdminQueries";
+import CmsLayout from "./layouts/CmsLayout";
+import Cases from "./pages/cms/Cases";
+import CasesList from "./pages/cms/CasesList";
+import CaseDetail from "./pages/cms/CaseDetail";
+import Teams from "./pages/cms/Teams";
 
 function App() {
   const { sidebarVisible, setSidebarVisible, user, isLoading } =
@@ -213,6 +218,14 @@ function App() {
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/users/:id" element={<AdminUserDetail />} />
               <Route path="/admin/queries" element={<AdminQueries />} />
+            </Route>
+
+            {/* CMS routes */}
+            <Route element={<CmsLayout />}>
+              <Route path="/cms/cases" element={<Cases />} />
+              <Route path="/cms/cases/:id" element={<CaseDetail />} />
+              <Route path="/cms/my-cases" element={<CasesList />} />
+              <Route path="/cms/teams" element={<Teams />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
