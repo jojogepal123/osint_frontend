@@ -17,8 +17,6 @@ export default function CasesList() {
     search: "",
   });
 
-  // const isSupervisor = user?.cms_role === "supervisor" || user?.is_admin;
-
   useEffect(() => {
     fetchCases();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -35,7 +33,7 @@ export default function CasesList() {
       const response = await axios.get(`/api/cases?${params.toString()}`);
       const casesData = response.data?.data || response.data;
       setCases(Array.isArray(casesData) ? casesData : []);
-    } catch (_error) {
+    } catch {
       toast.error("Failed to fetch cases");
       setCases([]);
     } finally {
@@ -72,9 +70,27 @@ export default function CasesList() {
     total: cases.length,
     open: cases.filter((c) => c.status === "open").length,
     in_progress: cases.filter((c) => c.status === "in_progress").length,
+    pending: cases.filter((c) => c.status === "pending").length,
     resolved: cases.filter((c) => c.status === "resolved").length,
     closed: cases.filter((c) => c.status === "closed").length,
+    critical: cases.filter((c) => c.priority === "critical").length,
+    high: cases.filter((c) => c.priority === "high").length,
+    medium: cases.filter((c) => c.priority === "medium").length,
+    low: cases.filter((c) => c.priority === "low").length,
+    myCases: cases.filter(
+      (c) =>
+        c.user_id === user?.id ||
+        c.assigned_users?.some((u) => u.id === user?.id) ||
+        (c.assigned_users?.length === 0 && c.assigned_to === user?.id),
+    ).length,
   };
+
+  const priorityStats = [
+    { label: "Critical", count: stats.critical, color: "border-red-500/30" },
+    { label: "High", count: stats.high, color: "border-orange-500/30" },
+    { label: "Medium", count: stats.medium, color: "border-blue-500/30" },
+    { label: "Low", count: stats.low, color: "border-gray-500/30" },
+  ];
 
   return (
     <div className="p-6">
@@ -83,7 +99,7 @@ export default function CasesList() {
         <p className="text-gray-400 text-sm mt-1">View and manage all cases</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
         <div className="bg-gray-800/50 border border-white/10 rounded-lg p-4">
           <div className="text-2xl font-bold text-white">{stats.total}</div>
           <div className="text-sm text-gray-400">Total</div>
@@ -93,17 +109,39 @@ export default function CasesList() {
           <div className="text-sm text-gray-400">Open</div>
         </div>
         <div className="bg-gray-800/50 border border-blue-500/30 rounded-lg p-4">
-          <div className="text-2xl font-bold text-blue-400">{stats.in_progress}</div>
+          <div className="text-2xl font-bold text-blue-400">
+            {stats.in_progress}
+          </div>
           <div className="text-sm text-gray-400">In Progress</div>
         </div>
         <div className="bg-gray-800/50 border border-purple-500/30 rounded-lg p-4">
-          <div className="text-2xl font-bold text-purple-400">{stats.resolved}</div>
+          <div className="text-2xl font-bold text-purple-400">
+            {stats.resolved}
+          </div>
           <div className="text-sm text-gray-400">Resolved</div>
         </div>
         <div className="bg-gray-800/50 border border-gray-500/30 rounded-lg p-4">
           <div className="text-2xl font-bold text-gray-400">{stats.closed}</div>
           <div className="text-sm text-gray-400">Closed</div>
         </div>
+      </div>
+
+      <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
+        <div className="bg-gray-800/50 border border-lime-500/30 rounded-lg p-4">
+          <div className="text-2xl font-bold text-lime-400">
+            {stats.myCases}
+          </div>
+          <div className="text-sm text-gray-400">My Cases</div>
+        </div>
+        {priorityStats.map((stat) => (
+          <div
+            key={stat.label}
+            className={`bg-gray-800/50 border ${stat.color} rounded-lg p-4`}
+          >
+            <div className="text-2xl font-bold text-white">{stat.count}</div>
+            <div className="text-sm text-gray-400">{stat.label}</div>
+          </div>
+        ))}
       </div>
 
       <div className="bg-gray-800/50 border border-white/10 rounded-lg p-4 mb-6">
@@ -123,7 +161,8 @@ export default function CasesList() {
             <option value="">All Statuses</option>
             {STATUSES.map((s) => (
               <option key={s} value={s}>
-                {s.replace("_", " ").charAt(0).toUpperCase() + s.replace("_", " ").slice(1)}
+                {s.replace("_", " ").charAt(0).toUpperCase() +
+                  s.replace("_", " ").slice(1)}
               </option>
             ))}
           </select>
@@ -152,38 +191,87 @@ export default function CasesList() {
             <table className="w-full">
               <thead className="bg-gray-900/50 border-b border-white/10">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Case #</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Title</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Created By</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Assigned To</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Priority</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Category</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                    Case #
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                    Title
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                    Created By
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                    Assigned To
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                    Priority
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                    Status
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                    Category
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {cases.map((caseItem) => (
                   <tr key={caseItem.id} className="hover:bg-white/5">
-                    <td className="px-4 py-3 text-sm text-lime-400">{caseItem.case_number}</td>
-                    <td className="px-4 py-3 text-sm text-white max-w-[200px] truncate">{caseItem.title}</td>
+                    <td className="px-4 py-3 text-sm text-lime-400">
+                      {caseItem.case_number}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-white max-w-[200px] truncate">
+                      {caseItem.title}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-400">
                       {caseItem.user?.name || "-"}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-400">
-                      {caseItem.assigned_user?.name || "-"}
+                    <td className="px-4 py-3">
+                      {(() => {
+                        const members = caseItem.assigned_users || [];
+                        if (members.length === 0) {
+                          return caseItem.assigned_user?.name || "-";
+                        }
+                        return (
+                          <div className="flex items-center gap-1">
+                            {members.slice(0, 3).map((m) => (
+                              <div
+                                key={m.id}
+                                title={m.name}
+                                className="w-6 h-6 rounded-full bg-lime-400/20 flex items-center justify-center text-lime-400 text-[10px] font-bold"
+                              >
+                                {m.name?.charAt(0)?.toUpperCase() || "?"}
+                              </div>
+                            ))}
+                            {members.length > 3 && (
+                              <span className="text-xs text-gray-400 ml-1">
+                                +{members.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-1 rounded border ${getPriorityColor(caseItem.priority)}`}>
+                      <span
+                        className={`text-xs px-2 py-1 rounded border ${getPriorityColor(caseItem.priority)}`}
+                      >
                         {caseItem.priority}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-1 rounded border ${getStatusColor(caseItem.status)}`}>
+                      <span
+                        className={`text-xs px-2 py-1 rounded border ${getStatusColor(caseItem.status)}`}
+                      >
                         {caseItem.status?.replace("_", " ")}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-400">{caseItem.category || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-gray-400">
+                      {caseItem.category || "-"}
+                    </td>
                     <td className="px-4 py-3">
                       <Link
                         to={`/cms/cases/${caseItem.id}`}

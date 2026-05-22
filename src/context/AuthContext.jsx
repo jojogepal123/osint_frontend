@@ -260,12 +260,14 @@ export const AuthProvider = ({ children }) => {
         credits: data.credits ?? null,
       };
 
+      const searchQueryId = data.search_query_id ?? null;
+
       if (data.credits !== undefined) {
         updateUser({ credits: data.credits });
       }
       // console.log("Parsed tel results:", newResults); // ✅ Extra log
       setResults(JSON.parse(JSON.stringify(newResults)));
-      return newResults;
+      return { ...newResults, searchQueryId };
     } catch (error) {
       if (error.response) {
         const { status, data } = error.response;
@@ -292,13 +294,15 @@ export const AuthProvider = ({ children }) => {
         params: { email: inputValue },
       });
 
+      const searchQueryId = data.search_query_id ?? null;
+
       if (data.credits !== undefined) {
         updateUser({ credits: data.credits });
         // console.log("User credits updated:", data.credits);
       }
       setResults(data.data); // Or whatever structure you use
       // console.log("email data:", data);
-      return data;
+      return { ...data, searchQueryId };
     } catch (error) {
       if (error.response) {
         const { status, data } = error.response;

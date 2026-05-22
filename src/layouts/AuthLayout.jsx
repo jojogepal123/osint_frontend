@@ -13,12 +13,18 @@ const AuthLayout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && !isLoading && !activeCase) {
-      fetchActiveCase().then((caseData) => {
-        if (!caseData && location.pathname !== "/cms/cases" && !location.pathname.startsWith("/cms/")) {
-          navigate("/cms/cases", { replace: true });
-        }
-      });
+    if (user && !isLoading) {
+      if (user.cms_role === "auditor" && !location.pathname.startsWith("/cms/")) {
+        navigate("/cms/cases", { replace: true });
+        return;
+      }
+      if (!activeCase) {
+        fetchActiveCase().then((caseData) => {
+          if (!caseData && location.pathname !== "/cms/cases" && !location.pathname.startsWith("/cms/")) {
+            navigate("/cms/cases", { replace: true });
+          }
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isLoading]);

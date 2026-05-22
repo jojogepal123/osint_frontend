@@ -3,20 +3,21 @@ import { GravatarCard } from "../components/cards/GravatarCard";
 import { OsintCard } from "../components/cards/OsintCard";
 import ResultHeader from "../components/ResultHeader";
 import { useLocation, useNavigate } from "react-router-dom";
+import instance from "../api/axios";
 
 import { ProfileFromTelApis } from "../utils/ProfileFromTelApis";
 import { ProfileFromEmailApis } from "../utils/ProfileFromEmailApis";
 import TelProfileCard from "../components/TelProfileCard";
 import EmailProfileCard from "../components/EmailProfileCard";
 import no_results_image from "../assets/noresults.png";
-import { useState, Suspense, lazy } from "react";
+import { useState, Suspense, lazy, useEffect } from "react";
 import InlineLoader from "../components/InlineLoader";
 
 const Map = lazy(() => import("../components/Map"));
 
 const Results = () => {
   const location = useLocation();
-  const { results, type, userInput } = location.state || {};
+  const { results, type, userInput, searchQueryId } = location.state || {};
   const actualResults = results?.data ?? results ?? {};
   const navigate = useNavigate();
   const handleNewSearch = () => navigate("/dashboard");
@@ -92,10 +93,10 @@ const Results = () => {
     );
   }
 
-  let resultsToSend = {};
-
   const isEmailDataValid =
     emailData && emailData.success !== null && emailData.error === undefined;
+
+  let resultsToSend = {};
 
   if (type === "tel") {
     resultsToSend = {
@@ -120,6 +121,17 @@ const Results = () => {
       mapData: mapData || null,
     };
   }
+
+  useEffect(() => {
+    if (userInput && type && resultsToSend && Object.keys(resultsToSend).length > 0) {
+      instance.post("/api/search-results", {
+        type: type,
+        user_input: userInput,
+        results: resultsToSend,
+        search_query_id: searchQueryId || null,
+      }).catch(() => {});
+    }
+  }, [userInput, type]);
 
   return (
     <>

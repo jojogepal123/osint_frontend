@@ -21,7 +21,8 @@ export default function Cases() {
     category: "",
   });
 
-  const isSupervisor = user?.cms_role === "supervisor" || user?.is_admin;
+  const canCreateCase = user?.cms_role === "supervisor" || user?.is_admin;
+  const canSelectCase = user?.cms_role === "supervisor" || user?.cms_role === "investigator" || user?.is_admin;
 
   useEffect(() => {
     fetchCases();
@@ -33,7 +34,7 @@ export default function Cases() {
       const response = await axios.get("/api/cases");
       const casesData = response.data?.data || response.data;
       setCases(Array.isArray(casesData) ? casesData : []);
-    } catch (_error) {
+    } catch {
       toast.error("Failed to fetch cases");
       setCases([]);
     } finally {
@@ -101,7 +102,7 @@ export default function Cases() {
           <h1 className="text-2xl font-bold text-white">Cases</h1>
           <p className="text-gray-400 text-sm mt-1">Manage your investigation cases</p>
         </div>
-        {isSupervisor && (
+        {canCreateCase && (
           <button
             onClick={() => setShowCreateForm(!showCreateForm)}
             className="px-4 py-2 bg-lime-400 text-gray-900 font-semibold rounded-lg hover:bg-lime-300 transition-colors"
@@ -190,7 +191,9 @@ export default function Cases() {
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Priority</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Category</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                  {user?.cms_role !== "auditor" && (
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -209,14 +212,18 @@ export default function Cases() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-400">{caseItem.category || "-"}</td>
-                    <td className="px-4 py-3">
-                      <button
-                        onClick={() => handleSelectCase(caseItem)}
-                        className="text-sm text-lime-400 hover:text-lime-300"
-                      >
-                        Select
-                      </button>
-                    </td>
+                    {user?.cms_role !== "auditor" && (
+                      <td className="px-4 py-3">
+                        {canSelectCase && (
+                          <button
+                            onClick={() => handleSelectCase(caseItem)}
+                            className="text-sm text-lime-400 hover:text-lime-300"
+                          >
+                            Select
+                          </button>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

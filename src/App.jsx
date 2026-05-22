@@ -42,7 +42,6 @@ import CmsLayout from "./layouts/CmsLayout";
 import Cases from "./pages/cms/Cases";
 import CasesList from "./pages/cms/CasesList";
 import CaseDetail from "./pages/cms/CaseDetail";
-import Teams from "./pages/cms/Teams";
 
 function App() {
   const { sidebarVisible, setSidebarVisible, user, isLoading } =
@@ -225,7 +224,6 @@ function App() {
               <Route path="/cms/cases" element={<Cases />} />
               <Route path="/cms/cases/:id" element={<CaseDetail />} />
               <Route path="/cms/my-cases" element={<CasesList />} />
-              <Route path="/cms/teams" element={<Teams />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

@@ -6,10 +6,12 @@ import { toast } from "react-toastify";
 import InlineLoader from "./InlineLoader";
 
 const UserCard = () => {
-  const { user, logout } = useAuthContext();
+  const { user, logout, activeCase } = useAuthContext();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const caseName = activeCase?.title || activeCase?.name || null;
 
   const handleLogout = () => {
     setLoading(true);
@@ -26,6 +28,13 @@ const UserCard = () => {
 
   return (
     <div className="flex gap-2 items-center justify-end p-4 z-20">
+      <div
+        className="text-xs md:text-sm text-custom-lime rounded px-2 py-1.5 bg-transparent border border-custom-lime max-w-[120px] md:max-w-[200px] truncate"
+        title={caseName || "selected case"}
+      >
+        Active:{" "}
+        <span className="font-semibold">{caseName || "selected case"}</span>
+      </div>
       {user && (
         <div className="text-xs md:text-sm text-gray-900 rounded p-2 bg-custom-lime">
           Credits:{" "}
