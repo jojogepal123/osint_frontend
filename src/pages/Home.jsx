@@ -8,6 +8,7 @@ import UserCard from "../components/UserCard";
 
 const Home = () => {
   const {
+    user,
     logout,
     inputValue,
     setInputValue,
@@ -27,6 +28,12 @@ const Home = () => {
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const [isChecked, setIsChecked] = useState(false);
+
+  useEffect(() => {
+    if (user?.cms_role === "auditor") {
+      navigate("/cms/cases", { replace: true });
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     setResults({});
@@ -62,6 +69,7 @@ const Home = () => {
             results: fetchedResults,
             type: inputType,
             userInput: inputValue,
+            searchQueryId: fetchedResults?.searchQueryId ?? null,
           },
         });
       } catch (error) {

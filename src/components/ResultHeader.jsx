@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import FullScreenLoader from "./FullScreenLoader";
 import useAuthContext from "../context/AuthContext";
+import { embedProfileImages } from "../utils/imageToBase64";
 
 const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -19,12 +20,13 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
   const handleSaveResults = async () => {
     setIsLoading(true);
     try {
+      const resultsWithImages = await embedProfileImages(results);
       const response = await instance.post(
         "/api/generate-report",
         {
           userInput,
           type,
-          results,
+          results: resultsWithImages,
         },
         {
           responseType: "blob",
@@ -52,12 +54,13 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
   const handleGenerateReport = async () => {
     setIsAiLoading(true);
     try {
+      const resultsWithImages = await embedProfileImages(results);
       const res = await instance.post(
         "/api/generate-ai-report",
         {
           userInput,
           type,
-          results,
+          results: resultsWithImages,
         },
         {
           responseType: "blob",

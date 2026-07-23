@@ -1,14 +1,33 @@
 import useAuthContext from "../context/AuthContext";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import SidebarLarge from "../components/SidebarLarge";
 import SidebarSmall from "../components/SidebarSmall";
+import { useEffect } from "react";
 
 const AuthLayout = () => {
-  const { user, setSidebarVisible, sidebarVisible, isLoading } =
+  const { user, setSidebarVisible, sidebarVisible, isLoading, activeCase, fetchActiveCase } =
     useAuthContext();
 
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && !isLoading) {
+      if (user.cms_role === "auditor" && !location.pathname.startsWith("/cms/")) {
+        navigate("/cms/cases", { replace: true });
+        return;
+      }
+      if (!activeCase) {
+        fetchActiveCase().then((caseData) => {
+          if (!caseData && location.pathname !== "/cms/cases" && !location.pathname.startsWith("/cms/")) {
+            navigate("/cms/cases", { replace: true });
+          }
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isLoading]);
 
   if (isLoading) {
     return (

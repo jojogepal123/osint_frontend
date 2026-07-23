@@ -30,6 +30,18 @@ import VerificationResults from "./pages/VerificationResults";
 import LiveOnlyRoute from "./components/LiveOnlyRoute";
 import Upgrade from "./pages/Upgrade";
 import OtpVerification from "./pages/OtpVerification";
+import SocialIntel from "./pages/SocialIntel";
+import VehicleFinder from "./pages/VehicleFinder";
+import VehicleResults from "./pages/VehicleResults";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminUserDetail from "./pages/admin/AdminUserDetail";
+import AdminQueries from "./pages/admin/AdminQueries";
+import CmsLayout from "./layouts/CmsLayout";
+import Cases from "./pages/cms/Cases";
+import CasesList from "./pages/cms/CasesList";
+import CaseDetail from "./pages/cms/CaseDetail";
 
 function App() {
   const { sidebarVisible, setSidebarVisible, user, isLoading } =
@@ -39,6 +51,8 @@ function App() {
     "/leak-data-finder",
     "/corporate",
     "/verification-id",
+    "/social-intel",
+    "/vehicle-intel",
   ];
   const location = useLocation();
   const showSidebar = showSidebarPaths.includes(location.pathname);
@@ -119,6 +133,30 @@ function App() {
                 }
               />
               <Route path="/upgrade" element={<Upgrade />} />
+              <Route
+                path="/social-intel"
+                element={
+                  <LiveOnlyRoute>
+                    <SocialIntel />
+                  </LiveOnlyRoute>
+                }
+              />
+              <Route
+                path="/vehicle-intel"
+                element={
+                  <LiveOnlyRoute>
+                    <VehicleFinder />
+                  </LiveOnlyRoute>
+                }
+              />
+              <Route
+                path="/vehicle-results"
+                element={
+                  <LiveOnlyRoute>
+                    <VehicleResults />
+                  </LiveOnlyRoute>
+                }
+              />
             </Route>
             <Route path="/otp-verification" element={<OtpVerification />} />
             {/* Guest routes */}
@@ -173,6 +211,21 @@ function App() {
               <Route path="/refund-policy" element={<RefundPolicy />} />
               <Route path="/terms-conditions" element={<TermsConditions />} />
             </Route>
+            {/* Admin routes */}
+            <Route element={<AdminLayout />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/users/:id" element={<AdminUserDetail />} />
+              <Route path="/admin/queries" element={<AdminQueries />} />
+            </Route>
+
+            {/* CMS routes */}
+            <Route element={<CmsLayout />}>
+              <Route path="/cms/cases" element={<Cases />} />
+              <Route path="/cms/cases/:id" element={<CaseDetail />} />
+              <Route path="/cms/my-cases" element={<CasesList />} />
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>

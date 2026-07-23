@@ -6,10 +6,12 @@ import { toast } from "react-toastify";
 import InlineLoader from "./InlineLoader";
 
 const UserCard = () => {
-  const { user, logout } = useAuthContext();
+  const { user, logout, activeCase } = useAuthContext();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const caseName = activeCase?.title || activeCase?.name || null;
 
   const handleLogout = () => {
     setLoading(true);
@@ -26,6 +28,13 @@ const UserCard = () => {
 
   return (
     <div className="flex gap-2 items-center justify-end p-4 z-20">
+      <div
+        className="text-xs md:text-sm text-custom-lime rounded px-2 py-1.5 bg-transparent border border-custom-lime max-w-[120px] md:max-w-[200px] truncate"
+        title={caseName || "selected case"}
+      >
+        Active:{" "}
+        <span className="font-semibold">{caseName || "selected case"}</span>
+      </div>
       {user && (
         <div className="text-xs md:text-sm text-gray-900 rounded p-2 bg-custom-lime">
           Credits:{" "}
@@ -64,6 +73,47 @@ const UserCard = () => {
                 <span className="">{user?.email || ""}</span>
               </div>
             </div>
+
+            <button
+              onClick={() => navigate("/cms/cases")}
+              className="flex items-center px-4 py-3 space-x-3 w-full hover:bg-gray-800 text-white hover:text-lime-300"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                className="size-4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+                />
+              </svg>
+              <span className="text-sm">My Cases</span>
+            </button>
+            {user?.is_admin && (
+              <button
+                onClick={() => navigate("/admin")}
+                className="flex items-center px-4 py-3 space-x-3 w-full hover:bg-gray-800 text-white hover:text-lime-300"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  className="size-4"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"
+                  />
+                </svg>
+                <span className="text-sm">Admin Panel</span>
+              </button>
+            )}
             {loading ? (
               <div className="flex items-center px-4 py-3 space-x-3 w-full">
                 <InlineLoader />

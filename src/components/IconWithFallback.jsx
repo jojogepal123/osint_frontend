@@ -10,25 +10,32 @@ const iconMap = {
   "x": "twitter",
 };
 
+const iconifyAllowList = new Set([
+  "simple-icons:x",
+  "simple-icons:twitter",
+  "simple-icons:chess",
+]);
+
 const fallbackSources = {
   // Primary source - Iconify with specific icon sets
   iconify: (platform) => {
-    // Special cases for specific platforms
     const iconifyMappings = {
-      chesscom: "chess", // Map Chess.com to chess icon
-      x: "simple-icons:x", // Use specific icon set for X
-      twitter: "simple-icons:twitter", // Specific Twitter icon
-      xtwitter: "simple-icons:x", // Handle xtwitter case
+      chesscom: "simple-icons:chess",
+      x: "simple-icons:x",
+      twitter: "simple-icons:twitter",
+      xtwitter: "simple-icons:x",
     };
 
-    const iconName = iconifyMappings[platform] || `simple-icons:${platform}`;
+    const iconName = iconifyMappings[platform];
+    if (!iconName || !iconifyAllowList.has(iconName)) {
+      return null;
+    }
     return `https://api.iconify.design/${iconName}.svg`;
   },
   // Secondary source - Font Awesome
   fontAwesome: (platform) => {
-    // Special cases for Font Awesome
     const faMapping = {
-      x: "twitter-x", // Font Awesome's name for X
+      x: "twitter-x",
       chesscom: "chess",
       xtwitter: "twitter-x",
     };
@@ -45,6 +52,14 @@ export default function IconWithFallback({ platform, size = 20 }) {
 
   // Get current icon URL based on fallback state
   const getIconUrl = () => {
+    if (currentSource === 0) {
+      const url = fallbackSources.iconify(normalizedPlatform);
+      if (!url) {
+        setCurrentSource(Object.values(fallbackSources).length - 1);
+        return fallbackSources.default;
+      }
+      return url;
+    }
     const sources = Object.values(fallbackSources);
     if (currentSource >= sources.length - 1) {
       return fallbackSources.default;

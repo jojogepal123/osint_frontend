@@ -5,6 +5,236 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   // Fallback data
+  // const countriesFallback = [
+  //   {
+  //     name: "Afghanistan",
+  //     code: "+93",
+  //     shortName: "AF",
+  //     flag: "https://flagcdn.com/af.svg",
+  //   },
+  //   {
+  //     name: "Albania",
+  //     code: "+355",
+  //     shortName: "AL",
+  //     flag: "https://flagcdn.com/al.svg",
+  //   },
+  //   {
+  //     name: "Algeria",
+  //     code: "+213",
+  //     shortName: "DZ",
+  //     flag: "https://flagcdn.com/dz.svg",
+  //   },
+  //   {
+  //     name: "Andorra",
+  //     code: "+376",
+  //     shortName: "AD",
+  //     flag: "https://flagcdn.com/ad.svg",
+  //   },
+  //   {
+  //     name: "Angola",
+  //     code: "+244",
+  //     shortName: "AO",
+  //     flag: "https://flagcdn.com/ao.svg",
+  //   },
+  //   {
+  //     name: "Argentina",
+  //     code: "+54",
+  //     shortName: "AR",
+  //     flag: "https://flagcdn.com/ar.svg",
+  //   },
+  //   {
+  //     name: "Australia",
+  //     code: "+61",
+  //     shortName: "AU",
+  //     flag: "https://flagcdn.com/au.svg",
+  //   },
+  //   {
+  //     name: "Austria",
+  //     code: "+43",
+  //     shortName: "AT",
+  //     flag: "https://flagcdn.com/at.svg",
+  //   },
+  //   {
+  //     name: "Bahamas",
+  //     code: "+1-242",
+  //     shortName: "BS",
+  //     flag: "https://flagcdn.com/bs.svg",
+  //   },
+  //   {
+  //     name: "Bahrain",
+  //     code: "+973",
+  //     shortName: "BH",
+  //     flag: "https://flagcdn.com/bh.svg",
+  //   },
+  //   {
+  //     name: "Bangladesh",
+  //     code: "+880",
+  //     shortName: "BD",
+  //     flag: "https://flagcdn.com/bd.svg",
+  //   },
+  //   {
+  //     name: "Belarus",
+  //     code: "+375",
+  //     shortName: "BY",
+  //     flag: "https://flagcdn.com/by.svg",
+  //   },
+  //   {
+  //     name: "Belgium",
+  //     code: "+32",
+  //     shortName: "BE",
+  //     flag: "https://flagcdn.com/be.svg",
+  //   },
+  //   {
+  //     name: "Bhutan",
+  //     code: "+975",
+  //     shortName: "BT",
+  //     flag: "https://flagcdn.com/bt.svg",
+  //   },
+  //   {
+  //     name: "Bolivia",
+  //     code: "+591",
+  //     shortName: "BO",
+  //     flag: "https://flagcdn.com/bo.svg",
+  //   },
+  //   {
+  //     name: "Brazil",
+  //     code: "+55",
+  //     shortName: "BR",
+  //     flag: "https://flagcdn.com/br.svg",
+  //   },
+  //   {
+  //     name: "Canada",
+  //     code: "+1",
+  //     shortName: "CA",
+  //     flag: "https://flagcdn.com/ca.svg",
+  //   },
+  //   {
+  //     name: "China",
+  //     code: "+86",
+  //     shortName: "CN",
+  //     flag: "https://flagcdn.com/cn.svg",
+  //   },
+  //   {
+  //     name: "Denmark",
+  //     code: "+45",
+  //     shortName: "DK",
+  //     flag: "https://flagcdn.com/dk.svg",
+  //   },
+  //   {
+  //     name: "Egypt",
+  //     code: "+20",
+  //     shortName: "EG",
+  //     flag: "https://flagcdn.com/eg.svg",
+  //   },
+  //   {
+  //     name: "Finland",
+  //     code: "+358",
+  //     shortName: "FI",
+  //     flag: "https://flagcdn.com/fi.svg",
+  //   },
+  //   {
+  //     name: "France",
+  //     code: "+33",
+  //     shortName: "FR",
+  //     flag: "https://flagcdn.com/fr.svg",
+  //   },
+  //   {
+  //     name: "Germany",
+  //     code: "+49",
+  //     shortName: "DE",
+  //     flag: "https://flagcdn.com/de.svg",
+  //   },
+  //   {
+  //     name: "India",
+  //     code: "+91",
+  //     shortName: "IN",
+  //     flag: "https://flagcdn.com/in.svg",
+  //   },
+  //   {
+  //     name: "Indonesia",
+  //     code: "+62",
+  //     shortName: "ID",
+  //     flag: "https://flagcdn.com/id.svg",
+  //   },
+  //   {
+  //     name: "Italy",
+  //     code: "+39",
+  //     shortName: "IT",
+  //     flag: "https://flagcdn.com/it.svg",
+  //   },
+  //   {
+  //     name: "Japan",
+  //     code: "+81",
+  //     shortName: "JP",
+  //     flag: "https://flagcdn.com/jp.svg",
+  //   },
+  //   {
+  //     name: "Mexico",
+  //     code: "+52",
+  //     shortName: "MX",
+  //     flag: "https://flagcdn.com/mx.svg",
+  //   },
+  //   {
+  //     name: "Netherlands",
+  //     code: "+31",
+  //     shortName: "NL",
+  //     flag: "https://flagcdn.com/nl.svg",
+  //   },
+  //   {
+  //     name: "New Zealand",
+  //     code: "+64",
+  //     shortName: "NZ",
+  //     flag: "https://flagcdn.com/nz.svg",
+  //   },
+  //   {
+  //     name: "Pakistan",
+  //     code: "+92",
+  //     shortName: "PK",
+  //     flag: "https://flagcdn.com/pk.svg",
+  //   },
+  //   {
+  //     name: "Russia",
+  //     code: "+7",
+  //     shortName: "RU",
+  //     flag: "https://flagcdn.com/ru.svg",
+  //   },
+  //   {
+  //     name: "Saudi Arabia",
+  //     code: "+966",
+  //     shortName: "SA",
+  //     flag: "https://flagcdn.com/sa.svg",
+  //   },
+  //   {
+  //     name: "South Africa",
+  //     code: "+27",
+  //     shortName: "ZA",
+  //     flag: "https://flagcdn.com/za.svg",
+  //   },
+  //   {
+  //     name: "South Korea",
+  //     code: "+82",
+  //     shortName: "KR",
+  //     flag: "https://flagcdn.com/kr.svg",
+  //   },
+  //   {
+  //     name: "Spain",
+  //     code: "+34",
+  //     shortName: "ES",
+  //     flag: "https://flagcdn.com/es.svg",
+  //   },
+  //   {
+  //     name: "United Kingdom",
+  //     code: "+44",
+  //     shortName: "GB",
+  //     flag: "https://flagcdn.com/gb.svg",
+  //   },
+  //   {
+  //     name: "United States",
+  //     code: "+1",
+  //     shortName: "US",
+  //     flag: "https://flagcdn.com/us.svg",
+  //   },
+  // ];
   const countriesFallback = [
     {
       name: "Afghanistan",
@@ -103,6 +333,12 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
       flag: "https://flagcdn.com/br.svg",
     },
     {
+      name: "Cambodia",
+      code: "+855",
+      shortName: "KH",
+      flag: "https://flagcdn.com/kh.svg",
+    },
+    {
       name: "Canada",
       code: "+1",
       shortName: "CA",
@@ -145,6 +381,18 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
       flag: "https://flagcdn.com/de.svg",
     },
     {
+      name: "Greece",
+      code: "+30",
+      shortName: "GR",
+      flag: "https://flagcdn.com/gr.svg",
+    },
+    {
+      name: "Hong Kong",
+      code: "+852",
+      shortName: "HK",
+      flag: "https://flagcdn.com/hk.svg",
+    },
+    {
       name: "India",
       code: "+91",
       shortName: "IN",
@@ -155,6 +403,12 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
       code: "+62",
       shortName: "ID",
       flag: "https://flagcdn.com/id.svg",
+    },
+    {
+      name: "Ireland",
+      code: "+353",
+      shortName: "IE",
+      flag: "https://flagcdn.com/ie.svg",
     },
     {
       name: "Italy",
@@ -169,10 +423,46 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
       flag: "https://flagcdn.com/jp.svg",
     },
     {
+      name: "Kenya",
+      code: "+254",
+      shortName: "KE",
+      flag: "https://flagcdn.com/ke.svg",
+    },
+    {
+      name: "Kuwait",
+      code: "+965",
+      shortName: "KW",
+      flag: "https://flagcdn.com/kw.svg",
+    },
+    {
+      name: "Laos",
+      code: "+856",
+      shortName: "LA",
+      flag: "https://flagcdn.com/la.svg",
+    },
+    {
+      name: "Malaysia",
+      code: "+60",
+      shortName: "MY",
+      flag: "https://flagcdn.com/my.svg",
+    },
+    {
       name: "Mexico",
       code: "+52",
       shortName: "MX",
       flag: "https://flagcdn.com/mx.svg",
+    },
+    {
+      name: "Myanmar",
+      code: "+95",
+      shortName: "MM",
+      flag: "https://flagcdn.com/mm.svg",
+    },
+    {
+      name: "Nepal",
+      code: "+977",
+      shortName: "NP",
+      flag: "https://flagcdn.com/np.svg",
     },
     {
       name: "Netherlands",
@@ -187,10 +477,52 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
       flag: "https://flagcdn.com/nz.svg",
     },
     {
+      name: "Nigeria",
+      code: "+234",
+      shortName: "NG",
+      flag: "https://flagcdn.com/ng.svg",
+    },
+    {
+      name: "Norway",
+      code: "+47",
+      shortName: "NO",
+      flag: "https://flagcdn.com/no.svg",
+    },
+    {
+      name: "Oman",
+      code: "+968",
+      shortName: "OM",
+      flag: "https://flagcdn.com/om.svg",
+    },
+    {
       name: "Pakistan",
       code: "+92",
       shortName: "PK",
       flag: "https://flagcdn.com/pk.svg",
+    },
+    {
+      name: "Philippines",
+      code: "+63",
+      shortName: "PH",
+      flag: "https://flagcdn.com/ph.svg",
+    },
+    {
+      name: "Poland",
+      code: "+48",
+      shortName: "PL",
+      flag: "https://flagcdn.com/pl.svg",
+    },
+    {
+      name: "Portugal",
+      code: "+351",
+      shortName: "PT",
+      flag: "https://flagcdn.com/pt.svg",
+    },
+    {
+      name: "Qatar",
+      code: "+974",
+      shortName: "QA",
+      flag: "https://flagcdn.com/qa.svg",
     },
     {
       name: "Russia",
@@ -203,6 +535,12 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
       code: "+966",
       shortName: "SA",
       flag: "https://flagcdn.com/sa.svg",
+    },
+    {
+      name: "Singapore",
+      code: "+65",
+      shortName: "SG",
+      flag: "https://flagcdn.com/sg.svg",
     },
     {
       name: "South Africa",
@@ -223,6 +561,54 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
       flag: "https://flagcdn.com/es.svg",
     },
     {
+      name: "Sri Lanka",
+      code: "+94",
+      shortName: "LK",
+      flag: "https://flagcdn.com/lk.svg",
+    },
+    {
+      name: "Sweden",
+      code: "+46",
+      shortName: "SE",
+      flag: "https://flagcdn.com/se.svg",
+    },
+    {
+      name: "Switzerland",
+      code: "+41",
+      shortName: "CH",
+      flag: "https://flagcdn.com/ch.svg",
+    },
+    {
+      name: "Taiwan",
+      code: "+886",
+      shortName: "TW",
+      flag: "https://flagcdn.com/tw.svg",
+    },
+    {
+      name: "Thailand",
+      code: "+66",
+      shortName: "TH",
+      flag: "https://flagcdn.com/th.svg",
+    },
+    {
+      name: "Turkey",
+      code: "+90",
+      shortName: "TR",
+      flag: "https://flagcdn.com/tr.svg",
+    },
+    {
+      name: "Ukraine",
+      code: "+380",
+      shortName: "UA",
+      flag: "https://flagcdn.com/ua.svg",
+    },
+    {
+      name: "United Arab Emirates",
+      code: "+971",
+      shortName: "AE",
+      flag: "https://flagcdn.com/ae.svg",
+    },
+    {
       name: "United Kingdom",
       code: "+44",
       shortName: "GB",
@@ -234,8 +620,13 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
       shortName: "US",
       flag: "https://flagcdn.com/us.svg",
     },
+    {
+      name: "Vietnam",
+      code: "+84",
+      shortName: "VN",
+      flag: "https://flagcdn.com/vn.svg",
+    },
   ];
-
   // Fetch country data
   // useEffect(() => {
   //   const fetchCountries = async () => {
@@ -284,7 +675,7 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
     const filtered = countries.filter(
       (country) =>
         country.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        country.code.includes(searchQuery)
+        country.code.includes(searchQuery),
     );
 
     // Return all countries if no matches found
@@ -337,7 +728,7 @@ const Options = ({ selectedCountryCode, setSelectedCountryCode }) => {
               </svg>
             </button>
           </div>
-          <div className="max-h-60 overflow-y-auto custom-scrollbar">
+          <div className="max-h-40 overflow-y-auto custom-scrollbar">
             {getFilteredCountries().map((country, index) => (
               <div
                 key={index}

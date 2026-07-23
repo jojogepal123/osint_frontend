@@ -13,7 +13,7 @@ const OtpVerification = () => {
   // const [otp, setOtp] = useState("");
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [loading, setLoading] = useState(false);
-  const { getUser } = useAuthContext();
+  const { getUser, fetchActiveCase } = useAuthContext();
   const [canResend, setCanResend] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [otpExpireString, setOtpExpireString] = useState(
@@ -91,7 +91,14 @@ const OtpVerification = () => {
         "Authorization"
       ] = `Bearer ${res.data.token}`;
       await getUser();
-      navigate("/dashboard");
+      
+      // Check for active case and redirect accordingly
+      const activeCaseData = await fetchActiveCase();
+      if (!activeCaseData) {
+        navigate("/cms/cases");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       setMessage(err.response?.data?.message || "OTP verification failed");
     } finally {
