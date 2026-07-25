@@ -14,6 +14,12 @@ const FIELD_TYPES = {
   email: { label: "Email", type: "email", placeholder: "Enter Email" },
   phone: { label: "Phone", type: "tel", placeholder: "Enter Phone Number" },
   username: { label: "Username", type: "text", placeholder: "Enter Username" },
+  pan: { label: "PAN", type: "text", placeholder: "Enter PAN Number" },
+  aadhar: {
+    label: "Aadhaar",
+    type: "text",
+    placeholder: "Enter Aadhaar Number",
+  },
 };
 const LeakDataFinder = () => {
   const [loading, setLoading] = useState(false);
@@ -55,6 +61,20 @@ const LeakDataFinder = () => {
         return { isValid: false, error: "Invalid username format" };
       }
     }
+    if (type === "pan") {
+      const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+      if (!panRegex.test(value.trim().toUpperCase())) {
+        return { isValid: false, error: "Invalid PAN number" };
+      }
+    }
+
+    if (type === "aadhar") {
+      const aadharRegex = /^[2-9]{1}[0-9]{11}$/;
+      const cleaned = value.replace(/\s+/g, "");
+      if (!aadharRegex.test(cleaned)) {
+        return { isValid: false, error: "Invalid Aadhaar number" };
+      }
+    }
     return { isValid: true, error: "" };
   };
 
@@ -73,8 +93,8 @@ const LeakDataFinder = () => {
   const handleChange = (id, key, newValue) => {
     setFields(
       fields.map((field) =>
-        field.id === id ? { ...field, [key]: newValue } : field
-      )
+        field.id === id ? { ...field, [key]: newValue } : field,
+      ),
     );
   };
 
@@ -104,7 +124,7 @@ const LeakDataFinder = () => {
     try {
       const res = await instance.post(
         `/api/leak-data-finder/?page=${page}&per_page=${perPage}`,
-        { fields: validatedFields }
+        { fields: validatedFields },
       );
       if (res.status === 200) {
         const results = res.data;
@@ -113,10 +133,11 @@ const LeakDataFinder = () => {
           updateUser({ credits: credits });
           // console.log("User credits updated:", credits);
         }
+        const isEmpty = !results.data || results.data.length === 0;
         setResults(results.data || []);
         setTotalResults(results.total || 0);
         setCurrentPage(results.page || 1);
-        setEmptyResults(!results.data || results.data.length === 0);
+        setEmptyResults(isEmpty);
         // console.log(res.data);
       } else {
         toast.error("Something went wrong. Please try again.");
@@ -171,9 +192,19 @@ const LeakDataFinder = () => {
                 type={FIELD_TYPES[field.type].type}
                 placeholder={FIELD_TYPES[field.type].placeholder}
                 value={field.value}
-                onChange={(e) =>
-                  handleChange(field.id, "value", e.target.value)
-                }
+                onChange={(e) => {
+                  let value = e.target.value;
+
+                  if (field.type === "pan") {
+                    value = value.toUpperCase();
+                  }
+
+                  if (field.type === "aadhar") {
+                    value = value.replace(/\D/g, "").slice(0, 12);
+                  }
+
+                  handleChange(field.id, "value", value);
+                }}
                 className={`relative w-full flex-1 py-2 md:py-2.5 px-4 border rounded-md ${
                   field.isValid === false ? "border-red-500" : "border-lime-300"
                 } bg-custom-input-bg text-lime-200 placeholder:text-gray-200 focus:outline-none transition-all text-sm md:text-lg`}
@@ -288,7 +319,7 @@ const LeakDataFinder = () => {
                             >
                               {page}
                             </button>
-                          )
+                          ),
                         )}
 
                         {/* Next Button */}
