@@ -2,41 +2,222 @@ import { GoogleCard } from "../components/cards/GoogleCard";
 import { GravatarCard } from "../components/cards/GravatarCard";
 import { OsintCard } from "../components/cards/OsintCard";
 import ResultHeader from "../components/ResultHeader";
-import { useLocation, useNavigate } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import instance from "../api/axios";
 
 import { ProfileFromTelApis } from "../utils/ProfileFromTelApis";
 import { ProfileFromEmailApis } from "../utils/ProfileFromEmailApis";
 import TelProfileCard from "../components/TelProfileCard";
 import EmailProfileCard from "../components/EmailProfileCard";
+import SocialCandidateCard from "../components/SocialCandidateCard";
 import no_results_image from "../assets/noresults.png";
-import { useState, Suspense, lazy, useEffect } from "react";
+import { useState, Suspense, lazy, useEffect, useMemo } from "react";
 import InlineLoader from "../components/InlineLoader";
 
 const Map = lazy(() => import("../components/Map"));
 
 const Results = () => {
   const location = useLocation();
-  const { results, type, userInput, searchQueryId } = location.state || {};
-  const actualResults = results?.data ?? results ?? {};
   const navigate = useNavigate();
+  const params = useParams();
+  const {
+    results: stateResults,
+    type: stateType,
+    userInput: stateUserInput,
+    searchQueryId,
+    searchQueryPublicId: statePublicId,
+  } = location.state || {};
+
+  const publicIdParam = params.publicId || null;
+
+  const [fetched, setFetched] = useState(null);
+  const [loadingFetch, setLoadingFetch] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  useEffect(() => {
+    if (!publicIdParam || stateResults) return;
+    let cancelled = false;
+    setLoadingFetch(true);
+    setFetchError(null);
+    instance
+      .get(`/api/search-results/${publicIdParam}`)
+      .then((res) => {
+        if (cancelled) return;
+        setFetched(res.data);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setFetchError(
+          err.response?.data?.error || "Failed to load saved result.",
+        );
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingFetch(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [publicIdParam, stateResults]);
+
+  const results = stateResults ?? fetched?.results ?? null;
+  const type = useMemo(() => {
+    if (stateType) return stateType;
+    const raw = fetched?.search_type ?? fetched?.search_query?.type ?? null;
+    if (raw === "phone" || raw === "tel") return "tel";
+    if (raw === "email") return "email";
+    return raw;
+  }, [stateType, fetched]);
+  const userInput = stateUserInput ?? fetched?.search_query?.query ?? null;
   const handleNewSearch = () => navigate("/dashboard");
-  const TelProfile = ProfileFromTelApis(actualResults);
-  const EmailProfile = ProfileFromEmailApis(actualResults);
+  const isFromSavedResult = !stateResults && !!fetched?.results;
+  // The saved-results endpoint returns a curated shape:
+  //   - tel/email: { profile, emailData, gravatar, breachData, osintData, mapData }
+  //   - social:   { results: [ { candidate, status }, ... ] }
+  // The live endpoints return the raw per-API shape:
+  //   - tel/email: { emailData, zehefData, hibpData, osintData, holeheData, ... }
+  //   - social:   { results: [ ... ] }   (same shape as saved)
+  // Normalise the saved shape into the live one for tel/email so downstream
+  // code (which expects the live shape) just works. For social, both shapes
+  // are the same — passthrough.
+  const actualResults = useMemo(() => {
+    const base = results?.data ?? results ?? {};
+    if (!isFromSavedResult) return base;
+    if (type === "social") return base;
+    return {
+      ...base,
+      // Re-wrap mapData under the live emailData.maps_result.reviews path so
+      // the Map component finds it.
+      emailData: base.emailData
+        ? { ...base.emailData, maps_result: { reviews: base.mapData } }
+        : base.emailData,
+      // zehefData.data drives the Gravatar card; saved uses `gravatar` instead.
+      zehefData: Array.isArray(base.gravatar)
+        ? { data: base.gravatar.map((g) => ({ source: "Gravatar", status: "found", ...g })) }
+        : base.zehefData,
+      // breachData (saved) is the HIBP list; live uses `hibpData`.
+      hibpData: base.breachData ?? base.hibpData,
+      // osintData: live wraps as { data: [...] }, saved stores the array directly.
+      osintData: Array.isArray(base.osintData)
+        ? { data: base.osintData }
+        : base.osintData,
+    };
+  }, [results, isFromSavedResult, type]);
+  // When the data came from the saved-results endpoint the response already
+  // contains a curated `profile` object built from the live API; reuse it
+  // directly so the profile cards render correctly. Otherwise derive it from
+  // the live API response.
+  const TelProfile = useMemo(
+    () =>
+      isFromSavedResult && results?.profile
+        ? results.profile
+        : ProfileFromTelApis(actualResults),
+    [isFromSavedResult, results, actualResults],
+  );
+  const EmailProfile = useMemo(
+    () =>
+      isFromSavedResult && results?.profile
+        ? results.profile
+        : ProfileFromEmailApis(actualResults),
+    [isFromSavedResult, results, actualResults],
+  );
 
   const emailData = actualResults?.emailData || null;
   const mapData = emailData?.maps_result?.reviews || null;
-  const hibpResults = actualResults?.hibpData || [];
-  const zehefResults = actualResults?.zehefData?.data || [];
+  const hibpResults = useMemo(
+    () => actualResults?.hibpData || [],
+    [actualResults],
+  );
+  const zehefResults = useMemo(
+    () => actualResults?.zehefData?.data || [],
+    [actualResults],
+  );
   const osResults = actualResults?.osintData?.data || null;
-  // console.log("osResults:", osResults);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  // console.log("Results:", results);
+
+  // Social candidates: the live/saved body is
+  //   { results: [ { candidate, status }, ... ] }
+  const socialCandidates = useMemo(() => {
+    if (type !== "social") return [];
+    const rows = Array.isArray(actualResults?.results)
+      ? actualResults.results
+      : [];
+    return rows
+      .filter((r) => r && r.candidate && r.status !== "failed")
+      .map((r) => r.candidate);
+  }, [type, actualResults]);
+
+  const isEmailDataValid =
+    emailData && emailData.success !== null && emailData.error === undefined;
+
+  const resultsToSend = useMemo(() => {
+    if (type === "tel") {
+      return {
+        profile: TelProfile || null,
+        osintData: osResults || null,
+      };
+    }
+    if (type === "email") {
+      return {
+        profile: EmailProfile || null,
+        emailData: isEmailDataValid
+          ? emailData?.PROFILE_CONTAINER?.profile
+          : null,
+        breachData: hibpResults || null,
+        gravatar: zehefResults?.some(
+          (item) => item.source === "Gravatar" && item.status === "found"
+        )
+          ? zehefResults?.filter(
+              (item) => item.source === "Gravatar" && item.status === "found"
+            )
+          : null,
+        osintData: osResults || null,
+        mapData: mapData || null,
+      };
+    }
+    return {};
+  }, [
+    type,
+    TelProfile,
+    EmailProfile,
+    emailData,
+    hibpResults,
+    zehefResults,
+    osResults,
+    mapData,
+    isEmailDataValid,
+  ]);
+
+  useEffect(() => {
+    if (
+      !stateResults ||
+      !userInput ||
+      !type ||
+      !resultsToSend ||
+      Object.keys(resultsToSend).length === 0
+    ) {
+      return;
+    }
+    if (statePublicId) return;
+    instance
+      .post("/api/search-results", {
+        type: type,
+        user_input: userInput,
+        results: resultsToSend,
+        search_query_id: searchQueryId || null,
+      })
+      .catch(() => {});
+  }, [userInput, type, stateResults, statePublicId, searchQueryId, resultsToSend]);
+
   const isResultEmpty = () => {
     if (!results) return true;
 
-    // Handle tel-based search
+    const isFromSavedResult = !stateResults && !!fetched?.results;
+
     if (type === "tel") {
       const telEmpty =
         !TelProfile ||
@@ -50,8 +231,51 @@ const Results = () => {
       return telEmpty && (!osResults || osResults.length === 0);
     }
 
-    // Handle email-based search
+    if (type === "social") {
+      // SignalHire response shape: { results: [ { candidate, status }, ... ] }
+      const socialRows = Array.isArray(actualResults?.results)
+        ? actualResults.results
+        : [];
+      const validCandidates = socialRows.filter(
+        (r) => r && r.candidate && r.status !== "failed",
+      );
+      return validCandidates.length === 0;
+    }
+
     if (type === "email") {
+      if (isFromSavedResult) {
+        // Saved/cached results have a curated shape (profile, emailData,
+        // gravatar, breachData, osintData, mapData). If any of them have
+        // content, treat the result as non-empty.
+        const profileHasContent =
+          TelProfile &&
+          Object.values(TelProfile).some(
+            (val) =>
+              val !== null &&
+              val !== undefined &&
+              !(Array.isArray(val) && val.length === 0) &&
+              !(typeof val === "object" && Object.keys(val).length === 0),
+          );
+        const emailDataHasContent =
+          emailData &&
+          emailData.success !== null &&
+          emailData.error === undefined;
+        const breachHasContent =
+          Array.isArray(hibpResults) && hibpResults.length > 0;
+        const osintHasContent = osResults && osResults.length > 0;
+        const gravatarHasContent = zehefResults?.some(
+          (item) => item.source === "Gravatar" && item.status === "found",
+        );
+
+        return !(
+          profileHasContent ||
+          emailDataHasContent ||
+          breachHasContent ||
+          osintHasContent ||
+          gravatarHasContent
+        );
+      }
+
       const zehefFound = Array.isArray(results.zehefData?.data)
         ? results.zehefData.data.some((item) => item.status === "found")
         : false;
@@ -75,6 +299,24 @@ const Results = () => {
     return true;
   };
 
+  if (loadingFetch) {
+    return <InlineLoader />;
+  }
+
+  if (fetchError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen z-10 text-center px-4">
+        <p className="text-red-400 mb-4">{fetchError}</p>
+        <button
+          onClick={handleNewSearch}
+          className="px-4 py-2 bg-lime-400 font-bold uppercase text-gray-950 rounded hover:bg-lime-500"
+        >
+          Start a new search
+        </button>
+      </div>
+    );
+  }
+
   if (isResultEmpty()) {
     return (
       <div className="flex flex-col items-center justify-center h-screen z-10">
@@ -92,46 +334,6 @@ const Results = () => {
       </div>
     );
   }
-
-  const isEmailDataValid =
-    emailData && emailData.success !== null && emailData.error === undefined;
-
-  let resultsToSend = {};
-
-  if (type === "tel") {
-    resultsToSend = {
-      profile: TelProfile || null,
-      osintData: osResults || null,
-    };
-  } else if (type === "email") {
-    resultsToSend = {
-      profile: EmailProfile || null,
-      emailData: isEmailDataValid
-        ? emailData?.PROFILE_CONTAINER?.profile
-        : null,
-      breachData: hibpResults || null,
-      gravatar: zehefResults?.some(
-        (item) => item.source === "Gravatar" && item.status === "found"
-      )
-        ? zehefResults?.filter(
-            (item) => item.source === "Gravatar" && item.status === "found"
-          )
-        : null,
-      osintData: osResults || null,
-      mapData: mapData || null,
-    };
-  }
-
-  useEffect(() => {
-    if (userInput && type && resultsToSend && Object.keys(resultsToSend).length > 0) {
-      instance.post("/api/search-results", {
-        type: type,
-        user_input: userInput,
-        results: resultsToSend,
-        search_query_id: searchQueryId || null,
-      }).catch(() => {});
-    }
-  }, [userInput, type]);
 
   return (
     <>
@@ -156,6 +358,16 @@ const Results = () => {
             {osResults !== null && <OsintCard data={osResults} />}
           </div>
         </>
+      ) : type === "social" ? (
+        <div className="z-10 w-full max-w-5xl mx-auto my-12 px-4 space-y-3">
+          <p className="text-gray-500 text-sm">
+            {socialCandidates.length} profile
+            {socialCandidates.length !== 1 ? "s" : ""} found
+          </p>
+          {socialCandidates.map((c, i) => (
+            <SocialCandidateCard key={i} candidate={c} />
+          ))}
+        </div>
       ) : (
         <>
           <div className="z-10 w-full max-w-6xl mx-auto my-12">
@@ -173,7 +385,6 @@ const Results = () => {
                   <GoogleCard emailData={emailData} />
                 </div>
               )}
-              {/* <GoogleCard emailData={emailData} /> */}
               {zehefResults?.some(
                 (item) => item.source === "Gravatar" && item.status === "found"
               ) && (
@@ -187,7 +398,6 @@ const Results = () => {
                 </div>
               )}
             </div>
-            {/* hibp Data Card */}
             {Array.isArray(hibpResults) && hibpResults.length > 0 && (
               <div className="h-full mt-4">
                 <div className="w-full h-full bg-green border border-gray-700/60 rounded-2xl shadow-2xl p-6 backdrop-blur-md">
@@ -227,11 +437,9 @@ const Results = () => {
                         <span className="font-semibold text-gray-100 group-hover:text-lime-200">
                           {result.Name}
                         </span>
-                        {/* Example badge for year or type */}
                         {result.BreachDate && (
                           <span className="ml-auto px-2 py-0.5 rounded-full bg-lime-700/20 text-xs text-lime-200 font-medium">
                             {new Date(result.BreachDate).getFullYear()}
-                            {/* {result.BreachDate} */}
                           </span>
                         )}
                       </li>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Minus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import StyledDropdown from "../components/StyledDropdown";
 import { OsintCard } from "../components/cards/OsintCard";
@@ -29,6 +30,7 @@ const LeakDataFinder = () => {
   const [perPage, setPerPage] = useState(10);
   const [emptyResults, setEmptyResults] = useState(false);
   const { updateUser, hasSufficientCredits } = useAuthContext();
+  const navigate = useNavigate();
   const [fields, setFields] = useState([
     { id: Date.now(), type: "name", value: "", isValid: true, error: "" },
   ]);
@@ -132,6 +134,11 @@ const LeakDataFinder = () => {
         if (credits !== undefined) {
           updateUser({ credits: credits });
           // console.log("User credits updated:", credits);
+        }
+        if (results.cached && results.search_query_public_id) {
+          toast.info("Showing saved result — no credits charged.");
+          navigate(`/results/${results.search_query_public_id}`);
+          return;
         }
         const isEmpty = !results.data || results.data.length === 0;
         setResults(results.data || []);

@@ -250,6 +250,14 @@ const CorporateFinder = () => {
         setLoading(false);
         return;
       } else {
+        if (
+          response.data?.cached &&
+          response.data?.search_query_public_id
+        ) {
+          toast.info("Showing saved result — no credits charged.");
+          navigate(`/results/${response.data.search_query_public_id}`);
+          return;
+        }
         navigate("/corporate-results", {
           state: { data: response.data.data, searchInput },
         });
@@ -312,7 +320,7 @@ const CorporateFinder = () => {
       <UserCard />
       <div className="w-full flex flex-col items-center z-10 text-white mt-10 sm:mt-20">
         <MainHeader header="Corporate Intelligence" />
-        <div className="min-h-auto max-w-full sm:max-w-3xl lg:max-w-4xl xl:max-w-7xl md:min-h-[450px] w-auto sm:w-full m-4 sm:mx-auto flex flex-col md:flex-row gap-4 sm:gap-6 lg:gap-8 items-center md:items-start bg-gray-900/70 border border-lime-300/50 rounded-lg p-4 md:p-8">
+        <div className="max-w-full sm:max-w-3xl lg:max-w-4xl xl:max-w-4xl w-auto sm:w-full m-4 sm:mx-auto flex flex-col md:flex-row gap-4 sm:gap-6 lg:gap-8 items-center md:items-start bg-gray-900/70 border border-lime-300/50 rounded-lg p-4 md:p-8">
           {/* Left: Dropdown */}
           <div className="w-full md:w-1/3 flex flex-col justify-start px-4 md:px-0">
             <label className="mb-1 font-semibold">Select Search Type</label>
@@ -322,7 +330,7 @@ const CorporateFinder = () => {
                   {selectedOption.label}
                   <ChevronDown className="w-5 h-5 text-lime-300" />
                 </Listbox.Button>
-                <Listbox.Options className="absolute mt-2 w-full bg-custom-input-bg border border-lime-300 rounded-md z-10">
+                <Listbox.Options className="absolute mt-2 w-full bg-custom-input-bg border border-lime-300 rounded-md z-10 max-h-60 overflow-y-auto custom-scrollbar">
                   {SEARCH_OPTIONS.map((option) => (
                     <Listbox.Option
                       key={option.key}
@@ -388,7 +396,7 @@ const CorporateFinder = () => {
                             {inputValues[field.name] || field.options[0]}
                             <ChevronDown className="w-5 h-5 text-lime-200" />
                           </Listbox.Button>
-                          <Listbox.Options className="absolute mt-1 w-full bg-custom-input-bg border border-lime-300 rounded z-10">
+                          <Listbox.Options className="absolute mt-1 w-full bg-custom-input-bg border border-lime-300 rounded z-10 max-h-60 overflow-y-auto custom-scrollbar">
                             {field.options.map((opt) => (
                               <Listbox.Option
                                 key={opt}

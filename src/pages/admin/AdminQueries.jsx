@@ -114,16 +114,17 @@ export default function AdminQueries() {
 
   const handleDownload = async (q) => {
     if (!q.result) return;
-    setDownloadingId(q.id);
+    const key = q.public_id || q.id;
+    setDownloadingId(key);
     try {
-      const res = await instance.get(`/api/search-results/${q.id}/download`, {
+      const res = await instance.get(`/api/search-results/${key}/download`, {
         responseType: "blob",
       });
       const blob = new Blob([res.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `query_${q.id}_${Date.now()}.pdf`;
+      a.download = `query_${key}_${Date.now()}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();

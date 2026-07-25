@@ -261,13 +261,15 @@ export const AuthProvider = ({ children }) => {
       };
 
       const searchQueryId = data.search_query_id ?? null;
+      const searchQueryPublicId = data.search_query_public_id ?? null;
+      const cached = data.cached === true;
 
       if (data.credits !== undefined) {
         updateUser({ credits: data.credits });
       }
       // console.log("Parsed tel results:", newResults); // ✅ Extra log
       setResults(JSON.parse(JSON.stringify(newResults)));
-      return { ...newResults, searchQueryId };
+      return { ...newResults, searchQueryId, searchQueryPublicId, cached };
     } catch (error) {
       if (error.response) {
         const { status, data } = error.response;
@@ -295,6 +297,8 @@ export const AuthProvider = ({ children }) => {
       });
 
       const searchQueryId = data.search_query_id ?? null;
+      const searchQueryPublicId = data.search_query_public_id ?? null;
+      const cached = data.cached === true;
 
       if (data.credits !== undefined) {
         updateUser({ credits: data.credits });
@@ -302,7 +306,7 @@ export const AuthProvider = ({ children }) => {
       }
       setResults(data.data); // Or whatever structure you use
       // console.log("email data:", data);
-      return { ...data, searchQueryId };
+      return { ...data, searchQueryId, searchQueryPublicId, cached };
     } catch (error) {
       if (error.response) {
         const { status, data } = error.response;
