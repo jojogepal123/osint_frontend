@@ -113,10 +113,25 @@ export default function CaseDetail() {
   };
 
   const formatQuery = (query) => {
+    if (!query) return "—";
+    if (typeof query !== "string") return String(query);
+    const trimmed = query.trim();
+    if (!trimmed.startsWith("[") && !trimmed.startsWith("{")) return query;
     try {
-      const parsed = JSON.parse(query);
-      if (typeof parsed === "object") {
-        return Object.values(parsed).join(", ");
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        const values = parsed
+          .map((item) => {
+            if (item === null || typeof item !== "object") return String(item);
+            return item.value ?? item.query ?? null;
+          })
+          .filter((v) => v !== null && v !== "");
+        if (values.length > 0) return values.join(", ");
+      } else if (parsed && typeof parsed === "object") {
+        const values = Object.values(parsed)
+          .filter((v) => v !== null && v !== "" && v !== undefined)
+          .map(String);
+        if (values.length > 0) return values.join(", ");
       }
       return query;
     } catch {

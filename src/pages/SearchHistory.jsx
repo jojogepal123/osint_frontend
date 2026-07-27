@@ -28,6 +28,36 @@ const formatDate = (iso) => {
   }
 };
 
+// Render the stored `query` field as a human-readable string.
+// The backend stores some search types (e.g. `leak`) as JSON-encoded
+// objects/arrays. Render the meaningful `value` from those.
+const formatQuery = (query) => {
+  if (query === null || query === undefined || query === "") return "—";
+  if (typeof query !== "string") return String(query);
+  const trimmed = query.trim();
+  if (!trimmed.startsWith("[") && !trimmed.startsWith("{")) return query;
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (Array.isArray(parsed)) {
+      const values = parsed
+        .map((item) => {
+          if (item === null || typeof item !== "object") return String(item);
+          return item.value ?? item.query ?? null;
+        })
+        .filter((v) => v !== null && v !== "");
+      if (values.length > 0) return values.join(", ");
+    } else if (parsed && typeof parsed === "object") {
+      const values = Object.values(parsed)
+        .filter((v) => v !== null && v !== "" && v !== undefined)
+        .map(String);
+      if (values.length > 0) return values.join(", ");
+    }
+    return query;
+  } catch {
+    return query;
+  }
+};
+
 const SearchHistory = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -91,7 +121,7 @@ const SearchHistory = () => {
                     {TYPE_LABELS[q.type] || q.type}
                   </span>
                   <span className="text-white font-mono text-sm break-all flex-1 min-w-[120px]">
-                    {q.query}
+                    {formatQuery(q.query)}
                   </span>
                   <span className="text-gray-400 text-xs whitespace-nowrap">
                     {formatDate(q.created_at)}
