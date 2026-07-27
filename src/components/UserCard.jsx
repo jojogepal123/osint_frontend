@@ -58,7 +58,7 @@ const UserCard = () => {
           />
         </button>
         {dropdownOpen && (
-          <div className="absolute top-8 md:top-10 right-2 md:right-0 mt-2 w-80 border border-lime-300 bg-gray-900 bg-opacity-30 backdrop-blur-lg shadow-md rounded-lg px-4 divide-y divide-lime-300">
+          <div className="absolute top-8 md:top-10 right-2 md:right-0 mt-2 w-80 z-50 border border-lime-300 bg-gray-900 bg-opacity-30 backdrop-blur-lg shadow-md rounded-lg px-4 divide-y divide-lime-300">
             <div className="flex items-center justify-start space-x-4 mb-4 py-2">
               <div className="text-white">
                 <img
