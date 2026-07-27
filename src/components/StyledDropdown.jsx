@@ -7,6 +7,8 @@ const options = [
   { key: "email", label: "Email" },
   { key: "phone", label: "Phone" },
   { key: "username", label: "Username" },
+  { key: "pan", label: "PAN" },
+  { key: "aadhar", label: "Aadhaar" },
 ];
 
 export default function StyledDropdown({ value, onChange }) {

@@ -33,6 +33,7 @@ import OtpVerification from "./pages/OtpVerification";
 import SocialIntel from "./pages/SocialIntel";
 import VehicleFinder from "./pages/VehicleFinder";
 import VehicleResults from "./pages/VehicleResults";
+import SearchHistory from "./pages/SearchHistory";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
@@ -99,6 +100,8 @@ function App() {
               <Route path="/dashboard" element={<Home />} />
               {/* <Route path="/subscription" element={<Subscription />} /> */}
               <Route path="/results" element={<Results />} />
+              <Route path="/results/:publicId" element={<Results />} />
+              <Route path="/searches" element={<SearchHistory />} />
               <Route path="/leak-data-finder" element={<LeakDataFinder />} />
               <Route
                 path="/corporate"

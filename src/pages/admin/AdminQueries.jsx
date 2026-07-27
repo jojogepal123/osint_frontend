@@ -62,9 +62,42 @@ const TYPE_INFO = {
 
 function parseQuery(raw, type) {
   if (!raw) return { display: "—", fields: [] };
+  if (typeof raw !== "string") {
+    return {
+      display: String(raw),
+      fields: [{ k: TYPE_INFO[type]?.input ?? "Value", v: String(raw) }],
+    };
+  }
+  const trimmed = raw.trim();
+  // Non-JSON plain value
+  if (!trimmed.startsWith("[") && !trimmed.startsWith("{")) {
+    return {
+      display: raw,
+      fields: [{ k: TYPE_INFO[type]?.input ?? "Value", v: raw }],
+    };
+  }
   try {
-    const parsed = JSON.parse(raw);
-    if (typeof parsed === "object" && parsed !== null) {
+    const parsed = JSON.parse(trimmed);
+    // Array shape (e.g. leak: [{type, value}])
+    if (Array.isArray(parsed)) {
+      const fields = parsed
+        .map((item) => {
+          if (item === null || typeof item !== "object") {
+            return { k: "Value", v: String(item) };
+          }
+          const k = item.type ?? item.key ?? "Value";
+          const v = item.value ?? item.query ?? "";
+          return { k: String(k), v: String(v) };
+        })
+        .filter((f) => f.v !== "");
+      if (fields.length === 0) return { display: raw, fields: [] };
+      return {
+        display: fields.map((f) => `${f.k}: ${f.v}`).join(" · "),
+        fields,
+      };
+    }
+    // Plain object shape
+    if (parsed && typeof parsed === "object") {
       const fields = Object.entries(parsed).map(([k, v]) => ({
         k,
         v: String(v),
@@ -114,16 +147,17 @@ export default function AdminQueries() {
 
   const handleDownload = async (q) => {
     if (!q.result) return;
-    setDownloadingId(q.id);
+    const key = q.public_id || q.id;
+    setDownloadingId(key);
     try {
-      const res = await instance.get(`/api/search-results/${q.id}/download`, {
+      const res = await instance.get(`/api/search-results/${key}/download`, {
         responseType: "blob",
       });
       const blob = new Blob([res.data], { type: "application/pdf" });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `query_${q.id}_${Date.now()}.pdf`;
+      a.download = `query_${key}_${Date.now()}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();

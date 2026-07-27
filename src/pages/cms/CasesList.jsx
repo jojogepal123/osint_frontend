@@ -8,7 +8,7 @@ const STATUSES = ["open", "in_progress", "pending", "resolved", "closed"];
 const PRIORITIES = ["low", "medium", "high", "critical"];
 
 export default function CasesList() {
-  const { user } = useAuthContext();
+  const { user, activeCase } = useAuthContext();
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -218,70 +218,92 @@ export default function CasesList() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {cases.map((caseItem) => (
-                  <tr key={caseItem.id} className="hover:bg-white/5">
-                    <td className="px-4 py-3 text-sm text-lime-400">
-                      {caseItem.case_number}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-white max-w-[200px] truncate">
-                      {caseItem.title}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-400">
-                      {caseItem.user?.name || "-"}
-                    </td>
-                    <td className="px-4 py-3">
-                      {(() => {
-                        const members = caseItem.assigned_users || [];
-                        if (members.length === 0) {
-                          return caseItem.assigned_user?.name || "-";
-                        }
-                        return (
-                          <div className="flex items-center gap-1">
-                            {members.slice(0, 3).map((m) => (
-                              <div
-                                key={m.id}
-                                title={m.name}
-                                className="w-6 h-6 rounded-full bg-lime-400/20 flex items-center justify-center text-lime-400 text-[10px] font-bold"
-                              >
-                                {m.name?.charAt(0)?.toUpperCase() || "?"}
-                              </div>
-                            ))}
-                            {members.length > 3 && (
-                              <span className="text-xs text-gray-400 ml-1">
-                                +{members.length - 3}
-                              </span>
-                            )}
-                          </div>
-                        );
-                      })()}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`text-xs px-2 py-1 rounded border ${getPriorityColor(caseItem.priority)}`}
+                {cases.map((caseItem) => {
+                  const isActive = activeCase?.id === caseItem.id;
+                  return (
+                    <tr
+                      key={caseItem.id}
+                      className={`hover:bg-white/5 ${
+                        isActive
+                          ? "border-l-4 border-l-lime-400 bg-lime-400/5"
+                          : ""
+                      }`}
+                    >
+                      <td
+                        className={`px-4 py-3 text-sm ${
+                          isActive ? "text-lime-300 font-semibold" : "text-lime-400"
+                        }`}
                       >
-                        {caseItem.priority}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`text-xs px-2 py-1 rounded border ${getStatusColor(caseItem.status)}`}
-                      >
-                        {caseItem.status?.replace("_", " ")}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-400">
-                      {caseItem.category || "-"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <Link
-                        to={`/cms/cases/${caseItem.id}`}
-                        className="text-sm text-lime-400 hover:text-lime-300"
-                      >
-                        View
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
+                        {caseItem.case_number}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-white max-w-[200px] truncate">
+                        {caseItem.title}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-400">
+                        {caseItem.user?.name || "-"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {(() => {
+                          const members = caseItem.assigned_users || [];
+                          if (members.length === 0) {
+                            return caseItem.assigned_user?.name || "-";
+                          }
+                          return (
+                            <div className="flex items-center gap-1">
+                              {members.slice(0, 3).map((m) => (
+                                <div
+                                  key={m.id}
+                                  title={m.name}
+                                  className="w-6 h-6 rounded-full bg-lime-400/20 flex items-center justify-center text-lime-400 text-[10px] font-bold"
+                                >
+                                  {m.name?.charAt(0)?.toUpperCase() || "?"}
+                                </div>
+                              ))}
+                              {members.length > 3 && (
+                                <span className="text-xs text-gray-400 ml-1">
+                                  +{members.length - 3}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`text-xs px-2 py-1 rounded border ${getPriorityColor(caseItem.priority)}`}
+                        >
+                          {caseItem.priority}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`text-xs px-2 py-1 rounded border ${getStatusColor(caseItem.status)}`}
+                        >
+                          {caseItem.status?.replace("_", " ")}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-400">
+                        {caseItem.category || "-"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          {isActive && (
+                            <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded border bg-lime-400/20 text-lime-300 border-lime-400/40 font-semibold">
+                              <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
+                              Active
+                            </span>
+                          )}
+                          <Link
+                            to={`/cms/cases/${caseItem.id}`}
+                            className="text-sm text-lime-400 hover:text-lime-300"
+                          >
+                            View
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

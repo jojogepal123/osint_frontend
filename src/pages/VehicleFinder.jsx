@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Listbox } from "@headlessui/react";
 import { ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import UserCard from "../components/UserCard";
 import instance from "../api/axios";
 import { toast } from "react-toastify";
@@ -193,6 +194,7 @@ const VehicleFinder = () => {
   const [loading, setLoading]               = useState(false);
   const [result, setResult]                 = useState(null); // { data, searchInput, type }
   const { hasSufficientCredits, updateUser } = useAuthContext();
+  const navigate = useNavigate();
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
@@ -232,6 +234,15 @@ const VehicleFinder = () => {
       const response = await instance.post(selectedOption.endpoint, payload);
       const credits = response?.data?.credits;
       if (credits !== undefined) updateUser({ credits });
+
+      if (
+        response.data?.cached &&
+        response.data?.search_query_public_id
+      ) {
+        toast.info("Showing saved result — no credits charged.");
+        navigate(`/results/${response.data.search_query_public_id}`);
+        return;
+      }
 
       // Unwrap nested Surepass response: { data: { status_code, message, data: {...} }, credits }
       const outer = response.data.data ?? response.data;

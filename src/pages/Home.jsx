@@ -64,12 +64,19 @@ const Home = () => {
           fetchedResults = await fetchEmailData();
         }
         // console.log("Fetched results:", fetchedResults);
+        if (fetchedResults?.cached && fetchedResults?.searchQueryPublicId) {
+          toast.info("Showing saved result — no credits charged.");
+          navigate(`/results/${fetchedResults.searchQueryPublicId}`);
+          return;
+        }
         navigate("/results", {
           state: {
             results: fetchedResults,
             type: inputType,
             userInput: inputValue,
             searchQueryId: fetchedResults?.searchQueryId ?? null,
+            searchQueryPublicId:
+              fetchedResults?.searchQueryPublicId ?? null,
           },
         });
       } catch (error) {

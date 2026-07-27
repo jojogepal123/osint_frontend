@@ -84,11 +84,12 @@ export default function CaseDetail() {
     setShowSearchQueries(!showSearchQueries);
   };
 
-  const handleDownloadResult = async (searchQueryId) => {
-    setDownloadingId(searchQueryId);
+  const handleDownloadResult = async (searchQuery) => {
+    const key = searchQuery.public_id || searchQuery.id;
+    setDownloadingId(key);
     try {
       const response = await axios.get(
-        `/api/search-results/${searchQueryId}/download`,
+        `/api/search-results/${key}/download`,
         { responseType: "blob" },
       );
       const blob = new Blob([response.data], { type: "application/pdf" });
@@ -97,7 +98,7 @@ export default function CaseDetail() {
       link.href = url;
       link.setAttribute(
         "download",
-        `search_result_${searchQueryId}_${Date.now()}.pdf`,
+        `search_result_${key}_${Date.now()}.pdf`,
       );
       document.body.appendChild(link);
       link.click();
@@ -112,10 +113,25 @@ export default function CaseDetail() {
   };
 
   const formatQuery = (query) => {
+    if (!query) return "—";
+    if (typeof query !== "string") return String(query);
+    const trimmed = query.trim();
+    if (!trimmed.startsWith("[") && !trimmed.startsWith("{")) return query;
     try {
-      const parsed = JSON.parse(query);
-      if (typeof parsed === "object") {
-        return Object.values(parsed).join(", ");
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        const values = parsed
+          .map((item) => {
+            if (item === null || typeof item !== "object") return String(item);
+            return item.value ?? item.query ?? null;
+          })
+          .filter((v) => v !== null && v !== "");
+        if (values.length > 0) return values.join(", ");
+      } else if (parsed && typeof parsed === "object") {
+        const values = Object.values(parsed)
+          .filter((v) => v !== null && v !== "" && v !== undefined)
+          .map(String);
+        if (values.length > 0) return values.join(", ");
       }
       return query;
     } catch {
@@ -458,7 +474,7 @@ export default function CaseDetail() {
                           </td>
                           <td className="px-6 py-3">
                             {sq.result ? (
-                              downloadingId === sq.id ? (
+                              downloadingId === (sq.public_id || sq.id) ? (
                                 <button
                                   disabled
                                   className="text-lime-400 text-xs flex items-center gap-1 cursor-not-allowed"
@@ -468,7 +484,7 @@ export default function CaseDetail() {
                                 </button>
                               ) : (
                                 <button
-                                  onClick={() => handleDownloadResult(sq.id)}
+                                  onClick={() => handleDownloadResult(sq)}
                                   className="text-lime-400 hover:text-lime-300 text-xs flex items-center gap-1"
                                 >
                                   <svg
