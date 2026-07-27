@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import useAuthContext from "../context/AuthContext";
 import UserIcon from "../assets/userIcon.png";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import InlineLoader from "./InlineLoader";
 
 const UserCard = () => {
   const { user, logout, activeCase } = useAuthContext();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState(null);
   const navigate = useNavigate();
+  const avatarRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   const caseName = activeCase?.title || activeCase?.name || null;
 
@@ -26,56 +29,74 @@ const UserCard = () => {
     }, 2000);
   };
 
-  return (
-    <div className="flex gap-2 items-center justify-end p-4 z-20">
-      <div
-        className="text-xs md:text-sm text-custom-lime rounded px-2 py-1.5 bg-transparent border border-custom-lime max-w-[120px] md:max-w-[200px] truncate"
-        title={caseName || "selected case"}
-      >
-        Active:{" "}
-        <span className="font-semibold">{caseName || "selected case"}</span>
-      </div>
-      {user && (
-        <div className="text-xs md:text-sm text-gray-900 rounded p-2 bg-custom-lime">
-          Credits:{" "}
-          <span className="font-semibold">
-            {" "}
-            {Number(user.credits).toFixed(2)}
-          </span>
-        </div>
-      )}
-      <div className="relative flex items-center">
-        <button
-          className="h-8 w-8 md:h-10 md:w-10 rounded-full shadow bg-white/10 transition-opacity duration-300"
-          title={user?.name || "User"}
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-        >
-          <img
-            className="h-8 w-8 md:h-10 md:w-10 rounded-full border-2 border-custom-lime"
-            src={UserIcon}
-            alt={`${user?.name}'s profile`}
-            title={user?.name || "User"}
-          />
-        </button>
-        {dropdownOpen && (
-          <div className="absolute top-8 md:top-10 right-2 md:right-0 mt-2 w-80 z-50 border border-lime-300 bg-gray-900 bg-opacity-30 backdrop-blur-lg shadow-md rounded-lg px-4 divide-y divide-lime-300">
+  const toggleDropdown = () => {
+    if (!dropdownOpen && avatarRef.current) {
+      const rect = avatarRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right,
+      });
+    }
+    setDropdownOpen((v) => !v);
+  };
+
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    const handleClickOutside = (e) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target) &&
+        avatarRef.current &&
+        !avatarRef.current.contains(e.target)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+    const handleEscape = (e) => {
+      if (e.key === "Escape") setDropdownOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [dropdownOpen]);
+
+  const dropdownNode =
+    dropdownOpen && dropdownPos
+      ? createPortal(
+          <div
+            ref={dropdownRef}
+            style={{
+              position: "fixed",
+              top: dropdownPos.top,
+              right: dropdownPos.right,
+              zIndex: 9999,
+            }}
+            className="w-80 border border-lime-300 bg-gray-900/95 backdrop-blur-lg shadow-2xl rounded-lg px-4 divide-y divide-lime-300"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-start space-x-4 mb-4 py-2">
               <div className="text-white">
                 <img
                   className="h-8 md:h-10 w-8 md:w-10 rounded-full border-2 border-lime-300"
                   src={UserIcon}
                   alt={`${user?.name}'s profile`}
-                  title={user?.name || "User"} // Show name on hover
+                  title={user?.name || "User"}
                 />
               </div>
-              <div className=" text-white hover:text-lime-300 flex flex-col">
-                <span className="">{user?.name || "User"}</span>
-                <span className="">{user?.email || ""}</span>
+              <div className="text-white flex flex-col">
+                <span>{user?.name || "User"}</span>
+                <span>{user?.email || ""}</span>
               </div>
             </div>
 
             <button
-              onClick={() => navigate("/cms/cases")}
+              onClick={() => {
+                setDropdownOpen(false);
+                navigate("/cms/cases");
+              }}
               className="flex items-center px-4 py-3 space-x-3 w-full hover:bg-gray-800 text-white hover:text-lime-300"
             >
               <svg
@@ -95,7 +116,10 @@ const UserCard = () => {
             </button>
             {user?.is_admin && (
               <button
-                onClick={() => navigate("/admin")}
+                onClick={() => {
+                  setDropdownOpen(false);
+                  navigate("/admin");
+                }}
                 className="flex items-center px-4 py-3 space-x-3 w-full hover:bg-gray-800 text-white hover:text-lime-300"
               >
                 <svg
@@ -139,8 +163,43 @@ const UserCard = () => {
                 <span className="text-sm">Logout</span>
               </button>
             )}
-          </div>
-        )}
+          </div>,
+          document.body,
+        )
+      : null;
+
+  return (
+    <div className="flex gap-2 items-center justify-end p-4 z-20">
+      {dropdownNode}
+      <div
+        className="text-xs md:text-sm text-custom-lime rounded px-2 py-1.5 bg-transparent border border-custom-lime max-w-[120px] md:max-w-[200px] truncate"
+        title={caseName || "selected case"}
+      >
+        Active:{" "}
+        <span className="font-semibold">{caseName || "selected case"}</span>
+      </div>
+      {user && (
+        <div className="text-xs md:text-sm text-gray-900 rounded p-2 bg-custom-lime">
+          Credits:{" "}
+          <span className="font-semibold">
+            {" "}
+            {Number(user.credits).toFixed(2)}
+          </span>
+        </div>
+      )}
+      <div className="relative flex items-center" ref={avatarRef}>
+        <button
+          className="h-8 w-8 md:h-10 md:w-10 rounded-full shadow bg-white/10 transition-opacity duration-300"
+          title={user?.name || "User"}
+          onClick={toggleDropdown}
+        >
+          <img
+            className="h-8 w-8 md:h-10 md:w-10 rounded-full border-2 border-custom-lime"
+            src={UserIcon}
+            alt={`${user?.name}'s profile`}
+            title={user?.name || "User"}
+          />
+        </button>
       </div>
     </div>
   );
