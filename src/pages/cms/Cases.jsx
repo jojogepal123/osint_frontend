@@ -8,7 +8,7 @@ const PRIORITIES = ["low", "medium", "high", "critical"];
 const CATEGORIES = ["billing", "technical", "investigation", "general"];
 
 export default function Cases() {
-  const { user, fetchActiveCase } = useAuthContext();
+  const { user, fetchActiveCase, activeCase } = useAuthContext();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [cases, setCases] = useState([]);
@@ -197,35 +197,58 @@ export default function Cases() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {cases.map((caseItem) => (
-                  <tr key={caseItem.id} className="hover:bg-white/5">
-                    <td className="px-4 py-3 text-sm text-lime-400">{caseItem.case_number}</td>
-                    <td className="px-4 py-3 text-sm text-white">{caseItem.title}</td>
-                    <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-1 rounded border ${getPriorityColor(caseItem.priority)}`}>
-                        {caseItem.priority}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-1 rounded border ${getStatusColor(caseItem.status)}`}>
-                        {caseItem.status?.replace("_", " ")}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-400">{caseItem.category || "-"}</td>
-                    {user?.cms_role !== "auditor" && (
-                      <td className="px-4 py-3">
-                        {canSelectCase && (
-                          <button
-                            onClick={() => handleSelectCase(caseItem)}
-                            className="text-sm text-lime-400 hover:text-lime-300"
-                          >
-                            Select
-                          </button>
-                        )}
+                {cases.map((caseItem) => {
+                  const isActive = activeCase?.id === caseItem.id;
+                  return (
+                    <tr
+                      key={caseItem.id}
+                      className={`hover:bg-white/5 ${
+                        isActive
+                          ? "border-l-4 border-l-lime-400 bg-lime-400/5"
+                          : ""
+                      }`}
+                    >
+                      <td
+                        className={`px-4 py-3 text-sm ${
+                          isActive ? "text-lime-300 font-semibold" : "text-lime-400"
+                        }`}
+                      >
+                        {caseItem.case_number}
                       </td>
-                    )}
-                  </tr>
-                ))}
+                      <td className="px-4 py-3 text-sm text-white">{caseItem.title}</td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs px-2 py-1 rounded border ${getPriorityColor(caseItem.priority)}`}>
+                          {caseItem.priority}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs px-2 py-1 rounded border ${getStatusColor(caseItem.status)}`}>
+                          {caseItem.status?.replace("_", " ")}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-400">{caseItem.category || "-"}</td>
+                      {user?.cms_role !== "auditor" && (
+                        <td className="px-4 py-3">
+                          {isActive ? (
+                            <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded border bg-lime-400/20 text-lime-300 border-lime-400/40 font-semibold">
+                              <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
+                              Active
+                            </span>
+                          ) : (
+                            canSelectCase && (
+                              <button
+                                onClick={() => handleSelectCase(caseItem)}
+                                className="text-sm text-lime-400 hover:text-lime-300"
+                              >
+                                Select
+                              </button>
+                            )
+                          )}
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
