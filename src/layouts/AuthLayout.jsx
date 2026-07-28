@@ -47,7 +47,8 @@ const AuthLayout = () => {
     location.pathname.startsWith("/results") ||
     location.pathname.startsWith("/corporate-results") ||
     location.pathname.startsWith("/upgrade") ||
-    location.pathname.startsWith("/verification-results");
+    location.pathname.startsWith("/verification-results") ||
+    location.pathname.startsWith("/social-results");
 
   return user ? (
     <>

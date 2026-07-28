@@ -32,7 +32,7 @@ const UserCard = () => {
         className="text-xs md:text-sm text-custom-lime rounded px-2 py-1.5 bg-transparent border border-custom-lime max-w-[120px] md:max-w-[200px] truncate"
         title={caseName || "selected case"}
       >
-        Active:{" "}
+        Active Case:{" "}
         <span className="font-semibold">{caseName || "selected case"}</span>
       </div>
       {user && (

@@ -343,19 +343,35 @@ const ProfileModal = ({ candidate, onClose }) => {
   const handleDownload = async () => {
     setDownloading(true);
     try {
-      // Convert photo to base64 client-side (LinkedIn CDN blocks server-side fetches)
+      // Convert photo to base64 client-side (LinkedIn CDN blocks server-side fetches).
+      // Force JPEG via canvas so the backend's dompdf can render it (WebP isn't
+      // supported by GD on the server).
       let payload = { ...candidate };
       const photoUrl = candidate.photo?.url ?? candidate.photoUrl ?? null;
       if (photoUrl && !photoUrl.startsWith("data:")) {
         try {
           const imgRes = await fetch(photoUrl);
           const blob = await imgRes.blob();
-          const base64 = await new Promise((resolve) => {
+          const dataUrl = await new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(new Error("read failed"));
             reader.readAsDataURL(blob);
           });
-          payload._photoBase64 = base64;
+          const img = await new Promise((resolve, reject) => {
+            const i = new Image();
+            i.onload = () => resolve(i);
+            i.onerror = () => reject(new Error("image load failed"));
+            i.src = dataUrl;
+          });
+          const canvas = document.createElement("canvas");
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+          payload._photoBase64 = canvas.toDataURL("image/jpeg", 0.9);
         } catch {
           // photo fetch failed — backend will show initials fallback
         }
@@ -1121,9 +1137,18 @@ const ProfileModal = ({ candidate, onClose }) => {
 
 // ─── Result Card (list row) ───────────────────────────────────────────────────
 
-const SocialCandidateCard = ({ candidate }) => {
+const SocialCandidateCard = ({ candidate, setModalOpen }) => {
   const [showContacts, setShowContacts] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+
+  const openProfile = () => {
+    setShowProfile(true);
+    if (typeof setModalOpen === "function") setModalOpen(true);
+  };
+  const closeProfile = () => {
+    setShowProfile(false);
+    if (typeof setModalOpen === "function") setModalOpen(false);
+  };
 
   const c = candidate;
   const photoUrl = getCandidatePhotoUrl(c);
@@ -1220,7 +1245,7 @@ const SocialCandidateCard = ({ candidate }) => {
             <button
               onClick={() => {
                 setShowContacts(false);
-                setShowProfile(true);
+                openProfile();
               }}
               className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-gradient-to-r from-lime-200 to-teal-700 text-gray-900 hover:opacity-90 transition-opacity"
             >
@@ -1245,7 +1270,7 @@ const SocialCandidateCard = ({ candidate }) => {
                 candidate={candidate}
                 onViewProfile={() => {
                   setShowContacts(false);
-                  setShowProfile(true);
+                  openProfile();
                 }}
                 onClose={() => setShowContacts(false)}
               />
@@ -1263,7 +1288,7 @@ const SocialCandidateCard = ({ candidate }) => {
       {showProfile && (
         <ProfileModal
           candidate={candidate}
-          onClose={() => setShowProfile(false)}
+          onClose={closeProfile}
         />
       )}
     </>

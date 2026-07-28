@@ -146,6 +146,10 @@ export default function AdminQueries() {
   };
 
   const handleDownload = async (q) => {
+    if (q.type === "leak") {
+      toast.info("Download is not available for Leak Data Finder results");
+      return;
+    }
     if (!q.result) return;
     const key = q.public_id || q.id;
     setDownloadingId(key);
@@ -349,8 +353,16 @@ export default function AdminQueries() {
                                 e.stopPropagation();
                                 handleDownload(q);
                               }}
-                              className="text-lime-400 hover:text-lime-300 transition-colors"
-                              title="Download PDF"
+                              className={`transition-colors ${
+                                q.type === "leak"
+                                  ? "text-gray-600 cursor-not-allowed"
+                                  : "text-lime-400 hover:text-lime-300"
+                              }`}
+                              title={
+                                q.type === "leak"
+                                  ? "Download not available for Leak Data Finder results"
+                                  : "Download PDF"
+                              }
                             >
                               <svg
                                 className="w-4 h-4"
@@ -435,8 +447,16 @@ export default function AdminQueries() {
                             e.stopPropagation();
                             handleDownload(q);
                           }}
-                          className="text-lime-400 hover:text-lime-300 transition-colors"
-                          title="Download PDF"
+                          className={`transition-colors ${
+                            q.type === "leak"
+                              ? "text-gray-600 cursor-not-allowed"
+                              : "text-lime-400 hover:text-lime-300"
+                          }`}
+                          title={
+                            q.type === "leak"
+                              ? "Download not available for Leak Data Finder results"
+                              : "Download PDF"
+                          }
                         >
                           <svg
                             className="w-4 h-4"

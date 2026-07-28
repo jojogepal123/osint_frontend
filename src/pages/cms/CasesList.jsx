@@ -294,7 +294,7 @@ export default function CasesList() {
                             </span>
                           )}
                           <Link
-                            to={`/cms/cases/${caseItem.id}`}
+                            to={`/cms/cases/${caseItem.public_id || caseItem.id}`}
                             className="text-sm text-lime-400 hover:text-lime-300"
                           >
                             View
