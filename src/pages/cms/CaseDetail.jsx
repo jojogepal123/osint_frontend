@@ -44,7 +44,7 @@ export default function CaseDetail() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("/api/admin/users");
+      const response = await axios.get(`/api/cases/${id}/assignable-users`);
       const usersData = response.data?.data || response.data || [];
       setUsers(Array.isArray(usersData) ? usersData : []);
     } catch {
@@ -85,6 +85,10 @@ export default function CaseDetail() {
   };
 
   const handleDownloadResult = async (searchQuery) => {
+    if (searchQuery.type === "leak") {
+      toast.info("Download is not available for Leak Data Finder results");
+      return;
+    }
     const key = searchQuery.public_id || searchQuery.id;
     setDownloadingId(key);
     try {
@@ -485,7 +489,16 @@ export default function CaseDetail() {
                               ) : (
                                 <button
                                   onClick={() => handleDownloadResult(sq)}
-                                  className="text-lime-400 hover:text-lime-300 text-xs flex items-center gap-1"
+                                  className={`text-xs flex items-center gap-1 ${
+                                    sq.type === "leak"
+                                      ? "text-gray-600 cursor-not-allowed"
+                                      : "text-lime-400 hover:text-lime-300"
+                                  }`}
+                                  title={
+                                    sq.type === "leak"
+                                      ? "Download not available for Leak Data Finder results"
+                                      : undefined
+                                  }
                                 >
                                   <svg
                                     className="w-4 h-4"
@@ -713,43 +726,67 @@ export default function CaseDetail() {
             <h3 className="text-lg font-semibold text-white mb-4">
               Assign Members
             </h3>
-            <div className="space-y-2 max-h-80 overflow-y-auto">
-              {users.map((u) => (
-                <div
-                  key={u.id}
-                  onClick={() => toggleUser(u.id)}
-                  className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer border transition-colors ${
-                    selectedUsers.includes(u.id)
-                      ? "border-lime-400 bg-lime-400/10"
-                      : "border-white/10 hover:bg-white/5"
-                  }`}
-                >
-                  <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white text-xs font-bold">
-                    {u.name?.charAt(0)?.toUpperCase() || "?"}
-                  </div>
-                  <div className="flex-1">
-                    <span className="text-white text-sm">{u.name}</span>
-                    <span className="text-gray-500 text-xs block">
-                      {u.email}
-                    </span>
-                  </div>
-                  {selectedUsers.includes(u.id) && (
-                    <svg
-                      className="w-5 h-5 text-lime-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+            <div className="space-y-2 max-h-80 overflow-y-auto custom-scrollbar">
+              {(() => {
+                const currentMemberIds = new Set(
+                  (caseData?.assigned_users || []).map((u) => u.id)
+                );
+                const merged = [
+                  ...users,
+                  ...(caseData?.assigned_users || [])
+                    .filter((m) => !users.some((u) => u.id === m.id))
+                    .map((m) => ({ ...m, _currentMember: true })),
+                ];
+                return merged.map((u) => {
+                  const isCurrent = currentMemberIds.has(u.id);
+                  const isSelected = selectedUsers.includes(u.id);
+                  return (
+                    <div
+                      key={u.id}
+                      onClick={() => !isCurrent && toggleUser(u.id)}
+                      className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
+                        isCurrent
+                          ? "border-white/5 bg-white/[0.02] opacity-60 cursor-not-allowed"
+                          : isSelected
+                            ? "border-lime-400 bg-lime-400/10 cursor-pointer"
+                            : "border-white/10 hover:bg-white/5 cursor-pointer"
+                      }`}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  )}
-                </div>
-              ))}
+                      <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white text-xs font-bold">
+                        {u.name?.charAt(0)?.toUpperCase() || "?"}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-white text-sm">{u.name}</span>
+                          {isCurrent && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-600 text-gray-200">
+                              Already assigned
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-gray-500 text-xs block">
+                          {u.email}
+                        </span>
+                      </div>
+                      {isSelected && !isCurrent && (
+                        <svg
+                          className="w-5 h-5 text-lime-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  );
+                });
+              })()}
             </div>
             <div className="flex gap-3 mt-6">
               <button

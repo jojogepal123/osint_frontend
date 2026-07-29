@@ -9,7 +9,6 @@ import { ProfileFromTelApis } from "../utils/ProfileFromTelApis";
 import { ProfileFromEmailApis } from "../utils/ProfileFromEmailApis";
 import TelProfileCard from "../components/TelProfileCard";
 import EmailProfileCard from "../components/EmailProfileCard";
-import SocialCandidateCard from "../components/SocialCandidateCard";
 import no_results_image from "../assets/noresults.png";
 import { useState, Suspense, lazy, useEffect, useMemo } from "react";
 import InlineLoader from "../components/InlineLoader";
@@ -118,17 +117,13 @@ const Results = () => {
   const isFromSavedResult = !stateResults && !!fetched?.results;
   // The saved-results endpoint returns a curated shape:
   //   - tel/email: { profile, emailData, gravatar, breachData, osintData, mapData }
-  //   - social:   { results: [ { candidate, status }, ... ] }
   // The live endpoints return the raw per-API shape:
   //   - tel/email: { emailData, zehefData, hibpData, osintData, holeheData, ... }
-  //   - social:   { results: [ ... ] }   (same shape as saved)
   // Normalise the saved shape into the live one for tel/email so downstream
-  // code (which expects the live shape) just works. For social, both shapes
-  // are the same — passthrough.
+  // code (which expects the live shape) just works.
   const actualResults = useMemo(() => {
     const base = results?.data ?? results ?? {};
     if (!isFromSavedResult) return base;
-    if (type === "social") return base;
     return {
       ...base,
       // Re-wrap mapData under the live emailData.maps_result.reviews path so
@@ -184,18 +179,6 @@ const Results = () => {
     [actualResults],
   );
   const osResults = actualResults?.osintData?.data || null;
-
-  // Social candidates: the live/saved body is
-  //   { results: [ { candidate, status }, ... ] }
-  const socialCandidates = useMemo(() => {
-    if (type !== "social") return [];
-    const rows = Array.isArray(actualResults?.results)
-      ? actualResults.results
-      : [];
-    return rows
-      .filter((r) => r && r.candidate && r.status !== "failed")
-      .map((r) => r.candidate);
-  }, [type, actualResults]);
 
   const isEmailDataValid =
     emailData && emailData.success !== null && emailData.error === undefined;
@@ -282,17 +265,6 @@ const Results = () => {
         );
 
       return telEmpty && (!osResults || osResults.length === 0);
-    }
-
-    if (type === "social") {
-      // SignalHire response shape: { results: [ { candidate, status }, ... ] }
-      const socialRows = Array.isArray(actualResults?.results)
-        ? actualResults.results
-        : [];
-      const validCandidates = socialRows.filter(
-        (r) => r && r.candidate && r.status !== "failed",
-      );
-      return validCandidates.length === 0;
     }
 
     if (type === "email") {
@@ -411,16 +383,6 @@ const Results = () => {
             {osResults !== null && <OsintCard data={osResults} />}
           </div>
         </>
-      ) : type === "social" ? (
-        <div className="z-10 w-full max-w-5xl mx-auto my-12 px-4 space-y-3">
-          <p className="text-gray-500 text-sm">
-            {socialCandidates.length} profile
-            {socialCandidates.length !== 1 ? "s" : ""} found
-          </p>
-          {socialCandidates.map((c, i) => (
-            <SocialCandidateCard key={i} candidate={c} />
-          ))}
-        </div>
       ) : (
         <>
           <div className="z-10 w-full max-w-6xl mx-auto my-12">

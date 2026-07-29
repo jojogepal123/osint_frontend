@@ -127,7 +127,11 @@ const SearchHistory = () => {
                     {formatDate(q.created_at)}
                   </span>
                   <Link
-                    to={`/results/${q.public_id}`}
+                    to={
+                      q.type === "social"
+                        ? `/social-results/${q.public_id}`
+                        : `/results/${q.public_id}`
+                    }
                     className="px-3 py-1 rounded bg-gradient-to-r from-lime-200 to-teal-800 text-gray-900 text-xs font-bold hover:opacity-90"
                   >
                     View

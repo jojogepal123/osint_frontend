@@ -68,7 +68,7 @@ const SocialIntel = () => {
         if (data.credits !== undefined) updateUser({ credits: data.credits });
         if (data.cached && data.search_query_public_id) {
           toast.info("Showing saved result — no credits charged.");
-          navigate(`/results/${data.search_query_public_id}`);
+          navigate(`/social-results/${data.search_query_public_id}`);
           return;
         }
         setResults(data.results ?? data);

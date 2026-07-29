@@ -31,6 +31,7 @@ import LiveOnlyRoute from "./components/LiveOnlyRoute";
 import Upgrade from "./pages/Upgrade";
 import OtpVerification from "./pages/OtpVerification";
 import SocialIntel from "./pages/SocialIntel";
+import SocialResults from "./pages/SocialResults";
 import VehicleFinder from "./pages/VehicleFinder";
 import VehicleResults from "./pages/VehicleResults";
 import SearchHistory from "./pages/SearchHistory";
@@ -101,6 +102,15 @@ function App() {
               {/* <Route path="/subscription" element={<Subscription />} /> */}
               <Route path="/results" element={<Results />} />
               <Route path="/results/:publicId" element={<Results />} />
+              <Route path="/social-results" element={<SocialResults />} />
+              <Route
+                path="/social-results/:publicId"
+                element={
+                  <LiveOnlyRoute>
+                    <SocialResults />
+                  </LiveOnlyRoute>
+                }
+              />
               <Route path="/searches" element={<SearchHistory />} />
               <Route path="/leak-data-finder" element={<LeakDataFinder />} />
               <Route

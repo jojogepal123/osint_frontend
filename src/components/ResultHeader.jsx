@@ -7,6 +7,24 @@ import FullScreenLoader from "./FullScreenLoader";
 import useAuthContext from "../context/AuthContext";
 import { embedProfileImages } from "../utils/imageToBase64";
 
+// Map a results-page type to the correct PDF-report endpoint.
+const REPORT_ENDPOINT_BY_TYPE = {
+  tel: "/api/generate-report",
+  email: "/api/generate-report",
+  social: "/api/generate-social-report",
+  vehicle: "/api/generate-rc-report",
+  upi: "/api/generate-upi-report",
+  challan: "/api/generate-challan-report",
+  verification: "/api/generate-verification-report",
+  corporate: "/api/generate-ai-report",
+  leak: "/api/generate-report",
+};
+
+const AI_REPORT_ENDPOINT_BY_TYPE = {
+  tel: "/api/generate-ai-report",
+  email: "/api/generate-ai-report",
+};
+
 const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -17,12 +35,24 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
   const location = useLocation();
   const handleBack = () => navigate(-1);
 
+  const downloadPdfBlob = (blob, filename) => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
   const handleSaveResults = async () => {
     setIsLoading(true);
     try {
+      const endpoint = REPORT_ENDPOINT_BY_TYPE[type] || "/api/generate-report";
       const resultsWithImages = await embedProfileImages(results);
       const response = await instance.post(
-        "/api/generate-report",
+        endpoint,
         {
           userInput,
           type,
@@ -32,31 +62,30 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
           responseType: "blob",
         }
       );
-      const filename = response?.data?.filename;
-      //  (filename);
       const blob = new Blob([response.data], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `report-${userInput}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      downloadPdfBlob(blob, `report-${userInput || "search"}.pdf`);
     } catch (error) {
       // console.error("Download failed:", error);
-      toast.error("Error generating report. Please try again.");
+      toast.error(
+        error.response?.status === 422
+          ? "This search type doesn't support PDF export yet."
+          : "Error generating report. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGenerateReport = async () => {
+    if (!AI_REPORT_ENDPOINT_BY_TYPE[type]) {
+      toast.error("AI Report is only available for phone and email searches.");
+      return;
+    }
     setIsAiLoading(true);
     try {
       const resultsWithImages = await embedProfileImages(results);
       const res = await instance.post(
-        "/api/generate-ai-report",
+        AI_REPORT_ENDPOINT_BY_TYPE[type],
         {
           userInput,
           type,
@@ -67,21 +96,19 @@ const ResultHeader = ({ userInput, type, results, modalOpen, searchInput }) => {
         }
       );
       const blob = new Blob([res.data], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `ai-generated-report-${userInput}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      // console.error("Download failed:", error);
+      downloadPdfBlob(
+        blob,
+        `ai-generated-report-${userInput || "search"}.pdf`,
+      );
+    } catch {
       toast.error("Error generating AI report. Please try again.");
     } finally {
       setIsAiLoading(false);
     }
   };
+
+  // Hide the entire bar when any modal (image / social profile) is open.
+  if (modalOpen) return null;
 
   return (
     <>
