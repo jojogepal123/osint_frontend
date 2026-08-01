@@ -192,7 +192,8 @@ function App() {
                 path="/"
                 element={
                   <PageTransition>
-                    <Main />
+                    {/* <Main /> */}
+                    <Login />
                   </PageTransition>
                 }
               />

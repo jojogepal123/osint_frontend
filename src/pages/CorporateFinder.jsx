@@ -258,6 +258,11 @@ const CorporateFinder = () => {
           navigate(`/results/${response.data.search_query_public_id}`);
           return;
         }
+        if (response.data?.success === false) {
+          navigate("/corporate-results", { state: { data: null } });
+          toast.success("No data found");
+          return;
+        }
         navigate("/corporate-results", {
           state: { data: response.data.data, searchInput },
         });
