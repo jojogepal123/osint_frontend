@@ -28,14 +28,56 @@ body {
   width: 100%;
   z-index: -1;
 }
+/* ── Scrollbars ────────────────────────────────────────────────────────────
+   The .custom-scrollbar look, applied to the whole app. Firefox reads the
+   standard scrollbar-* properties (inherited from html); Chromium, Edge and
+   Safari need the ::-webkit-scrollbar pseudo-elements, which apply to every
+   scrollable element when written unprefixed by a class.                    */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #9acc14 #111827; /* thumb and track colors */
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #111827;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #9acc14;
+  border-radius: 9999px;
+  border: 2px solid #111827; /* inset the thumb inside the track */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #abde64;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: #111827;
+}
+
+/* Kept for the many elements that already opt in by class: a slimmer,
+   track-less variant for scroll areas nested inside cards and tables. */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #dafa9d #374151; /* thumb and track colors */
+  scrollbar-color: #9acc14 transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: #9acc14;
+  border: none;
 }

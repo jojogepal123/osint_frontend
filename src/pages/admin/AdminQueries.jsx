@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import instance from "../../api/axios";
 import Loader from "../../components/Loader";
+import DeleteQueryModal from "../../components/DeleteQueryModal";
 
 const TYPE_COLORS = {
   phone: "bg-blue-500/20 text-blue-300 border-blue-500/30",
@@ -59,6 +60,52 @@ const TYPE_INFO = {
   },
   upi: { label: "UPI Lookup", sidebar: "Vehicle Intell", input: "UPI ID" },
 };
+
+// Loopback / RFC1918 / link-local / CGNAT. A search logged with one of these
+// was recorded behind a proxy, so it identifies the infrastructure rather than
+// the user — the UI falls back to their last login IP in that case.
+function isPrivateIp(ip) {
+  if (!ip) return true;
+  if (ip === "::1" || ip.startsWith("fc") || ip.startsWith("fd")) return true;
+  const parts = ip.split(".").map(Number);
+  if (parts.length !== 4 || parts.some(isNaN)) return false;
+  const [a, b] = parts;
+  return (
+    a === 10 ||
+    a === 127 ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168) ||
+    (a === 169 && b === 254) ||
+    (a === 100 && b >= 64 && b <= 127)
+  );
+}
+
+// Prefer whichever address actually identifies the user: the IP the search was
+// logged with, or the one recorded at their last login when that is a proxy.
+function ipInfo(q) {
+  const requestIp = q.ip_address ?? null;
+  const loginIp = q.user?.latest_ip?.ip ?? null;
+  const proxied = isPrivateIp(requestIp);
+
+  if (proxied && loginIp && !isPrivateIp(loginIp)) {
+    return {
+      value: loginIp,
+      label: "last login",
+      title: `Recorded at this user's last login. The search itself was logged as ${
+        requestIp ?? "unknown"
+      }, which is a proxy address.`,
+    };
+  }
+
+  return {
+    value: requestIp ?? "—",
+    label: proxied && requestIp ? "proxy" : null,
+    title:
+      proxied && requestIp
+        ? "Proxy address, not the user's own IP — the request reached Laravel without a trusted X-Forwarded-For header."
+        : "IP the search was made from",
+  };
+}
 
 function parseQuery(raw, type) {
   if (!raw) return { display: "—", fields: [] };
@@ -124,16 +171,23 @@ export default function AdminQueries() {
   const [queries, setQueries] = useState([]);
   const [meta, setMeta] = useState({});
   const [search, setSearch] = useState("");
+  const [userFilter, setUserFilter] = useState("");
+  const [debounced, setDebounced] = useState({ search: "", user: "" });
   const [typeFilter, setType] = useState("");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(null);
   const [downloadingId, setDownloadingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [confirmTarget, setConfirmTarget] = useState(null);
+  const [impact, setImpact] = useState(null);
+  const [impactLoading, setImpactLoading] = useState(false);
 
   const fetchQueries = () => {
     setLoading(true);
     const params = new URLSearchParams({ page });
-    if (search) params.set("search", search);
+    if (debounced.search) params.set("search", debounced.search);
+    if (debounced.user) params.set("user", debounced.user);
     if (typeFilter) params.set("type", typeFilter);
     instance
       .get(`/api/admin/queries?${params}`)
@@ -152,7 +206,7 @@ export default function AdminQueries() {
     }
     if (!q.result) return;
     const key = q.public_id || q.id;
-    setDownloadingId(key);
+    setDownloadingId(q.id);
     try {
       const res = await instance.get(`/api/search-results/${key}/download`, {
         responseType: "blob",
@@ -173,9 +227,79 @@ export default function AdminQueries() {
     }
   };
 
+  // Opening the dialog kicks off the impact lookup: deleting one entry purges
+  // every entry for the same value, so the dialog has to say how many that is
+  // before the admin commits.
+  const openDeleteModal = async (q) => {
+    setConfirmTarget(q);
+    setImpact(null);
+    setImpactLoading(true);
+    try {
+      const key = q.public_id || q.id;
+      const r = await instance.get(`/api/admin/queries/${key}/impact`);
+      setImpact(r.data);
+    } catch {
+      setImpact({ total_count: 1, case_count: q.case_id ? 1 : 0 });
+    } finally {
+      setImpactLoading(false);
+    }
+  };
+
+  const closeDeleteModal = () => {
+    setConfirmTarget(null);
+    setImpact(null);
+  };
+
+  const confirmDelete = async () => {
+    const q = confirmTarget;
+    if (!q) return;
+
+    setDeletingId(q.id);
+    try {
+      const res = await instance.delete(
+        `/api/admin/queries/${q.public_id || q.id}`
+      );
+      const n = res.data?.deleted_count ?? 1;
+      toast.success(
+        n > 1
+          ? `Deleted ${n} entries. Cache cleared \u2014 next search will be fresh.`
+          : "Query deleted. Cache cleared \u2014 next search will be fresh."
+      );
+      closeDeleteModal();
+      if (expanded === q.id) setExpanded(null);
+      // meta.total / last_page drive the pager, so refetch instead of splicing.
+      if (queries.length === 1 && page > 1) setPage((prev) => prev - 1);
+      else fetchQueries();
+    } catch (e) {
+      toast.error(e?.response?.data?.error ?? "Failed to delete query");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  // Both text filters are typed into, so settle them before hitting the API.
+  useEffect(() => {
+    const id = setTimeout(
+      () =>
+        // Returning the previous object when nothing changed lets React bail
+        // out, so mounting doesn't cost a second fetch.
+        setDebounced((prev) =>
+          prev.search === search && prev.user === userFilter
+            ? prev
+            : { search, user: userFilter }
+        ),
+      350
+    );
+    return () => clearTimeout(id);
+  }, [search, userFilter]);
+
   useEffect(() => {
     fetchQueries();
-  }, [page, search, typeFilter]);
+  }, [page, debounced, typeFilter]);
+
+  const confirmInfo = confirmTarget
+    ? (TYPE_INFO[confirmTarget.type] ?? { label: confirmTarget.type })
+    : null;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -196,6 +320,15 @@ export default function AdminQueries() {
           }}
           placeholder="Search by query value…"
           className="flex-1 bg-gray-900 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-lime-500/50"
+        />
+        <input
+          value={userFilter}
+          onChange={(e) => {
+            setUserFilter(e.target.value);
+            setPage(1);
+          }}
+          placeholder="Filter by user name or email…"
+          className="bg-gray-900 border border-white/10 rounded-lg px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-lime-500/50 sm:w-64"
         />
         <select
           value={typeFilter}
@@ -261,7 +394,7 @@ export default function AdminQueries() {
               <th className="text-left px-4 py-3">User</th>
               <th className="text-left px-4 py-3 hidden lg:table-cell">IP</th>
               <th className="text-left px-4 py-3 w-32">Time</th>
-              <th className="text-left px-4 py-3 w-16">Actions</th>
+              <th className="text-left px-4 py-3 w-24">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -331,38 +464,76 @@ export default function AdminQueries() {
                           <span className="text-gray-600 text-xs">—</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-gray-500 text-xs font-mono hidden lg:table-cell">
-                        {q.ip_address ?? "—"}
+                      <td className="px-4 py-3 hidden lg:table-cell">
+                        {(() => {
+                          const ip = ipInfo(q);
+                          return (
+                            <div title={ip.title}>
+                              <div className="text-gray-500 text-xs font-mono">
+                                {ip.value}
+                              </div>
+                              {ip.label && (
+                                <div className="text-[10px] text-gray-600">
+                                  {ip.label}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </td>
                       <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
                         {new Date(q.created_at).toLocaleString()}
                       </td>
                       <td className="px-4 py-3">
-                        {q.result ? (
-                          downloadingId === q.id ? (
-                            <button
-                              disabled
-                              className="text-lime-400 text-xs flex items-center gap-1 cursor-not-allowed"
-                            >
+                        <div className="flex items-center gap-2">
+                          {q.result ? (
+                            downloadingId === q.id ? (
                               <div className="w-4 h-4 border-2 border-lime-400 border-t-transparent rounded-full animate-spin" />
-                              Downloading...
-                            </button>
+                            ) : (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDownload(q);
+                                }}
+                                className={`transition-colors ${
+                                  q.type === "leak"
+                                    ? "text-gray-600 cursor-not-allowed"
+                                    : "text-lime-400 hover:text-lime-300"
+                                }`}
+                                title={
+                                  q.type === "leak"
+                                    ? "Download not available for Leak Data Finder results"
+                                    : "Download PDF"
+                                }
+                              >
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                  />
+                                </svg>
+                              </button>
+                            )
+                          ) : (
+                            <span className="text-gray-600">—</span>
+                          )}
+                          {deletingId === q.id ? (
+                            <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
                           ) : (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDownload(q);
+                                openDeleteModal(q);
                               }}
-                              className={`transition-colors ${
-                                q.type === "leak"
-                                  ? "text-gray-600 cursor-not-allowed"
-                                  : "text-lime-400 hover:text-lime-300"
-                              }`}
-                              title={
-                                q.type === "leak"
-                                  ? "Download not available for Leak Data Finder results"
-                                  : "Download PDF"
-                              }
+                              className="text-red-400 hover:text-red-300 transition-colors"
+                              title="Delete query & clear cache"
                             >
                               <svg
                                 className="w-4 h-4"
@@ -374,14 +545,12 @@ export default function AdminQueries() {
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                   strokeWidth="2"
-                                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                 />
                               </svg>
                             </button>
-                          )
-                        ) : (
-                          <span className="text-gray-600">—</span>
-                        )}
+                          )}
+                        </div>
                       </td>
                     </tr>
                     {isExpanded && fields.length > 1 && (
@@ -473,6 +642,32 @@ export default function AdminQueries() {
                           </svg>
                         </button>
                       ))}
+                    {deletingId === q.id ? (
+                      <Loader />
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openDeleteModal(q);
+                        }}
+                        className="text-red-400 hover:text-red-300 transition-colors"
+                        title="Delete query & clear cache"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                      </button>
+                    )}
                     <span className="text-gray-600 text-xs">
                       {new Date(q.created_at).toLocaleString()}
                     </span>
@@ -498,11 +693,15 @@ export default function AdminQueries() {
                   ) : (
                     <span className="text-gray-600">Unknown user</span>
                   )}
-                  {q.ip_address && (
-                    <span className="text-gray-600 font-mono">
-                      {q.ip_address}
-                    </span>
-                  )}
+                  {(() => {
+                    const ip = ipInfo(q);
+                    return (
+                      <span className="text-gray-600 font-mono" title={ip.title}>
+                        {ip.value}
+                        {ip.label ? ` (${ip.label})` : ""}
+                      </span>
+                    );
+                  })()}
                 </div>
 
                 <div className="mt-1 text-gray-600 text-xs">
@@ -548,6 +747,25 @@ export default function AdminQueries() {
           </div>
         </div>
       )}
+
+      <DeleteQueryModal
+        open={!!confirmTarget}
+        typeLabel={confirmInfo?.label ?? ""}
+        typeColor={
+          TYPE_COLORS[confirmTarget?.type] ??
+          "bg-white/5 text-gray-400 border-white/10"
+        }
+        displayValue={
+          confirmTarget
+            ? parseQuery(confirmTarget.query, confirmTarget.type).display
+            : ""
+        }
+        impact={impact}
+        impactLoading={impactLoading}
+        deleting={deletingId === confirmTarget?.id}
+        onCancel={closeDeleteModal}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }
