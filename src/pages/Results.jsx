@@ -10,7 +10,7 @@ import { ProfileFromEmailApis } from "../utils/ProfileFromEmailApis";
 import TelProfileCard from "../components/TelProfileCard";
 import EmailProfileCard from "../components/EmailProfileCard";
 import no_results_image from "../assets/noresults.png";
-import { useState, Suspense, lazy, useEffect, useMemo } from "react";
+import { useState, Suspense, lazy, useEffect, useMemo, useRef } from "react";
 import InlineLoader from "../components/InlineLoader";
 
 const Map = lazy(() => import("../components/Map"));
@@ -221,6 +221,12 @@ const Results = () => {
     isEmailDataValid,
   ]);
 
+  // The row written at search time by the API controller holds the raw
+  // per-API shape; overwrite it with the curated shape above so that the
+  // saved-result view and the history-page PDF download both get real data.
+  // Tracks what was already persisted so re-renders don't re-POST.
+  const savedKeyRef = useRef(null);
+
   useEffect(() => {
     if (
       !stateResults ||
@@ -231,15 +237,25 @@ const Results = () => {
     ) {
       return;
     }
-    if (statePublicId) return;
+    // Never write back a result that was just loaded from the server.
+    if (isFromSavedResult) return;
+
+    const saveKey = `${type}:${searchQueryId ?? statePublicId ?? userInput}`;
+    if (savedKeyRef.current === saveKey) return;
+    savedKeyRef.current = saveKey;
+
     instance
       .post("/api/search-results", {
         type: type,
         user_input: userInput,
         results: resultsToSend,
         search_query_id: searchQueryId || null,
+        search_query_public_id: statePublicId || null,
       })
-      .catch(() => {});
+      .catch(() => {
+        // Allow a retry on the next render if the save failed.
+        savedKeyRef.current = null;
+      });
   }, [
     userInput,
     type,
@@ -247,6 +263,7 @@ const Results = () => {
     statePublicId,
     searchQueryId,
     resultsToSend,
+    isFromSavedResult,
   ]);
 
   const isResultEmpty = () => {
