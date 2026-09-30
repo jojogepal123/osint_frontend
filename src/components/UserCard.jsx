@@ -4,6 +4,7 @@ import UserIcon from "../assets/userIcon.png";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import InlineLoader from "./InlineLoader";
+import { adminUrl } from "../utils/adminPath";
 
 const UserCard = () => {
   const { user, logout, activeCase } = useAuthContext();
@@ -27,7 +28,7 @@ const UserCard = () => {
   };
 
   return (
-    <div className="flex gap-2 items-center justify-end p-4 z-20">
+    <div className="relative flex gap-2 items-center justify-end p-4 z-[70]">
       <div
         className="text-xs md:text-sm text-custom-lime rounded px-2 py-1.5 bg-transparent border border-custom-lime max-w-[120px] md:max-w-[200px] truncate"
         title={caseName || "selected case"}
@@ -44,7 +45,7 @@ const UserCard = () => {
           </span>
         </div>
       )}
-      <div className="relative flex items-center">
+      <div className="relative z-[60] flex items-center">
         <button
           className="h-8 w-8 md:h-10 md:w-10 rounded-full shadow bg-white/10 transition-opacity duration-300"
           title={user?.name || "User"}
@@ -95,7 +96,7 @@ const UserCard = () => {
             </button>
             {user?.is_admin && (
               <button
-                onClick={() => navigate("/admin")}
+                onClick={() => navigate(adminUrl())}
                 className="flex items-center px-4 py-3 space-x-3 w-full hover:bg-gray-800 text-white hover:text-lime-300"
               >
                 <svg
