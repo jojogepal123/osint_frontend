@@ -2,6 +2,7 @@ import { useEffect, useState, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import instance from "../../api/axios";
+import { adminUrl } from "../../utils/adminPath";
 import Loader from "../../components/Loader";
 import DeleteQueryModal from "../../components/DeleteQueryModal";
 
@@ -449,7 +450,7 @@ export default function AdminQueries() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              navigate(`/admin/users/${q.user.id}`);
+                              navigate(adminUrl(`/users/${q.user.id}`));
                             }}
                             className="text-left hover:text-lime-400 transition-colors"
                           >
@@ -683,7 +684,7 @@ export default function AdminQueries() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/admin/users/${q.user.id}`);
+                        navigate(adminUrl(`/users/${q.user.id}`));
                       }}
                       className="text-gray-400 hover:text-lime-400 transition-colors text-left"
                     >

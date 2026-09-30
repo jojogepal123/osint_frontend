@@ -5,6 +5,10 @@ import { loadSlim } from "@tsparticles/slim";
 import backgroundImage from "../assets/background2.png";
 
 const particlesOptions = {
+  fullScreen: {
+    enable: true,
+    zIndex: -1,
+  },
   background: {
     image: `url(${backgroundImage})`,
     position: "50% 50%",

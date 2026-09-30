@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import instance from "../../api/axios";
+import { adminUrl } from "../../utils/adminPath";
 
 const TYPE_COLORS = {
   phone:        "bg-blue-500/20 text-blue-300 border-blue-500/30",
@@ -75,7 +76,7 @@ export default function AdminUserDetail() {
 
       {/* Back button */}
       <button
-        onClick={() => navigate("/admin/users")}
+        onClick={() => navigate(adminUrl("/users"))}
         className="flex items-center gap-2 text-gray-400 hover:text-white text-sm mb-5 sm:mb-6 transition-colors"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 shrink-0">

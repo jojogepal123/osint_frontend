@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "../../api/axios";
+import { adminUrl } from "../../utils/adminPath";
 import { toast } from "react-toastify";
 import ModalService from "../../services/ModalService.jsx";
 
@@ -385,7 +386,7 @@ export default function AdminUsers() {
                   <td className="px-4 py-3">
                     <div className="flex gap-1.5 justify-end">
                       <button
-                        onClick={() => navigate(`/admin/users/${u.id}`)}
+                        onClick={() => navigate(adminUrl(`/users/${u.id}`))}
                         className="text-xs px-2 sm:px-2.5 py-1 rounded-lg border border-white/10 text-gray-300 hover:text-white hover:border-lime-500/40 transition-colors"
                       >
                         View
@@ -516,7 +517,7 @@ export default function AdminUsers() {
               {/* Actions */}
               <div className="flex gap-2">
                 <button
-                  onClick={() => navigate(`/admin/users/${u.id}`)}
+                  onClick={() => navigate(adminUrl(`/users/${u.id}`))}
                   className="flex-1 text-xs py-1.5 rounded-lg border border-white/10 text-gray-300 hover:text-white hover:border-lime-500/40 transition-colors"
                 >
                   View

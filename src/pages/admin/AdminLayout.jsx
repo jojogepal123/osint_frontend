@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import useAuthContext from "../../context/AuthContext";
+import { adminUrl } from "../../utils/adminPath";
 
 const NAV = [
   {
     label: "Dashboard",
-    path: "/admin",
+    path: adminUrl(),
     exact: true,
     icon: (
       <svg
@@ -24,7 +25,7 @@ const NAV = [
   },
   {
     label: "Users",
-    path: "/admin/users",
+    path: adminUrl("/users"),
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -42,7 +43,7 @@ const NAV = [
   },
   {
     label: "Search Queries",
-    path: "/admin/queries",
+    path: adminUrl("/queries"),
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -53,6 +54,23 @@ const NAV = [
       >
         <circle cx="11" cy="11" r="8" />
         <path d="m21 21-4.35-4.35" />
+      </svg>
+    ),
+  },
+  {
+    label: "Logs",
+    path: adminUrl("/logs"),
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        className="w-5 h-5 shrink-0"
+      >
+        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+        <line x1="12" y1="9" x2="12" y2="13" />
+        <line x1="12" y1="17" x2="12.01" y2="17" />
       </svg>
     ),
   },

@@ -40,10 +40,12 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminUserDetail from "./pages/admin/AdminUserDetail";
 import AdminQueries from "./pages/admin/AdminQueries";
+import AdminLogs from "./pages/admin/AdminLogs";
 import CmsLayout from "./layouts/CmsLayout";
 import Cases from "./pages/cms/Cases";
 import CasesList from "./pages/cms/CasesList";
 import CaseDetail from "./pages/cms/CaseDetail";
+import { adminUrl } from "./utils/adminPath";
 
 function App() {
   const { sidebarVisible, setSidebarVisible, user, isLoading } =
@@ -227,10 +229,11 @@ function App() {
             </Route>
             {/* Admin routes */}
             <Route element={<AdminLayout />}>
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/users" element={<AdminUsers />} />
-              <Route path="/admin/users/:id" element={<AdminUserDetail />} />
-              <Route path="/admin/queries" element={<AdminQueries />} />
+              <Route path={adminUrl()} element={<AdminDashboard />} />
+              <Route path={adminUrl("/users")} element={<AdminUsers />} />
+              <Route path={adminUrl("/users/:id")} element={<AdminUserDetail />} />
+              <Route path={adminUrl("/queries")} element={<AdminQueries />} />
+              <Route path={adminUrl("/logs")} element={<AdminLogs />} />
             </Route>
 
             {/* CMS routes */}

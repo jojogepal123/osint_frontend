@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import useAuthContext from "../context/AuthContext";
+import { adminUrl } from "../utils/adminPath";
 
 const NAV = [
   {
@@ -41,7 +42,7 @@ const NAV = [
   },
   {
     label: "Admin Panel",
-    path: "/admin",
+    path: adminUrl(),
     icon: (
       <svg
         viewBox="0 0 24 24"
