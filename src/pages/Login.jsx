@@ -4,14 +4,12 @@ import useAuthContext from "../context/AuthContext";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
 import Loader from "../components/Loader";
-import { useGoogleLogin } from "@react-oauth/google";
-import instance from "../api/axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false); // Add loading state
-  const { login, errors, getUser } = useAuthContext();
+  const { login, errors } = useAuthContext();
   const [showPassword, setShowPassword] = useState(false); // Toggle state
   const navigate = useNavigate();
 
@@ -26,34 +24,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
-  // const handleLogin = useGoogleLogin({
-  //   onSuccess: async (tokenResponse) => {
-  //     try {
-  //       setLoading(true);
-  //       const res = await instance.post("/api/google-login", {
-  //         token: tokenResponse.access_token,
-  //       });
-
-  //       localStorage.setItem("auth_token", res.data.token);
-
-  //       // You can redirect or update UI here
-  //       await getUser();
-  //       navigate("/dashboard");
-  //     } catch (err) {
-  //       toast.error("Google login failed. Please try again.");
-  //       // console.error("Google login failed:", err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   },
-  //   onError: (err) => {
-  //     // console.error("Google login error:", err);
-  //     toast.error("Google login failed.");
-  //   },
-  //   flow: "implicit",
-  //   scope: "openid email profile",
-  // });
 
   return (
     <>
@@ -146,18 +116,6 @@ const Login = () => {
                       </svg>
                     </button>
 
-                    {/* <div className="text-center text-lg">
-                          <p className="relative text-gray-300 before:absolute before:left-0 before:top-1/2 before:inline-block before:h-px before:w-[45%] before:bg-gray-500 after:absolute after:right-0 after:top-1/2 after:inline-block after:h-px after:w-[45%] after:bg-gray-500">
-                            OR
-                          </p>
-                        </div>
-                        //  google login button  
-                        <button onClick={() => handleLogin()} className="whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-600 text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 gradient-background flex w-2/3 flex-row justify-center  items-center rounded-md font-bold mx-auto">
-                          <img src="data:image/svg+xml,%3csvg%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cg%20id='flat-color-icons:google'%3e%3cpath%20id='Vector'%20d='M21.8055%2010.0415H21V10H12V14H17.6515C16.827%2016.3285%2014.6115%2018%2012%2018C8.6865%2018%206%2015.3135%206%2012C6%208.6865%208.6865%206%2012%206C13.5295%206%2014.921%206.577%2015.9805%207.5195L18.809%204.691C17.023%203.0265%2014.634%202%2012%202C6.4775%202%202%206.4775%202%2012C2%2017.5225%206.4775%2022%2012%2022C17.5225%2022%2022%2017.5225%2022%2012C22%2011.3295%2021.931%2010.675%2021.8055%2010.0415Z'%20fill='%23FFC107'/%3e%3cpath%20id='Vector_2'%20d='M3.15295%207.3455L6.43845%209.755C7.32745%207.554%209.48045%206%2012%206C13.5295%206%2014.921%206.577%2015.9805%207.5195L18.809%204.691C17.023%203.0265%2014.634%202%2012%202C8.15895%202%204.82795%204.1685%203.15295%207.3455Z'%20fill='%23FF3D00'/%3e%3cpath%20id='Vector_3'%20d='M12%2022C14.583%2022%2016.93%2021.0115%2018.7045%2019.404L15.6095%2016.785C14.5718%2017.5742%2013.3038%2018.001%2012%2018C9.39903%2018%207.19053%2016.3415%206.35853%2014.027L3.09753%2016.5395C4.75253%2019.778%208.11353%2022%2012%2022Z'%20fill='%234CAF50'/%3e%3cpath%20id='Vector_4'%20d='M21.8055%2010.0415H21V10H12V14H17.6515C17.2571%2015.1082%2016.5467%2016.0766%2015.608%2016.7855L15.6095%2016.7845L18.7045%2019.4035C18.4855%2019.6025%2022%2017%2022%2012C22%2011.3295%2021.931%2010.675%2021.8055%2010.0415Z'%20fill='%231976D2'/%3e%3c/g%3e%3c/svg%3e"></img>
-                          <span className="ml-1 md:ml-2 text-center text-xs md:text-sm lg:text-lg font-medium bg-gradient-to-r text-lime-200">
-                            Continue with Google
-                          </span>
-                        </button> */}
                   </div>
                 </form>
                 <div className="flex items-center justify-center">
